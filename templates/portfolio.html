@@ -1,0 +1,134 @@
+{% extends "base.html" -%}
+{% block content -%}
+
+<div class="row row-cols-1">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ portfolio['profit_today_absolute'] }}</h5>
+                <p class="card-text"><small class="text-muted">performance today</small></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ portfolio['profit_total_absolute'] }}</h5>
+                <p class="card-text"><small class="text-muted">overall return</small></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ portfolio['portfolio_value'] }}</h5>
+                <p class="card-text"><small class="text-muted">portfolio value</small></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-4">
+        <div class="card h-100">
+            <div class="card-body"><h5 class="card-title">{{ portfolio['dividend'] }}</h5>
+                <p class="card-text"><small class="text-muted">dividends</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1">
+
+    <!-- line -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <canvas id="all_portfolios_line"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+
+        <!-- doughnut -->
+        <div class="card col-md-12 mb-4">
+            <div class="card-body">
+                <canvas id="portfolio_assets_doughnut" data-val="{{percentage_doughnut_data}}"
+                        label-val="{{percentage_doughnut_label}}"></canvas>
+            </div>
+        </div>
+
+
+        <!-- doughnut -->
+        <div class="card col-md-12 mb-4">
+            <div class="card-body">
+                <canvas id="doughnut_sector" data-val="{{doughnut_sector_data}}"
+                        label-val="{{doughnut_sector_label}}"></canvas>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- table -->
+    <div class="col-md-8 mb-4">
+        <table id="portfolio_stocks" class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Asset</th>
+                <th scope="col">symbol</th>
+                <th scope="col">quantity</th>
+                <th scope="col">price</th>
+                <th scope="col">performance today</th>
+                <th scope="col">overall return</th>
+                <th scope="col">value</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for asset in assets %}
+            <tr>
+                <th scope="row"><a href="asset?id={{ asset.id }}">{{ asset.title }}</a></th>
+                <td>{{ asset.symbol }}</td>
+                <td>{{ asset.quantity }}</td>
+                <td>{{ asset.regularMarketPrice }}</td>
+                <td>{{ asset.profit_today_absolute }}</td>
+                <td>{{ asset.profit_total_absolute }}</td>
+                <td>{{ asset.asset_value }}</td>
+                <td>
+                    <div class="dropdown">
+
+                        <span class="edit dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i
+                                class="fas fa-ellipsis-v"></i></span>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="#">Edit</a></li>
+                            <li><a class="dropdown-item" href="#">Delete</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+{%- endblock content %}
+
+{% block footer -%}
+<script>
+    portfolio_assets_doughnut_data = JSON.parse($('#portfolio_assets_doughnut').attr('data-val').replaceAll('\'', '\"'))
+    portfolio_assets_doughnut_label = JSON.parse($('#portfolio_assets_doughnut').attr('label-val').replaceAll('\'', '\"'))
+    chart_doughnut('portfolio_assets_doughnut', 'Distrubution', portfolio_assets_doughnut_data, portfolio_assets_doughnut_label)
+
+
+    doughnut_sector_data = JSON.parse($('#doughnut_sector').attr('data-val').replaceAll('\'', '\"'))
+    doughnut_sector_label = JSON.parse($('#doughnut_sector').attr('label-val').replaceAll('\'', '\"'))
+    chart_doughnut('doughnut_sector', 'sector', doughnut_sector_data, doughnut_sector_label)
+
+
+    // chart_linechart('portfolio_stock_sectore_doughnut', 'Line chart', data_asset_allocation, labels_asset_allocation)
+
+
+</script>
+{%- endblock footer %}
