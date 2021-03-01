@@ -87,8 +87,8 @@ def prepare_portfolios(conn, portfolios):
         portfolio['profit_today_relative'] = portfolio_profit_today
         portfolio['dividend'] = my_dividend
 
-    # all_portfolios = {'value': calc_portfolio_value(static), 'profit_total': (calc_portfolio_profit(static))[0],
-    #                 'profit_today': (calc_portfolio_profit(static))[1], 'dividend': calc_portfolio_dividend(static)}
+    # all_portfolios = {'value': calc_portfolio_value(assets), 'profit_total': (calc_portfolio_profit(assets))[0],
+    #                 'profit_today': (calc_portfolio_profit(assets))[1], 'dividend': calc_portfolio_dividend(assets)}
 
     return portfolios  # , all_portfolios
 

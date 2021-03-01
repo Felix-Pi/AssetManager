@@ -1,4 +1,4 @@
-{% extends "base.html" -%}
+{% extends "base/base.html" -%}
 {% block content -%}
 
 <div class="row row-cols-1">
@@ -64,6 +64,12 @@
                         label-val="{{doughnut_sector_label}}"></canvas>
             </div>
         </div>
+        <!-- doughnut -->
+        <div class="card col-md-12 mb-4">
+            <div class="card-body">
+                news
+            </div>
+        </div>
 
 
     </div>
@@ -86,7 +92,15 @@
             <tbody>
             {% for asset in assets %}
             <tr>
-                <th scope="row"><a href="asset?id={{ asset.id }}">{{ asset.title }}</a></th>
+                <th scope="row">
+                    {% if asset.asset_type == 1 %}
+                    <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&stock={{ asset.id }}">{{ asset.title
+                        }}</a>
+                    {% else %}
+                    <a href="/asset?id={{ asset.id }}">{{ asset.title }}</a>
+                    {% endif %}
+                </th>
+
                 <td>{{ asset.symbol }}</td>
                 <td>{{ asset.quantity }}</td>
                 <td>{{ asset.regularMarketPrice }}</td>
@@ -99,7 +113,8 @@
                         <span class="edit dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i
                                 class="fas fa-ellipsis-v"></i></span>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Edit</a></li>
+                            <li><a class="edit_stock_button dropdown-item" portfolio_id="{{ portfolio_id }}"
+                                   asset_id="{{ asset.id }}">Edit</a></li>
                             <li><a class="dropdown-item" href="#">Delete</a></li>
                         </ul>
                     </div>
@@ -113,9 +128,63 @@
 
 
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="edit_stock_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="edit_stock_modal_label">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">BuyIn</label>
+                        <input type="text" class="form-control dbcol" col="buyIn">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="text" class="form-control dbcol" col="quantity">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Portfolio</label>
+                        <select class="form-select dbcol-opt" col="portfolio">
+                            {% for user_portfolio in user_portfolios %}
+                            <option id="portfolio_{{ user_portfolio['id'] }}">{{ user_portfolio['title'] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Sector</label>
+                        <select class="form-select dbcol-opt" col="sector">
+                            {% for sector in all_sectors %}
+                            <option id="sector_{{ sector['id'] }}">{{ sector['title'] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {%- endblock content %}
 
 {% block footer -%}
+<script src="{{ url_for('static', filename='js/portfolio_edit_stock.js') }}"></script>
 <script>
     portfolio_assets_doughnut_data = JSON.parse($('#portfolio_assets_doughnut').attr('data-val').replaceAll('\'', '\"'))
     portfolio_assets_doughnut_label = JSON.parse($('#portfolio_assets_doughnut').attr('label-val').replaceAll('\'', '\"'))

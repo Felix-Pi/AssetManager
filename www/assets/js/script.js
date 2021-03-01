@@ -65,43 +65,20 @@ function chart_doughnut(id, title, data, labels) {
 }
 
 
-function chart_linechart(id, data, labels) {
-    data[0] = [
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor()
-    ]
-    data[1] = [
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor()
-    ]
+function chart_linechart(id, title, data, labels) {
 
-
+    console.log('chart_linechart id', id)
+    console.log('chart_linechart data', data)
+    console.log('chart_linechart labels', labels)
     var lineChartData = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels: labels,
         datasets: [{
-            label: 'My First dataset',
+            label: title,
             borderColor: colors[0],
             backgroundColor: colors[0],
             fill: false,
-            data: data[0],
+            data: data,
             yAxisID: 'y-axis-1',
-        }, {
-            label: 'My Second dataset',
-            borderColor: colors[1],
-            backgroundColor: colors[1],
-            fill: false,
-            data: data[1],
-            yAxisID: 'y-axis-2'
         }]
     };
 
@@ -119,12 +96,10 @@ function chart_linechart(id, data, labels) {
             },
             scales: {
                 yAxes: [{
-                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
                     display: true,
                     position: 'left',
                     id: 'y-axis-1',
                 }, {
-                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
                     display: true,
                     position: 'right',
                     id: 'y-axis-2',
@@ -144,16 +119,11 @@ function chart_linechart(id, data, labels) {
 }
 
 
-
-
 function test() {
 
 }
+
 $(document).ready(function () {
-
-
-
-
 
 
 });

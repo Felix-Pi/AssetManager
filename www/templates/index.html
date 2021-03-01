@@ -1,4 +1,4 @@
-{% extends "base.html" -%}
+{% extends "base/base.html" -%}
 {% block content -%}
 
 
@@ -53,7 +53,7 @@
             <tbody>
             {% for portfolio in portfolios %}
             <tr>
-                <th scope="row"><a href="portfolio?id={{ portfolio.id }}">{{ portfolio.title }}</a></th>
+                <th scope="row"><a href="{{ url_for('portfolio') }}?id={{ portfolio.id }}">{{ portfolio.title }}</a></th>
                 <td>{{ portfolio.profit_today_absolute }}</td>
                 <td>{{ portfolio.profit_total_absolute }}</td>
                 <td>{{ portfolio.portfolio_value }}</td>
@@ -70,6 +70,15 @@
             <div class="card-body">
                 <canvas id="doughnut_asset_allocation" data-val="{{doughnut_asset_allocation_data}}"
                         label-val="{{doughnut_asset_allocation_label}}"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- news -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+               news
             </div>
         </div>
     </div>

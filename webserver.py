@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for, jsonify
 from assets import *
 from portfolio import *
 from mysql import *
+from stock import *
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='www/templates/', static_folder='www/assets/')
 
 USER_ID = 1
 database = r"data/database.db"
@@ -21,8 +22,7 @@ def index():
                       'profit_today_absolute': (calc_portfolio_profit(portfolios))[1],
                       'dividend': calc_portfolio_dividend(portfolios)}
 
-    print(portfolios)
-
+    # url_for('portfolio')
     templateData = {
         'pagetitle': 'Home',
         'portfolios': portfolios,
@@ -39,16 +39,20 @@ def portfolio():
 
     conn = create_connection(database)
     with conn:
-        portfolio = select_portfolio(conn, portfolio_id)[0]
-        assets = select_assets_from_portfolio(conn, portfolio_id)
+        portfolio = select_portfolio(conn, portfolio_id)
+        user_portfolios = select_portfolios_from_user(conn, USER_ID)
+        assets = select_all_assets_from_portfolio(conn, portfolio_id)
         doughnut_sector = select_sectordata_from_portfolio_grouped_by_sector(conn, portfolio_id)
+        all_sectors = select_all_sectors(conn)
 
-
-    print(doughnut_sector)
+    print('user_portfolios', user_portfolios)
     templateData = {
         'pagetitle': 'Portfolio',
-        'portfolio': portfolio,
-        'assets': assets,
+        'portfolio_id': portfolio_id,  # the current portfolio
+        'portfolio': portfolio,  # the current portfolio
+        'user_portfolios': user_portfolios,  # all portfolios owned by that user
+        'assets': assets,  # assets in this portfolio
+        'all_sectors': all_sectors,  # assets in this portfolio
         'percentage_doughnut_data': [asset['asset_value'] for asset in assets],
         'percentage_doughnut_label': [asset['title'] for asset in assets],
         'doughnut_sector_data': [asset['val'] for asset in doughnut_sector],
@@ -56,7 +60,45 @@ def portfolio():
     }
     return render_template('portfolio.html', **templateData)
 
-    return json.dumps({'data': data, 'labels': [labels]})
+
+@app.route('/stock/')
+def stock():
+    portfolio_id = request.args.get('portfolio', type=int)
+    stock_id = request.args.get('stock', type=int)
+    conn = create_connection(database)
+    with conn:
+        stock = select_single_asset_from_portfolio(conn, portfolio_id, stock_id)
+        stock_price_linechart = get_historical_data()
+
+    templateData = {
+        'pagetitle': 'Portfolio',
+        'stock_price_linechart': {'data': stock_price_linechart[0], 'label': stock_price_linechart[1]}
+
+    }
+    return render_template('assets/stock.html', **templateData)
+
+
+@app.route('/api/refresh/')
+def refresh_data():
+    database = r"data/database.db"
+
+    conn = create_connection(database)
+    with conn:
+        update_assets(conn)
+        update_portfolio_data(conn)
+
+        update_portfolios(conn)
+
+    return 'updated'
+
+
+@app.route('/api/select_single_asset_from_portfolio/', methods=['POST'])
+def api_select_single_asset_from_portfolio():
+    if request.method == 'POST':
+        conn = create_connection(database)
+        with conn:
+            return jsonify(
+                select_single_asset_from_portfolio(conn, request.form['portfolio_id'], request.form['asset_id']))
 
 
 if __name__ == '__main__':
