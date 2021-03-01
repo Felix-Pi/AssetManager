@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, jsonify
+from flask import Flask, render_template, request, url_for, jsonify, redirect
 from assets import *
 from portfolio import *
 from mysql import *
@@ -67,8 +67,9 @@ def stock():
     stock_id = request.args.get('stock', type=int)
     conn = create_connection(database)
     with conn:
-        stock = select_single_asset_from_portfolio(conn, portfolio_id, stock_id)
-        stock_price_linechart = get_historical_data()
+        stock = select_single_asset_from_portfolio(conn, portfolio_id, stock_id)[0]
+        print('stock: ', stock)
+        stock_price_linechart = get_historical_data(stock['symbol'])
 
     templateData = {
         'pagetitle': 'Portfolio',
@@ -89,7 +90,7 @@ def refresh_data():
 
         update_portfolios(conn)
 
-    return 'updated'
+    return redirect(url_for('index'))
 
 
 @app.route('/api/select_single_asset_from_portfolio/', methods=['POST'])
@@ -102,4 +103,4 @@ def api_select_single_asset_from_portfolio():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=80, host='0.0.0.0')
+    app.run(debug=True, port=81, host='0.0.0.0')

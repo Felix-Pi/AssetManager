@@ -35,7 +35,7 @@ function chart_doughnut(id, title, data, labels) {
             },
             responsive: true,
             title: {
-                display: true,
+                display: false,
                 text: title
             },
             animation: {
@@ -60,13 +60,18 @@ function chart_doughnut(id, title, data, labels) {
         }
     };
 
-    var ctx = document.getElementById(id).getContext('2d');
+
+    $(id + ' .card-header').text(title);
+    $(id + ' .card-body').html('<canvas id="' + id + '_canvas"></canvas>');
+
+    var ctx = document.getElementById(id + '_canvas').getContext('2d');
     window.id = new Chart(ctx, config);
+
+
 }
 
 
 function chart_linechart(id, title, data, labels) {
-
     console.log('chart_linechart id', id)
     console.log('chart_linechart data', data)
     console.log('chart_linechart labels', labels)
@@ -79,6 +84,8 @@ function chart_linechart(id, title, data, labels) {
             fill: false,
             data: data,
             yAxisID: 'y-axis-1',
+            cubicInterpolationMode: 'monotone'
+
         }]
     };
 
@@ -99,15 +106,6 @@ function chart_linechart(id, title, data, labels) {
                     display: true,
                     position: 'left',
                     id: 'y-axis-1',
-                }, {
-                    display: true,
-                    position: 'right',
-                    id: 'y-axis-2',
-
-                    // grid line settings
-                    gridLines: {
-                        drawOnChartArea: false, // only want the grid lines for one axis to show up
-                    },
                 }],
             }
         }
@@ -118,12 +116,3 @@ function chart_linechart(id, title, data, labels) {
 
 }
 
-
-function test() {
-
-}
-
-$(document).ready(function () {
-
-
-});
