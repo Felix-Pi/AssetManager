@@ -6,40 +6,69 @@
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body">
-                <h5 class="card-title">{{ all_portfolios['profit_today_absolute'] }}</h5>
-                <p class="card-text"><small class="text-muted">performance today</small></p>
+                <div class="ui tiny statistic">
+                    <div class="value">
+                        {{ all_portfolios['profit_today_absolute'] }}
+                    </div>
+                    <div class="label">
+                        performance today
+                    </div>
+                </div>
             </div>
         </div>
+
+
     </div>
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body">
+                <div class="ui tiny statistic">
+                    <div class="value">
+                        {{ all_portfolios['profit_total_absolute'] }}
+                    </div>
+                    <div class="label">
+                        overall return
+                    </div>
+                </div>
 
-                <h5 class="card-title">{{ all_portfolios['profit_total_absolute'] }}</h5>
-                <p class="card-text"><small class="text-muted">overall return</small></p>
             </div>
         </div>
     </div>
     <div class="col-md-2 mb-4">
         <div class="card h-100">
             <div class="card-body">
+                <div class="ui tiny statistic">
+                    <div class="value">
+                        {{ all_portfolios['value'] }}
+                    </div>
+                    <div class="label">
+                        portfolio value
+                    </div>
+                </div>
 
-                <h5 class="card-title">{{ all_portfolios['value'] }}</h5>
-                <p class="card-text"><small class="text-muted">portfolio value</small></p>
             </div>
         </div>
     </div>
-    <div class="col-md-2 mb-4">
+        <div class="col-md-2 mb-4">
         <div class="card h-100">
-            <div class="card-body"><h5 class="card-title">{{ all_portfolios['dividend'] }}</h5>
-                <p class="card-text"><small class="text-muted">dividends</small></p>
+            <div class="card-body">
+                <div class="ui tiny statistic">
+                    <div class="value">
+                        {{ all_portfolios['dividend'] }}
+                    </div>
+                    <div class="label">
+                        dividends
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
+
 </div>
 
 <div class="row row-cols-1">
-    <!-- table -->
+    <!-- table portfolios -->
     <div class="col-md-8 mb-4">
         <table class="table">
             <thead class="thead-dark">
@@ -53,7 +82,8 @@
             <tbody>
             {% for portfolio in portfolios %}
             <tr>
-                <th scope="row"><a href="{{ url_for('portfolio') }}?id={{ portfolio.id }}">{{ portfolio.title }}</a></th>
+                <th scope="row"><a href="{{ url_for('portfolio') }}?id={{ portfolio.id }}">{{ portfolio.title }}</a>
+                </th>
                 <td>{{ portfolio.profit_today_absolute }}</td>
                 <td>{{ portfolio.profit_total_absolute }}</td>
                 <td>{{ portfolio.portfolio_value }}</td>
@@ -65,20 +95,32 @@
 
 
     <!-- doughnut -->
-    <div class="col-md-4">
+    <div class="col-md-4 mb-4">
+        <div class="card" id="doughnut_asset_allocation" data-val="{{doughnut_asset_allocation_data}}"
+             label-val="{{doughnut_asset_allocation_label}}">
+            <div class="card-header"></div>
+
+            <div class="card-body"></div>
+        </div>
+
+    </div>
+
+    <hr />
+    <!-- news -->
+    <div class="col-md-6 mb-4">
         <div class="card">
+            <div class="card-header">filler</div>
             <div class="card-body">
-                <canvas id="doughnut_asset_allocation" data-val="{{doughnut_asset_allocation_data}}"
-                        label-val="{{doughnut_asset_allocation_label}}"></canvas>
             </div>
         </div>
     </div>
 
     <!-- news -->
-    <div class="col-md-4">
+    <div class="col-md-6 mb-4">
         <div class="card">
+            <div class="card-header">News</div>
             <div class="card-body">
-               news
+                {% include "newsfeed.html" %}
             </div>
         </div>
     </div>
@@ -107,10 +149,10 @@
     doughnut_asset_allocation_data = JSON.parse($('#doughnut_asset_allocation').attr('data-val').replaceAll('\'', '\"'))
     doughnut_asset_allocation_label = JSON.parse($('#doughnut_asset_allocation').attr('label-val').replaceAll('\'', '\"'))
 
-    chart_doughnut('doughnut_asset_allocation', 'Distrubution', doughnut_asset_allocation_data, doughnut_asset_allocation_label)
+    chart_doughnut('#doughnut_asset_allocation', 'Distrubution', doughnut_asset_allocation_data, doughnut_asset_allocation_label)
 
 
-    chart_linechart('all_portfolios_line', 'Line chart', data_asset_allocation, labels_asset_allocation)
+    chart_linechart('#all_portfolios_line', 'Line chart', data_asset_allocation, labels_asset_allocation)
 
 </script>
 {%- endblock footer %}

@@ -1,4 +1,4 @@
-from mysql import *
+from db import *
 from assets import *
 
 
@@ -16,6 +16,7 @@ def calc_asset_profit(value, quantity, buyin, price_open):
 
 def calc_portfolio_value(portfolio_assets):
     return round(sum(asset['asset_value'] for asset in portfolio_assets), 2)
+
 
 def calc_all_portfolios_value(portfolio_assets):
     return round(sum(asset['portfolio_value'] for asset in portfolio_assets), 2)

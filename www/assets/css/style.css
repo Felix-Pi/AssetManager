@@ -1,4 +1,4 @@
-#portfolio_stocks .edit {
+#portfolio_stocks .edit, #portfolio_stocks #add_stock_button {
     cursor: pointer;
 }
 

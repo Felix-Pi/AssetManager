@@ -46,11 +46,14 @@
                 <th scope="col">Asset</th>
                 <th scope="col">symbol</th>
                 <th scope="col">quantity</th>
+                <th scope="col">buyIn</th>
                 <th scope="col">price</th>
-                <th scope="col">performance today</th>
-                <th scope="col">overall return</th>
+                <th scope="col">today</th>
+                <th scope="col">total</th>
                 <th scope="col">value</th>
-                <th scope="col"></th>
+                <th scope="col">
+                    <span id="add_stock_button"><i class="fas fa-plus"></i></span>
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -67,6 +70,7 @@
 
                 <td>{{ asset.symbol }}</td>
                 <td>{{ asset.quantity }}</td>
+                <td>{{ asset.buyIn }}</td>
                 <td>{{ asset.regularMarketPrice }}</td>
                 <td>{{ asset.profit_today_absolute }}</td>
                 <td>{{ asset.profit_total_absolute }}</td>
@@ -92,32 +96,27 @@
 
     <div class="col-md-4 mb-4">
 
-        <!-- doughnut -->
+        <!-- doughnut assets-->
+        <div class="card mb-4" id="portfolio_assets_doughnut" data-val="{{percentage_doughnut_data}}"
+             label-val="{{percentage_doughnut_label}}">
+            <div class="card-header"></div>
 
-        <div class="col-md-12 mb-4">
-
-            <div class="card" id="portfolio_assets_doughnut" data-val="{{percentage_doughnut_data}}"
-                 label-val="{{percentage_doughnut_label}}">
-                <div class="card-header"></div>
-
-                <div class="card-body"></div>
-            </div>
+            <div class="card-body"></div>
         </div>
 
-
-        <!-- doughnut -->
-        <div class="col-md-12 mb-4">
-
-            <div class="card" id="doughnut_sector" data-val="{{doughnut_sector_data}}"
-                 label-val="{{doughnut_sector_label}}">
-                <div class="card-header"></div>
-                <div class="card-body"></div>
-            </div>
+        {% if portfolio[0]['portfolio_type'] == 1 or portfolio[0]['portfolio_type'] == 4 %} <!-- stock or cash -->
+        <!-- doughnut sectors -->
+        <div class="card mb-4" id="doughnut_sector" data-val="{{doughnut_sector_data}}"
+             label-val="{{doughnut_sector_label}}">
+            <div class="card-header"></div>
+            <div class="card-body"></div>
         </div>
-        <!-- doughnut -->
-        <div class="card col-md-12 mb-4">
+        {% endif %}
+        <!-- news -->
+        <div class="card mb-4" id="portfolio_news">
+
             <div class="card-body">
-                news
+                {% include "newsfeed.html" %}
             </div>
         </div>
 
@@ -127,7 +126,7 @@
 </div>
 
 
-<!-- Modal -->
+<!-- Modal edit stock -->
 <div class="modal fade" id="edit_stock_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -137,6 +136,11 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <input type="hidden" class="dbcol" col="id">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control dbcol" col="title">
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">BuyIn</label>
                         <input type="text" class="form-control dbcol" col="buyIn">
@@ -149,8 +153,10 @@
                     <div class="mb-3">
                         <label class="form-label">Portfolio</label>
                         <select class="form-select dbcol-opt" col="portfolio">
-                            {% for user_portfolio in user_portfolios %}
-                            <option id="portfolio_{{ user_portfolio['id'] }}">{{ user_portfolio['title'] }}
+                            {% for user_portfolio in user_portfolios_with_same_type %}
+                            <option id="edit_stock_modal_portfolio_{{ user_portfolio['id'] }}"
+                                    db-id="{{ user_portfolio['id'] }}">
+                                {{ user_portfolio['title'] }}
                             </option>
                             {% endfor %}
                         </select>
@@ -160,7 +166,8 @@
                         <label class="form-label">Sector</label>
                         <select class="form-select dbcol-opt" col="sector">
                             {% for sector in all_sectors %}
-                            <option id="sector_{{ sector['id'] }}">{{ sector['title'] }}
+                            <option id="edit_stock_modal_sector_{{ sector['id'] }}" db-id="{{ sector['id'] }}">{{
+                                sector['title'] }}
                             </option>
                             {% endfor %}
                         </select>
@@ -171,7 +178,60 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary submit_form">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal edit stock -->
+<div class="modal fade" id="add_stock_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add_stock_modal_label">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" class="dbcol" col="portfolio" value="{{ portfolio[0]['id'] }}">
+                    <input type="hidden" class="dbcol" col="portfolio_type"
+                           value="{{ portfolio[0]['portfolio_type'] }}">
+                    <div class="mb-3">
+                        <label class="form-label">Symbol</label>
+                        <input type="text" class="form-control dbcol" col="symbol">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control dbcol" col="title">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sector</label>
+                        <select class="form-select dbcol-opt" col="sector">
+                            {% for sector in all_sectors %}
+                            <option id="add_stock_modal_sector_{{ sector['id'] }}" db-id="{{ sector['id'] }}">{{
+                                sector['title'] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">BuyIn</label>
+                        <input type="text" class="form-control dbcol" col="buyIn">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="text" class="form-control dbcol" col="quantity">
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary submit_form">Save changes</button>
             </div>
         </div>
     </div>
@@ -181,7 +241,7 @@
 {%- endblock content %}
 
 {% block footer -%}
-<script src="{{ url_for('static', filename='js/portfolio_edit_stock.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>
 <script>
     portfolio_assets_doughnut_data = JSON.parse($('#portfolio_assets_doughnut').attr('data-val').replaceAll('\'', '\"'))
     portfolio_assets_doughnut_label = JSON.parse($('#portfolio_assets_doughnut').attr('label-val').replaceAll('\'', '\"'))

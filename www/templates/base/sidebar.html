@@ -18,11 +18,23 @@
         <li class="nav-item">
             <a class="nav-link" href="#">
                 <span data-feather="file-text"></span>
-                Gemine
+                News
             </a>
-            <a class="nav-link" href="{{ url_for('refresh_data') }}">
+            <a class="nav-link" href="#">
                 <span data-feather="file-text"></span>
-                Updata data
+                Upcoming IPOS
+            </a>
+            <a class="nav-link" href="#">
+                <span data-feather="file-text"></span>
+                Upcoming dates / events
+            </a>
+            <a class="nav-link" href="#">
+                <span data-feather="file-text"></span>
+                Sentiment analysis
+            </a>
+            <a class="nav-link" href="{{ url_for('refresh_data') }}?rederict="> <!-- todo rederict to url-->
+                <span data-feather="file-text"></span>
+                Update data
             </a>
         </li>
     </ul>

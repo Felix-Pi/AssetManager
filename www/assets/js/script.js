@@ -29,34 +29,17 @@ function chart_doughnut(id, title, data, labels) {
             labels: labels
         },
         options: {
-            parsing: {
-                xAxisKey: 'value',
-                yAxisKey: 'symbol'
-            },
             responsive: true,
             title: {
                 display: false,
-                text: title
             },
             animation: {
                 animateScale: true,
                 animateRotate: true
             },
             legend: {
-                position: "right"
+                display: false,
             },
-            plugins: {
-                datalabels: {
-                    display: true,
-                    align: 'bottom',
-                    backgroundColor: '#ccc',
-                    borderRadius: 3,
-                    font: {
-                        size: 18,
-                    }
-                },
-            }
-
         }
     };
 

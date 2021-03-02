@@ -1,0 +1,24 @@
+<div class="ui small feed">
+    {% if news == None %}
+    No news
+    {% else %}
+    {% for event in news %}
+    <div class="event">
+
+        <div class="content">
+            <div class="summary">
+                <a href="{{ event.link }}" target="_blank">{{event.title}}n</a>
+                <div class="date">
+                    {{event.pubDate}}
+                </div>
+            </div>
+
+            <div class="extra text">
+                {{event.description}}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+</div>

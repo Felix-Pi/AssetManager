@@ -1,6 +1,6 @@
 import requests
 import json
-from mysql import *
+from db import *
 
 
 def get_stock_data(assets):
@@ -15,6 +15,20 @@ def get_stock_data(assets):
     return req.json()['quoteResponse']['result']
 
 
+def check_if_asset_symbol_exists(symbol):
+    api = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols={}'.format(symbol)
+
+    print(api)
+
+    req = requests.get(api).json()
+    result = req['quoteResponse']['result']
+
+    if result is None or len(result) == 0:
+        return False
+
+    return True
+
+
 def calc_asset_dividend(dividended_rate, dividended_yield, quantity):
     dividended_rate = float(dividended_rate)
     dividended_yield = float(dividended_yield * 100)
@@ -26,7 +40,10 @@ def calc_asset_dividend(dividended_rate, dividended_yield, quantity):
 def prepare_assets(assets, conn):
     data = get_stock_data(assets)
 
+    print(len(data), data)
+
     for i in range(len(data)):
+        print(assets[i]['id'])
         price = data[i]['regularMarketPrice']
         priceOpen = data[i]['regularMarketOpen']
 
@@ -36,14 +53,16 @@ def prepare_assets(assets, conn):
                                                                                  data[i]['trailingAnnualDividendYield'],
                                                                                  1)
 
-        assets[i]['price'] = price
-        assets[i]['priceOpen'] = priceOpen
+        assets[i]['regularMarketPrice'] = price
+        assets[i]['regularMarketOpen'] = priceOpen
 
         assets[i]['trailingAnnualDividendRate'] = dividended_rate
         assets[i]['trailingAnnualDividendYield'] = dividended_yield
         assets[i]['dividend'] = my_dividend
 
-        return assets
+        print(assets[i]['symbol'], data[i]['symbol'])
+
+    return assets
 
 
 def update_assets(conn):

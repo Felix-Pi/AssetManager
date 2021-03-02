@@ -40,6 +40,8 @@ def update_all_assets(conn, assets):
                    data['trailingAnnualDividendYield'],
                    data['id'])
 
+        print(dataset)
+
         sql = ''' UPDATE assets
                   SET regularMarketPrice          = ? ,
                       regularMarketOpen           = ? ,
@@ -51,22 +53,6 @@ def update_all_assets(conn, assets):
         conn.commit()
 
 
-def select_all_asset_types(conn):
-    """
-    Query all rows in the tasks table
-    :param conn: the Connection object
-    :return:
-    """
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM asset_types')
-
-    rows = cur.fetchall()
-
-    print(rows)
-    # for row in rows:
-    #    print(row)
-
-
 def select_all_symbols(conn):
     """
     Query tasks by priority
@@ -74,10 +60,7 @@ def select_all_symbols(conn):
     :return:
     """
     cur = conn.cursor()
-    # cur.execute("SELECT * FROM tasks WHERE priority=?", (priority,))
 
-    allowed_types = 1
-    # sql = 'SELECT a.symbol, a.title, a.buyin, a.quantity, at.title as asset_type FROM assets a JOIN asset_types at on at.id = a.asset_type'
     cur.execute('SELECT * FROM assets')
 
     return cur.fetchall()
@@ -105,7 +88,9 @@ def select_portfolios_data_for_prepare(conn):
 
     sql = 'SELECT pd.id, pd.quantity, pd.buyIn, a.* ' \
           'FROM portfolio_data pd ' \
-          'JOIN assets a on a.id = pd.asset'
+          'JOIN assets a on a.id = pd.asset WHERE a.asset_type != 4'  # dont select assets with type cash
+
+    print('sql', sql)
     cur.execute(sql)
 
     return cur.fetchall()
@@ -137,7 +122,6 @@ def update_all_portfolio_data(conn, portfolio_data):
                    data['dividend'],
                    data['id'])
 
-
         sql = ''' UPDATE portfolio_data
                   SET asset_value = ?, 
                       profit_total_absolute = ?, 
@@ -153,6 +137,7 @@ def update_all_portfolio_data(conn, portfolio_data):
         cur.execute(sql, dataset)
 
         conn.commit()
+        cur.close()
 
 
 def update_all_portfolios(conn, portfolios):
@@ -184,6 +169,7 @@ def update_all_portfolios(conn, portfolios):
         cur.execute(sql, dataset)
 
         conn.commit()
+        cur.close()
 
 
 def select_portfolios_from_user(conn, user_id):
@@ -212,6 +198,19 @@ def select_portfolio(conn, portfolio_id):
     return cur.fetchall()
 
 
+def select_all_assets(conn):
+    """
+    select all assets that are not asset_type=4 (cash)
+    :param conn: the Connection object
+    :return:
+    """
+    cur = conn.cursor()
+    sql = "SELECT * FROM assets WHERE asset_type !=4"
+    cur.execute(sql)
+
+    return cur.fetchall()
+
+
 def select_all_assets_from_portfolio(conn, portfolio_id):
     """
     Query tasks by priority
@@ -219,11 +218,14 @@ def select_all_assets_from_portfolio(conn, portfolio_id):
     :return:
     """
     cur = conn.cursor()
-    sql = 'SELECT * FROM portfolio_data, assets WHERE portfolio_data.asset = assets.id AND portfolio_data.portfolio={} ORDER BY asset_value DESC'.format(portfolio_id)
+    sql = 'SELECT * FROM portfolio_data, assets WHERE portfolio_data.asset = assets.id AND portfolio_data.portfolio={} ORDER BY asset_value DESC'.format(
+        portfolio_id)
 
+    print(sql)
     cur.execute(sql)
 
     return cur.fetchall()
+
 
 def select_single_asset_from_portfolio(conn, portfolio_id, asset_id):
     """
@@ -232,11 +234,14 @@ def select_single_asset_from_portfolio(conn, portfolio_id, asset_id):
     :return:
     """
     cur = conn.cursor()
-    sql = 'SELECT * FROM portfolio_data, assets WHERE portfolio_data.asset = assets.id AND portfolio_data.portfolio={} AND assets.id={} ORDER BY asset_value DESC'.format(portfolio_id, asset_id)
+    sql = 'SELECT * FROM portfolio_data, assets WHERE portfolio_data.asset = assets.id AND portfolio_data.portfolio={} AND assets.id={} ORDER BY asset_value DESC'.format(
+        portfolio_id, asset_id)
 
+    print(sql)
     cur.execute(sql)
 
     return cur.fetchall()
+
 
 def select_assets_from_portfolio_grouped_by_sector(conn, portfolio_id):
     """
@@ -255,6 +260,7 @@ def select_assets_from_portfolio_grouped_by_sector(conn, portfolio_id):
 
     return cur.fetchall()
 
+
 def select_sectordata_from_portfolio_grouped_by_sector(conn, portfolio_id):
     """
     Query tasks by priority
@@ -272,6 +278,7 @@ def select_sectordata_from_portfolio_grouped_by_sector(conn, portfolio_id):
 
     return cur.fetchall()
 
+
 def select_all_sectors(conn):
     """
     selects all secotrs. format: id, title
@@ -284,3 +291,58 @@ def select_all_sectors(conn):
     cur.execute(sql)
 
     return cur.fetchall()
+
+
+def api_portfolio_insert_stock(conn, data):
+    """
+
+    :param form input
+    :return:
+    """
+
+    # check if stock already in db assets - yes: insert and get id, no: use id
+    # check if asset already in portfolio, then update
+    # insert into portfolio_data
+
+    print(data)
+    cur = conn.cursor()
+    sql = "SELECT * FROM assets WHERE symbol='{}'".format(data['symbol'])
+
+    cur.execute(sql)
+
+    res = cur.fetchall()
+
+    if len(res) > 0:
+        asset_id = res[0]['id']
+    else:
+        # insert into asset
+        cur = conn.cursor()
+        sql = "INSERT INTO assets (symbol, asset_type) VALUES ('{}', {})".format(data['symbol'], data['portfolio_type'])
+
+        print(sql)
+        cur.execute(sql)
+
+        asset_id = cur.lastrowid
+
+        cur = conn.cursor()
+    sql = "INSERT INTO portfolio_data (asset, quantity, buyIn, title, portfolio, sector) VALUES ({}, {}, {}, '{}', {}, {})".format(
+        asset_id, data['quantity'], data['buyIn'], data['title'], data['portfolio'], data['sector']
+    )
+    print(sql)
+    cur.execute(sql)
+    cur.close()
+    return 'true'
+
+
+def api_portfolio_update_stock(conn, data):
+    sql = "UPDATE portfolio_data SET buyIn={}, title='{}', portfolio={}, sector={}, quantity={} WHERE asset={}".format(
+        data['buyIn'], data['title'], data['portfolio'], data['sector'], data['quantity'], data['id']
+    )
+
+    print(sql)
+    cur = conn.cursor()
+    cur.execute(sql)
+    conn.commit()
+
+    cur.close()
+    return data
