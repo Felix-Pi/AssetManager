@@ -8,10 +8,11 @@ def calc_asset_value(quantity, price):
 
 def calc_asset_profit(value, quantity, buyin, price_open):
     profit_total_absolute = round(value - (quantity * buyin), 2)
-
     profit_today_absolute = round(value - (quantity * price_open), 2)
 
-    return profit_total_absolute, profit_today_absolute
+    profit_total_relative = round(profit_total_absolute / (value + 0.0000000001) * 100, 2)  # avoid division by zero
+    profit_today_relative = round(profit_today_absolute / (value + 0.0000000001) * 100, 2)  # avoid division by zero
+    return profit_total_absolute, profit_total_relative, profit_today_absolute, profit_today_relative
 
 
 def calc_portfolio_value(portfolio_assets):
@@ -23,10 +24,22 @@ def calc_all_portfolios_value(portfolio_assets):
 
 
 def calc_portfolio_profit(portfolio_assets):
+    for asset in portfolio_assets:
+        print('a', asset)
+
     profit_total_absolute = round(sum(asset['profit_total_absolute'] for asset in portfolio_assets), 2)
     profit_today_absolute = round(sum(asset['profit_today_absolute'] for asset in portfolio_assets), 2)
 
-    return profit_total_absolute, profit_today_absolute
+    # function used for calculating value for one portfolio and all portfolios, todo
+    if 'asset_value' in portfolio_assets[0]:
+        value = sum(asset['asset_value'] for asset in portfolio_assets) + 0.0000000001  # avoid division by zero
+    else:
+        value = sum(asset['portfolio_value'] for asset in portfolio_assets if asset['portfolio_type'] != 4) + 0.0000000001  # avoid division by zero
+
+    profit_total_relative = round(profit_total_absolute / value * 100, 2)
+    profit_today_relative = round(profit_today_absolute / value * 100, 2)
+
+    return profit_total_absolute, profit_total_relative, profit_today_absolute, profit_today_relative
 
 
 def calc_portfolio_dividend(portfolio_assets):
@@ -44,13 +57,14 @@ def prepare_portfolio_data(portfolio_data):
 
         value = calc_asset_value(quantity, price)
 
-        profit_total, profit_today = calc_asset_profit(value, quantity, buyin, priceOpen)
+        profit_total_absolute, profit_total_relative, profit_today_absolute, profit_today_relative = calc_asset_profit(
+            value, quantity, buyin, priceOpen)
 
         data['asset_value'] = value
-        data['profit_total_absolute'] = profit_total
-        data['profit_total_relative'] = profit_total
-        data['profit_today_absolute'] = profit_today
-        data['profit_today_relative'] = profit_today
+        data['profit_total_absolute'] = profit_total_absolute
+        data['profit_total_relative'] = profit_total_relative
+        data['profit_today_absolute'] = profit_today_absolute
+        data['profit_today_relative'] = profit_today_relative
 
         # only for stocks
         if 'trailingAnnualDividendRate' in data:
@@ -77,15 +91,16 @@ def prepare_portfolios(conn, portfolios):
 
         portfolio_value = calc_portfolio_value(portfolio_assets)
 
-        portfolio_profit_total, portfolio_profit_today = calc_portfolio_profit(portfolio_assets)
+        profit_total_absolute, profit_total_relative, profit_today_absolute, profit_today_relative = calc_portfolio_profit(
+            portfolio_assets)
 
         my_dividend = calc_portfolio_dividend(portfolio_assets)
 
         portfolio['portfolio_value'] = portfolio_value
-        portfolio['profit_total_absolute'] = portfolio_profit_total
-        portfolio['profit_total_relative'] = portfolio_profit_total
-        portfolio['profit_today_absolute'] = portfolio_profit_today
-        portfolio['profit_today_relative'] = portfolio_profit_today
+        portfolio['profit_total_absolute'] = profit_total_absolute
+        portfolio['profit_total_relative'] = profit_total_relative
+        portfolio['profit_today_absolute'] = profit_today_absolute
+        portfolio['profit_today_relative'] = profit_today_relative
         portfolio['dividend'] = my_dividend
 
     # all_portfolios = {'value': calc_portfolio_value(assets), 'profit_total': (calc_portfolio_profit(assets))[0],

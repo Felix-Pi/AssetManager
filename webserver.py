@@ -33,7 +33,9 @@ def index():
 
     all_portfolios = {'value': calc_all_portfolios_value(portfolios),
                       'profit_total_absolute': (calc_portfolio_profit(portfolios))[0],
-                      'profit_today_absolute': (calc_portfolio_profit(portfolios))[1],
+                      'profit_total_relative': (calc_portfolio_profit(portfolios))[1],
+                      'profit_today_absolute': (calc_portfolio_profit(portfolios))[2],
+                      'profit_today_relative': (calc_portfolio_profit(portfolios))[3],
                       'dividend': calc_portfolio_dividend(portfolios)}
 
     # url_for('portfolio')

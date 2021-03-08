@@ -1,4 +1,39 @@
+* {
+    border-radius: 0 !important;
+}
+
+.card-header, .card-footer {
+    background: none;
+}
+.card-header {
+    background: none;
+
+}
+
 #portfolio_stocks .edit, #portfolio_stocks #add_stock_button {
     cursor: pointer;
 }
 
+#top_steps .steps {
+    width: 100%;
+}
+
+#top_steps .steps .step {
+    padding: 2em;
+    justify-content: left;
+}
+
+
+#top_steps .ordered_step_number {
+    position: absolute;
+    right: 1em;
+    display: block;
+    text-align: center;
+    -ms-flex-item-align: middle;
+    margin-left: 1rem;
+    font-size: 2.1em;
+    counter-increment: ordered;
+    font-family: inherit;
+    font-weight: 700;
+    justify-content: right;
+}

@@ -17,6 +17,7 @@ function get_random_color(amount) {
     return bgcolors;
 }
 
+
 function chart_doughnut(id, title, data, labels) {
     var config = {
         type: 'doughnut',
@@ -58,14 +59,37 @@ function chart_linechart(id, title, data, labels) {
     console.log('chart_linechart id', id)
     console.log('chart_linechart data', data)
     console.log('chart_linechart labels', labels)
+
+
+    unit = $(id + " .unit").val()
+    console.log(unit)
+
+    data_final = []
+    labels_final = []
+
+    for (let i = 0; i < 3; i++) {
+        label = labels[i]
+
+        console.log(label)
+        console.log(Date.parse(label))
+
+        if (i % 5 == 0) {
+            data_final.push(data[i])
+            labels_final.push(labels[i])
+        }
+    }
+
+    console.log(data.length)
+
+    color = get_random_color(data.length);
     var lineChartData = {
-        labels: labels,
+        labels: labels_final,
         datasets: [{
             label: title,
             borderColor: colors[0],
             backgroundColor: colors[0],
             fill: false,
-            data: data,
+            data: data_final,
             yAxisID: 'y-axis-1',
             cubicInterpolationMode: 'monotone'
 
@@ -81,8 +105,10 @@ function chart_linechart(id, title, data, labels) {
             hoverMode: 'index',
             stacked: false,
             title: {
-                display: true,
-                text: 'Chart.js Line Chart - Multi Axis'
+                display: false,
+            },
+            legend: {
+                display: false,
             },
             scales: {
                 yAxes: [{
@@ -93,9 +119,15 @@ function chart_linechart(id, title, data, labels) {
             }
         }
     }
-    var ctx = document.getElementById(id).getContext('2d');
+
+    $(id + ' .card-header').text(title);
+    $(id + ' .card-body').html('<canvas id="' + id + '_canvas"></canvas>');
+
+    var ctx = document.getElementById(id + '_canvas').getContext('2d');
     window.myLine = new Chart(ctx, config);
 
 
 }
+
+
 
