@@ -5,12 +5,13 @@
 .card-header, .card-footer {
     background: none;
 }
+
 .card-header {
     background: none;
 
 }
 
-#portfolio_stocks .edit, #portfolio_stocks #add_stock_button {
+#portfolio_stocks .edit, #portfolio_stocks #add_stock_button, .profit_label {
     cursor: pointer;
 }
 

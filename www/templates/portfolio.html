@@ -58,17 +58,16 @@
 
 
     <!-- table -->
-    <div class="col-md-8 mb-4">
+    <div class="col-md-4 mb-4">
         <table id="portfolio_stocks" class="table">
             <thead class="thead-dark">
             <tr>
                 <th scope="col">Asset</th>
-<!--                <th scope="col">symbol</th>-->
-<!--                <th scope="col">buyIn</th>-->
-<!--                <th scope="col">price</th>-->
-<!--                <th scope="col">today</th>-->
-                <th scope="col">value</th>
-                <th scope="col">total</th>
+                <!--                <th scope="col">symbol</th>-->
+                <!--                <th scope="col">buyIn</th>-->
+                <!--                <th scope="col">price</th>-->
+                <!--                <th scope="col">today</th>-->
+                <th scope="col" id="profit_label_title">profit total (absolute)</th>
                 <th scope="col">
                     <span id="add_stock_button"><i class="fas fa-plus"></i></span>
                 </th>
@@ -92,6 +91,9 @@
                         <div class="ui mini label">
                             x {{ asset.quantity }}
                         </div>
+                        <div class="ui mini label" style="background: none !important;">
+                             {{ asset.asset_value }}
+                        </div>
                     </span>
 
                     {% else %}
@@ -99,27 +101,27 @@
                     {% endif %}
                 </th>
 
-<!--                <td>{{ asset.symbol }}</td>-->
+                <!--                <td>{{ asset.symbol }}</td>-->
 
-<!--                <td>{{ asset.buyIn }}</td>-->
-<!--                <td>{{ asset.regularMarketPrice }}</td>-->
-<!--                <td>{{ asset.profit_today_absolute }} ({{ "%.2f"|format(asset.profit_today_relative) }} %)</td>-->
+                <!--                <td>{{ asset.buyIn }}</td>-->
+                <!--                <td>{{ asset.regularMarketPrice }}</td>-->
+                <!--                <td>{{ asset.profit_today_absolute }} ({{ "%.2f"|format(asset.profit_today_relative) }} %)</td>-->
                 <!--                <td>{{ asset.profit_total_absolute }} ({{ asset.profit_total_relative }}%)</td>-->
                 <td>
-                    <div class="ui label">
-                        <i class="fas fa-euro-sign"></i> {{ asset.asset_value }}
-                    </div>
-                </td>
-                <td>
-                    {% if asset.profit_today_absolute >= 0 %}
-                    <div class="ui label green">
-                        <i class="fas fa-caret-up"></i> {{ asset.profit_total_absolute }}
-                    </div>
-                    {% else %}
-                    <div class="ui label red">
-                        <i class="fas fa-caret-down"></i> {{ asset.profit_total_absolute }}
-                    </div>
-                    {% endif %}
+
+                    <span class="profit_label" counter="0"
+                          data-val="{{ asset.profit_total_absolute }}~{{ asset.profit_total_relative }}~{{ asset.profit_today_absolute }}~{{ asset.profit_today_relative }}">
+                        {% if asset.profit_today_absolute >= 0 %}
+                        <div class="ui label green">
+                            <i class="fas fa-caret-up"></i> {{ asset.profit_total_absolute }}
+                        </div>
+                        {% else %}
+                        <div class="ui label red">
+                            <i class="fas fa-caret-down"></i> {{ asset.profit_total_absolute }}
+
+                        </div>
+                        {% endif %}
+                    </span>
                 </td>
                 <td>
                     <div class="dropdown">
@@ -140,29 +142,34 @@
         </table>
     </div>
 
-    <div class="col-md-4 mb-4">
+    <div class="col-md-8 mb-4">
+        <div class="row ">
+            <!-- doughnut assets-->
+            <div class="col-md-6">
 
-        <!-- doughnut assets-->
-        <div class="card mb-4" id="portfolio_assets_doughnut" data-val="{{percentage_doughnut_data}}"
-             label-val="{{percentage_doughnut_label}}">
-            <div class="card-header"></div>
+                <div class="card mb-4" id="portfolio_assets_doughnut" data-val="{{percentage_doughnut_data}}"
+                     label-val="{{percentage_doughnut_label}}">
+                    <div class="card-header"></div>
 
-            <div class="card-body"></div>
-        </div>
+                    <div class="card-body"></div>
+                </div>
+            </div>
+            {% if portfolio[0]['portfolio_type'] == 1 or portfolio[0]['portfolio_type'] == 4 %} <!-- stock or cash -->
+            <div class="col-md-6">
+                <!-- doughnut sectors -->
+                <div class="card mb-4" id="doughnut_sector" data-val="{{doughnut_sector_data}}"
+                     label-val="{{doughnut_sector_label}}">
+                    <div class="card-header"></div>
+                    <div class="card-body"></div>
+                </div>
+            </div>
+            {% endif %}
+            <!-- news -->
+            <div class="card mb-4" id="portfolio_news">
 
-        {% if portfolio[0]['portfolio_type'] == 1 or portfolio[0]['portfolio_type'] == 4 %} <!-- stock or cash -->
-        <!-- doughnut sectors -->
-        <div class="card mb-4" id="doughnut_sector" data-val="{{doughnut_sector_data}}"
-             label-val="{{doughnut_sector_label}}">
-            <div class="card-header"></div>
-            <div class="card-body"></div>
-        </div>
-        {% endif %}
-        <!-- news -->
-        <div class="card mb-4" id="portfolio_news">
-
-            <div class="card-body">
-                {% include "newsfeed.html" %}
+                <div class="card-body">
+                    {% include "newsfeed.html" %}
+                </div>
             </div>
         </div>
 

@@ -130,4 +130,55 @@ function chart_linechart(id, title, data, labels) {
 }
 
 
+$(document).ready(function () {
+
+    /*
+    toggle profit label
+     */
+
+    const zeroPad = (num, places) => String(num).padStart(places, '0')
+    $(document).on('click', '.profit_label', function () {
+        $('.profit_label').each(function () {
+            let elem = $(this)
+
+            let counter = parseInt(elem.attr('counter'))
+            let content = elem.attr('data-val').split('~')
+
+            if (counter === content.length - 1) {
+                counter = 0
+            } else {
+                counter += 1
+            }
+
+
+            let content_val = parseFloat(content[counter])
+            content_val = zeroPad(content_val, 2)
+
+
+            if (content_val > 0) {
+                var color = 'green'
+                var icon = 'fas fa-caret-up'
+            } else {
+                var color = 'red'
+                var icon = 'fas fa-caret-down'
+                content_val = content_val * (-1)
+            }
+
+            let target_elem = elem.find('.label')
+
+
+            target_elem.removeClass('.red .green')
+            target_elem.addClass(color)
+
+
+            elem.attr('counter', counter)
+            target_elem.html('<i class="' + icon + '"></i> ' + content_val)
+
+            profit_label_titles = ['profit total (absolute)', 'profit total (relative)', ' profit today (absolute)', 'profit today (absolute)']
+            $('#profit_label_title').text(profit_label_titles[counter])
+
+        });
+    });
+});
+
 

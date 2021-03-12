@@ -73,24 +73,30 @@
                     <thead class="thead-dark">
                     <tr>
                         <th scope="col">Portfolio</th>
-                        <th scope="col">performance today</th>
-                        <th scope="col">portfolio value</th>
-                        <th scope="col">overall return</th>
+                        <th scope="col" id="profit_label_title">profit total (absolute)</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for portfolio in portfolios %}
                     <tr>
-                        <th scope="row"><a href="{{ url_for('portfolio') }}?id={{ portfolio.id }}">{{ portfolio.title
-                            }}</a>
-                        </th>
-                        <td>{{ portfolio.profit_today_absolute }}</td>
-                        <td>
-                            <div class="ui label">
-                                <i class="fas fa-euro-sign"></i> {{ portfolio.portfolio_value }}
+                        <th scope="row">
+
+
+                            <h1 class="ui sub header">
+                                <a href="{{ url_for('portfolio') }}?id={{ portfolio.id }}">{{ portfolio.title
+                                    }}</a>
+                            </h1>
+                            <span>
+                            <div class="ui mini label">
+                                {{ portfolio.portfolio_value }}
                             </div>
-                        </td>
+            </span>
+                        </th>
+
                         <td>
+
+                            <span class="profit_label" counter="0"
+                                  data-val="{{ portfolio.profit_total_absolute }}~{{ portfolio.profit_total_relative }}~{{ portfolio.profit_today_absolute }}~{{ portfolio.profit_today_relative }}">
                             {% if portfolio.profit_today_absolute >= 0 %}
                             <div class="ui label green">
                                 <i class="fas fa-caret-up"></i> {{ portfolio.profit_total_absolute }}
@@ -98,9 +104,13 @@
                             {% else %}
                             <div class="ui label red">
                                 <i class="fas fa-caret-down"></i> {{ portfolio.profit_total_absolute }}
+
                             </div>
                             {% endif %}
+                             </span>
                         </td>
+
+
                     </tr>
                     {% endfor %}
                     </tbody>
