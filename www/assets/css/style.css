@@ -11,7 +11,7 @@
 
 }
 
-#portfolio_stocks .edit, #portfolio_stocks #add_stock_button, .profit_label {
+#portfolio_stocks .edit_stock_button, #portfolio_stocks #add_stock_button, .profit_label {
     cursor: pointer;
 }
 

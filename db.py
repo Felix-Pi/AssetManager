@@ -272,7 +272,11 @@ def select_sectordata_from_portfolio_grouped_by_sector(conn, portfolio_id):
           'FROM portfolio_data ' \
           'JOIN sectors b on b.id = portfolio_data.sector ' \
           'GROUP BY portfolio_data.sector ' \
-          'HAVING portfolio_data.portfolio = {}'.format(portfolio_id)
+          'HAVING portfolio_data.portfolio = {} ' \
+          'ORDER BY val DESC'.format(portfolio_id)
+
+
+    print('sdapsü', sql)
 
     cur.execute(sql)
 
