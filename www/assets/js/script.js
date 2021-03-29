@@ -18,7 +18,7 @@ function get_random_color(amount) {
 }
 
 
-function chart_doughnut(id, title, data, labels, label_suffix) {
+function chart_doughnut(id, title, data, labels, label_suffix, more) {
     var config = {
         type: 'doughnut',
         data: {
@@ -61,6 +61,10 @@ function chart_doughnut(id, title, data, labels, label_suffix) {
 
     $(id + ' .card-header').text(title);
     $(id + ' .card-body').html('<canvas id="' + id + '_canvas"></canvas>');
+
+    if (more == true) {
+        $(id).append('<div class="more ui top right attached label">more ...</div>');
+    }
 
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
     // window.id = new Chart(ctx, config);
@@ -144,7 +148,12 @@ function chart_linechart(id, title, data, labels) {
 
 
 $(document).ready(function () {
+    $(document).on('click', '.card .more', function (e, f) {
+        elem = $(this)
+        console.log('elemmm',elem.parent().find('.card-footer'))
+        elem.parent().find('.card-footer').slideToggle()
 
+    });
     /*
     toggle profit label
      */

@@ -40,7 +40,6 @@ def update_all_assets(conn, assets):
                    data['trailingAnnualDividendYield'],
                    data['id'])
 
-        print(dataset)
 
         sql = ''' UPDATE assets
                   SET regularMarketPrice          = ? ,
@@ -86,11 +85,10 @@ def select_portfolios_data_for_prepare(conn):
     cur = conn.cursor()
     # cur.execute("SELECT * FROM tasks WHERE priority=?", (priority,))
 
-    sql = 'SELECT pd.id, pd.quantity, pd.buyIn, a.* ' \
+    sql = 'SELECT pd.id, pd.quantity, pd.buyIn, pd.sector, a.* ' \
           'FROM portfolio_data pd ' \
           'JOIN assets a on a.id = pd.asset WHERE a.asset_type != 4'  # dont select assets with type cash
 
-    print('sql', sql)
     cur.execute(sql)
 
     return cur.fetchall()
@@ -221,7 +219,6 @@ def select_all_assets_from_portfolio(conn, portfolio_id):
     sql = 'SELECT * FROM portfolio_data, assets WHERE portfolio_data.asset = assets.id AND portfolio_data.portfolio={} ORDER BY asset_value DESC'.format(
         portfolio_id)
 
-    print(sql)
     cur.execute(sql)
 
     return cur.fetchall()
@@ -237,7 +234,7 @@ def select_single_asset_from_portfolio(conn, portfolio_id, asset_id):
     sql = 'SELECT * FROM portfolio_data, assets WHERE portfolio_data.asset = assets.id AND portfolio_data.portfolio={} AND assets.id={} ORDER BY asset_value DESC'.format(
         portfolio_id, asset_id)
 
-    print(sql)
+    #print(sql)
     cur.execute(sql)
 
     return cur.fetchall()
@@ -275,9 +272,6 @@ def select_sectordata_from_portfolio_grouped_by_sector(conn, portfolio_id):
           'HAVING portfolio_data.portfolio = {} ' \
           'ORDER BY val DESC'.format(portfolio_id)
 
-
-    print('sdapsü', sql)
-
     cur.execute(sql)
 
     return cur.fetchall()
@@ -308,7 +302,6 @@ def api_portfolio_insert_stock(conn, data):
     # check if asset already in portfolio, then update
     # insert into portfolio_data
 
-    print(data)
     cur = conn.cursor()
     sql = "SELECT * FROM assets WHERE symbol='{}'".format(data['symbol'])
 
@@ -323,7 +316,6 @@ def api_portfolio_insert_stock(conn, data):
         cur = conn.cursor()
         sql = "INSERT INTO assets (symbol, asset_type) VALUES ('{}', {})".format(data['symbol'], data['portfolio_type'])
 
-        print(sql)
         cur.execute(sql)
 
         asset_id = cur.lastrowid
@@ -332,7 +324,6 @@ def api_portfolio_insert_stock(conn, data):
     sql = "INSERT INTO portfolio_data (asset, quantity, buyIn, title, portfolio, sector) VALUES ({}, {}, {}, '{}', {}, {})".format(
         asset_id, data['quantity'], data['buyIn'], data['title'], data['portfolio'], data['sector']
     )
-    print(sql)
     cur.execute(sql)
     cur.close()
     return 'true'
@@ -343,7 +334,6 @@ def api_portfolio_update_stock(conn, data):
         data['buyIn'], data['title'], data['portfolio'], data['sector'], data['quantity'], data['id']
     )
 
-    print(sql)
     cur = conn.cursor()
     cur.execute(sql)
     conn.commit()

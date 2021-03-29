@@ -1,0 +1,39 @@
+<div class="card mb-4" id="portfolio_assets_doughnut" data-val="{{percentage_doughnut_data}}"
+     label-val="{{percentage_doughnut_label}}">
+    <div class="card-header"></div>
+
+    <div class="card-body"></div>
+
+    <div class="card-footer">
+        <table id="sector_stocks" class="table">
+            {% for asset in assets %}
+            <tr>
+                <td>
+                    <h5 class="ui sub header">
+                        <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&stock={{ asset.id }}">{{
+                            asset.title }}</a>
+                    </h5>
+                    <span>
+                       <div class="progress">
+                           <div class="progress-bar bg-success" role="progressbar"
+                                style="width: {{ asset.portfolio_percentage * 4 }}%"
+                                aria-valuenow="{{ asset.portfolio_percentage }}" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                           <span>{{ asset.portfolio_percentage }}%</span>
+                       </div>
+                    </span>
+                </td>
+
+                <td>
+                    <div class="ui label">
+                        {{ asset.asset_value }} €
+                    </div>
+                </td>
+            </tr>
+
+            {% endfor %}
+        </table>
+
+
+    </div>
+</div>

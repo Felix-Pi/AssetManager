@@ -1,4 +1,12 @@
-.step, .steps, .card{
+.hidden {
+    display: none;
+}
+
+a, a:hover, a:active {
+    color: rgba(0, 0, 0, .87);
+}
+
+.step, .steps, .card {
     border-radius: 0 !important;
 }
 
@@ -8,7 +16,11 @@
 
 .card-header {
     background: none;
+}
 
+.card .more {
+    border-top-right-radius: 0px;
+    cursor: pointer;
 }
 
 #portfolio_stocks .edit_stock_button, #portfolio_stocks #add_stock_button, .profit_label {
@@ -40,7 +52,7 @@
 }
 
 
-.profit_label .label {
+.profit_label .label, #sector_stocks .label, #sector_distribution .label {
     float: right;
     min-width: 55px !important;
     display: inline-block !important
@@ -52,4 +64,22 @@
 
 .ui.sub.header {
     font-size: 1.205714286em !important;
+}
+
+.progress {
+    background: none;
+}
+
+.progress span {
+    line-height: 1.1;
+    margin: 0 0 0 10px;
+}
+
+.progress-bar {
+    border-radius: 5px;
+}
+
+#portfolio_assets_doughnut .card-footer, #doughnut_sector .card-footer {
+    padding: 0;
+    display: none;
 }

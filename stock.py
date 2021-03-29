@@ -18,7 +18,6 @@ def get_historical_data(symbol):
     url = 'https://query1.finance.yahoo.com/v8/finance/chart/?symbol={}&period1={}&period2={}&interval={}&chart'.format(
         symbol, period1, period2, interval)
 
-    print(url)
     result = requests.get(url)
 
     result = result.json()
@@ -41,7 +40,3 @@ def get_historical_data(symbol):
     return json.dumps(data), json.dumps(timestamps)
 
 
-if __name__ == '__main__':
-    data = get_historical_data('BAYN.DE')
-
-    print()

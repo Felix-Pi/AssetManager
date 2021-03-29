@@ -1,3 +1,6 @@
+import itertools
+import operator
+
 from db import *
 from assets import *
 
@@ -24,9 +27,6 @@ def calc_all_portfolios_value(portfolio_assets):
 
 
 def calc_portfolio_profit(portfolio_assets):
-    for asset in portfolio_assets:
-        print('a', asset)
-
     profit_total_absolute = round(sum(asset['profit_total_absolute'] for asset in portfolio_assets), 2)
     profit_today_absolute = round(sum(asset['profit_today_absolute'] for asset in portfolio_assets), 2)
 
@@ -34,7 +34,8 @@ def calc_portfolio_profit(portfolio_assets):
     if 'asset_value' in portfolio_assets[0]:
         value = sum(asset['asset_value'] for asset in portfolio_assets) + 0.0000000001  # avoid division by zero
     else:
-        value = sum(asset['portfolio_value'] for asset in portfolio_assets if asset['portfolio_type'] != 4) + 0.0000000001  # avoid division by zero
+        value = sum(asset['portfolio_value'] for asset in portfolio_assets if
+                    asset['portfolio_type'] != 4) + 0.0000000001  # avoid division by zero
 
     profit_total_relative = round(profit_total_absolute / value * 100, 2)
     profit_today_relative = round(profit_today_absolute / value * 100, 2)
@@ -46,6 +47,23 @@ def calc_portfolio_dividend(portfolio_assets):
     dividend = round(sum(asset['dividend'] for asset in portfolio_assets), 2)
 
     return round(dividend, 2)
+
+
+def calc_portfolio_percentage(portfolio_value, value):
+    return round(value / portfolio_value * 100, 2)
+
+
+def calc_sector_percentage(portfolio_data, portfolio_value, all_sectors):
+    for sector in all_sectors:
+        sector['value'] = round(sum(asset['asset_value'] for asset in portfolio_data if asset['sector'] == sector['id']), 2)
+        sector['percentage'] = round(sector['value'] / portfolio_value * 100, 2)
+
+    for data in portfolio_data:
+        sector_value = [sector['value'] for sector in all_sectors if data['sector'] == sector['id']][0]
+        data['sector_percentage'] = round(data['asset_value'] / sector_value * 100, 2)
+
+    result = sorted(all_sectors, key=lambda k: k['value'], reverse=True)
+    return result
 
 
 def prepare_portfolio_data(portfolio_data):
@@ -74,6 +92,8 @@ def prepare_portfolio_data(portfolio_data):
             data['trailingAnnualDividendRate'] = dividended_rate
             data['trailingAnnualDividendYield'] = dividended_yield
             data['dividend'] = my_dividend
+
+    # sector percentage
 
     return portfolio_data
 
