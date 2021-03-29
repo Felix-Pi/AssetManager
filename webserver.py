@@ -60,7 +60,6 @@ def portfolio():
         portfolio_value = portfolio[0]['portfolio_value']
         user_portfolios = select_portfolios_from_user(conn, USER_ID)
         assets = select_all_assets_from_portfolio(conn, portfolio_id)
-        doughnut_sector = select_sectordata_from_portfolio_grouped_by_sector(conn, portfolio_id)
         all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
 
     # portfolio percentage
@@ -79,9 +78,9 @@ def portfolio():
         'all_sectors': all_sectors,  # assets in this portfolio
         'percentage_doughnut_data': [asset['asset_value'] for asset in assets],
         'percentage_doughnut_label': [asset['title'] for asset in assets],
-        'doughnut_sector_data': [asset['val'] for asset in doughnut_sector],
-        'doughnut_sector_label': [asset['title'] for asset in doughnut_sector],
-        'news': get_news_for_ticker([asset['symbol'] for asset in assets if 'symbol' in asset])
+        'doughnut_sector_data': [asset['percentage'] for asset in all_sectors],
+        'doughnut_sector_label': [asset['title'] for asset in all_sectors],
+        'news': get_news_for_ticker([asset['symbol']  for asset in assets if 'symbol' in asset])
     }
     return render_template('portfolio/portfolio.html', **templateData)
 

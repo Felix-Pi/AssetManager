@@ -111,11 +111,12 @@ $(document).ready(function () {
 
 
     $(document).on('click', '#doughnut_sector', function (e, f) {
+
         var activePoints = sector_chart.getElementAtEvent(e);
 
         if (activePoints[0] === undefined) {
-            $("#sector_distribution .sector").removeClass('hidden');
-            $("#sector_distribution .sector_assets").addClass('hidden');
+            // $("#sector_distribution .sector").removeClass('hidden');
+            // $("#sector_distribution .sector_assets").addClass('hidden');
         } else {
             let index = activePoints[0]._index;
 
@@ -126,6 +127,8 @@ $(document).ready(function () {
 
             $("#sector_distribution .sector_assets").addClass('hidden')
             $("#sector_distribution .sector_assets_" + sector).removeClass('hidden')
+
+            $(this).find('.card-footer').slideDown();
         }
     });
 

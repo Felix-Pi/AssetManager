@@ -257,26 +257,6 @@ def select_assets_from_portfolio_grouped_by_sector(conn, portfolio_id):
 
     return cur.fetchall()
 
-
-def select_sectordata_from_portfolio_grouped_by_sector(conn, portfolio_id):
-    """
-    Query tasks by priority
-    :param conn: the Connection object
-    :return:
-    """
-    cur = conn.cursor()
-    sql = 'SELECT b.title, sum(asset_value) as val ' \
-          'FROM portfolio_data ' \
-          'JOIN sectors b on b.id = portfolio_data.sector ' \
-          'GROUP BY portfolio_data.sector ' \
-          'HAVING portfolio_data.portfolio = {} ' \
-          'ORDER BY val DESC'.format(portfolio_id)
-
-    cur.execute(sql)
-
-    return cur.fetchall()
-
-
 def select_all_sectors(conn):
     """
     selects all secotrs. format: id, title
