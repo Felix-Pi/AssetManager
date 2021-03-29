@@ -18,7 +18,7 @@ function get_random_color(amount) {
 }
 
 
-function chart_doughnut(id, title, data, labels) {
+function chart_doughnut(id, title, data, labels, label_suffix) {
     var config = {
         type: 'doughnut',
         data: {
@@ -41,6 +41,20 @@ function chart_doughnut(id, title, data, labels) {
             legend: {
                 display: false,
             },
+            tooltips: {
+                callbacks: {
+                    label: function (item, data) {
+
+                        let index = item.index;
+                        let symbol = data.labels[index];
+                        let value = data.datasets[0].data[index];
+                        let parsed_value = parseFloat(value);
+                        let formatted_value = parsed_value.toFixed(2);
+
+                        return ' ' + symbol + ': ' + formatted_value + ' ' + label_suffix
+                    }
+                }
+            }
         }
     };
 
@@ -49,9 +63,8 @@ function chart_doughnut(id, title, data, labels) {
     $(id + ' .card-body').html('<canvas id="' + id + '_canvas"></canvas>');
 
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    window.id = new Chart(ctx, config);
-
-
+    // window.id = new Chart(ctx, config);
+    return new Chart(ctx, config);
 }
 
 
