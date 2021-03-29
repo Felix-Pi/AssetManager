@@ -137,60 +137,12 @@
             <!-- doughnut assets-->
             <div class="col-md-6">
 
-                <div class="card mb-4" id="portfolio_assets_doughnut" data-val="{{percentage_doughnut_data}}"
-                     label-val="{{percentage_doughnut_label}}">
-                    <div class="card-header"></div>
-
-                    <div class="card-body"></div>
-                </div>
+                {% include "portfolio/portfolio_stock_distribution.html" %}
             </div>
             {% if portfolio[0]['portfolio_type'] == 1 or portfolio[0]['portfolio_type'] == 4 %} <!-- stock or cash -->
             <div class="col-md-6">
                 <!-- doughnut sectors -->
-                <div class="card mb-4" id="doughnut_sector" data-val="{{doughnut_sector_data}}"
-                     label-val="{{doughnut_sector_label}}">
-                    <div class="card-header"></div>
-                    <div class="card-body"></div>
-                    <div class="card-footer">
-
-
-                        <table id="sector_stocks" class="table">
-
-                            <tbody>
-
-                            <tr>
-                                <th scope="row">
-                                    <h2><i class="fas fa-plus"></i></h2>
-                                </th>
-                                <td>
-                                    <h1 class="ui sub header">
-                                        <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&stock=1">title</a>
-                                    </h1>
-                                    <span>
-                                       <div class="progress">
-                                           <div class="progress-bar bg-success" role="progressbar" style="width: 25%"
-                                                aria-valuenow="25" aria-valuemin="0"
-                                                aria-valuemax="100"></div>
-                                       </div>
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <span class="profit_label">
-                                        <div class="ui label">
-                                            25 %
-                                        </div>
-                                    </span>
-                                </td>
-                            </tr>
-
-
-                            </tbody>
-                        </table>
-
-
-                    </div>
-                </div>
+                {% include "portfolio/portfolio_sector_distribution.html" %}
             </div>
             {% endif %}
             <!-- news -->
@@ -324,19 +276,21 @@
 
 {% block footer -%}
 <script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>
+
 <script>
     portfolio_assets_doughnut_data = JSON.parse($('#portfolio_assets_doughnut').attr('data-val').replaceAll('\'', '\"'))
     portfolio_assets_doughnut_label = JSON.parse($('#portfolio_assets_doughnut').attr('label-val').replaceAll('\'', '\"'))
-    chart_doughnut('#portfolio_assets_doughnut', 'Stock distrubution', portfolio_assets_doughnut_data, portfolio_assets_doughnut_label)
+    chart_doughnut('#portfolio_assets_doughnut', 'Stock distrubution', portfolio_assets_doughnut_data, portfolio_assets_doughnut_label, '€', true)
 
 
     doughnut_sector_data = JSON.parse($('#doughnut_sector').attr('data-val').replaceAll('\'', '\"'))
     doughnut_sector_label = JSON.parse($('#doughnut_sector').attr('label-val').replaceAll('\'', '\"'))
-    chart_doughnut('#doughnut_sector', 'Sector distribution', doughnut_sector_data, doughnut_sector_label)
+    var sector_chart = chart_doughnut('#doughnut_sector', 'Sector distribution', doughnut_sector_data, doughnut_sector_label, '%', true)
 
-
+    var test = 'hallo'
     // chart_linechart('portfolio_stock_sectore_doughnut', 'Line chart', data_asset_allocation, labels_asset_allocation)
 
 
 </script>
+
 {%- endblock footer %}

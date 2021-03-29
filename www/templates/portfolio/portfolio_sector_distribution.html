@@ -1,0 +1,72 @@
+<div class="card mb-4" id="doughnut_sector" data-val="{{doughnut_sector_data}}"
+     label-val="{{doughnut_sector_label}}">
+    <div class="card-header"></div>
+    <div class="card-body"></div>
+    <div class="card-footer">
+
+
+        <table id="sector_distribution" class="table">
+            {% for sector in all_sectors if sector.value > 0 %}
+            <tr class="sector sector_{{ sector['title'] }}">
+                <th scope="row">
+                    <h2><i class="fas fa-{{ sector.icon }}"></i></h2>
+                </th>
+                <td>
+                    <h1 class="ui sub header">
+                        <a href="" class="sector_title">{{ sector.title }}</a>
+                    </h1>
+                    <span>
+                       <div class="progress">
+                           <div class="progress-bar bg-success" role="progressbar"
+                                style="width: {{ sector.percentage * 4 }}%"
+                                aria-valuenow="25" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                          <span>{{ sector.percentage }}%</span>
+                       </div>
+                    </span>
+                </td>
+
+                <td>
+                    <div class="ui label">
+                        {{ sector.value }} €
+                    </div>
+                </td>
+            </tr>
+            {% for asset in assets if asset['sector'] == sector['id'] %}
+            <tr class="sector_assets sector_assets_{{ sector['title'] }} hidden">
+                <th scope="row"></th>
+                <td>
+                    <h1 class="ui sub header">
+                        <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&stock={{ asset.id }}">{{
+                            asset.title }}</a>
+                    </h1>
+                    <span>
+                       <div class="progress">
+                           <div class="progress-bar bg-success" role="progressbar"
+                                style="width: {{ asset.portfolio_percentage * 4 }}%"
+                                aria-valuenow="{{ asset.portfolio_percentage }}" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                           <span>{{ asset.portfolio_percentage }}%</span>
+                       </div>
+                    </span>
+                </td>
+
+                <td>
+                    <div class="ui label">
+                        {{ asset.asset_value }} €
+                    </div>
+                </td>
+            </tr>
+
+            {% endfor %}
+            {% endfor %}
+        </table>
+
+
+    </div>
+</div>
+
+
+
+
+

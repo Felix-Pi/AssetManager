@@ -57,12 +57,16 @@ def portfolio():
     conn = create_connection(database)
     with conn:
         portfolio = select_portfolio(conn, portfolio_id)
+        portfolio_value = portfolio[0]['portfolio_value']
         user_portfolios = select_portfolios_from_user(conn, USER_ID)
         assets = select_all_assets_from_portfolio(conn, portfolio_id)
         doughnut_sector = select_sectordata_from_portfolio_grouped_by_sector(conn, portfolio_id)
-        all_sectors = select_all_sectors(conn)
+        all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
 
-    print(assets)
+    # portfolio percentage
+    for data in assets:
+        data['portfolio_percentage'] = calc_portfolio_percentage(portfolio_value, data['asset_value'])
+
     templateData = {
         'pagetitle': 'Portfolio',
         'portfolio_id': portfolio_id,  # the current portfolio
@@ -79,7 +83,7 @@ def portfolio():
         'doughnut_sector_label': [asset['title'] for asset in doughnut_sector],
         'news': get_news_for_ticker([asset['symbol'] for asset in assets if 'symbol' in asset])
     }
-    return render_template('portfolio.html', **templateData)
+    return render_template('portfolio/portfolio.html', **templateData)
 
 
 @app.route('/stock/')
@@ -89,11 +93,9 @@ def stock():
     conn = create_connection(database)
     with conn:
         stock = select_single_asset_from_portfolio(conn, portfolio_id, stock_id)[0]
-        print('stock: ', stock)
 
         stock_price_linechart = get_historical_data(stock['symbol'])
 
-    print('stocj: ', stock, stock['symbol'])
     templateData = {
         'pagetitle': 'Portfolio',
         'stock_price_linechart': {'data': stock_price_linechart[0], 'label': stock_price_linechart[1]},
@@ -143,7 +145,6 @@ def api_portfolio_edit_stock():
         # redirect(url_for('portfolio') + '?id=' + po) #todo portfolio id
 
     return "true"
-
 
 if __name__ == '__main__':
     app.run(debug=True, port=81, host='0.0.0.0')
