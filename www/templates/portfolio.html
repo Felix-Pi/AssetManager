@@ -7,10 +7,10 @@
         <div class="ui steps">
             <div class="step">
                 <div class="content">
-                    <div class="description">{{ portfolio[0]['profit_today_absolute'] }}</div>
+                    <div class="description">{{ portfolio[0]['profit_today_absolute'] }} €</div>
                     <div class="title">Performance today</div>
                 </div>
-                <div class="ordered_step_number">{{ portfolio[0]['profit_today_relative'] }}</div>
+                <div class="ordered_step_number">{{ portfolio[0]['profit_today_relative'] }} %</div>
             </div>
         </div>
     </div>
@@ -18,10 +18,10 @@
         <div class="ui steps">
             <div class="step">
                 <div class="content">
-                    <div class="description">{{ portfolio[0]['profit_total_absolute'] }}</div>
+                    <div class="description">{{ portfolio[0]['profit_total_absolute'] }} €</div>
                     <div class="title"> overall return</div>
                 </div>
-                <div class="ordered_step_number">{{ portfolio[0]['profit_total_relative'] }}</div>
+                <div class="ordered_step_number">{{ portfolio[0]['profit_total_relative'] }} %</div>
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@
                     <div class="description">&nbsp;</div>
                     <div class="title">portfolio value</div>
                 </div>
-                <div class="ordered_step_number"> {{ portfolio[0]['portfolio_value'] }}</div>
+                <div class="ordered_step_number"> {{ portfolio[0]['portfolio_value'] }} €</div>
             </div>
         </div>
     </div>
@@ -45,7 +45,7 @@
                     <div class="description"> &nbsp;</div>
                     <div class="title">dividends</div>
                 </div>
-                <div class="ordered_step_number"> {{ portfolio[0]['dividend'] }}</div>
+                <div class="ordered_step_number"> {{ portfolio[0]['dividend'] }} €</div>
             </div>
         </div>
     </div>
@@ -59,86 +59,77 @@
 
     <!-- table -->
     <div class="col-md-4 mb-4">
-        <table id="portfolio_stocks" class="table">
-            <thead class="thead-dark">
-            <tr>
-                <th scope="col">Asset</th>
-                <!--                <th scope="col">symbol</th>-->
-                <!--                <th scope="col">buyIn</th>-->
-                <!--                <th scope="col">price</th>-->
-                <!--                <th scope="col">today</th>-->
-                <th scope="col" id="profit_label_title">profit total (absolute)</th>
-                <th scope="col">
-                    <span id="add_stock_button"><i class="fas fa-plus"></i></span>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for asset in assets %}
-            <tr>
-                <th scope="row">
+        <div class="card mb-4">
+            <div class="card-body" style="padding: 0;">
+                <table id="portfolio_stocks" class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Investment</th>
+                        <th scope="col" id="profit_label_title">profit total (absolute)</th>
+                        <th scope="col">
+                            <span id="add_stock_button"><i class="fas fa-plus"></i></span>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for asset in assets %}
+                    <tr>
+                        <th scope="row">
 
 
-                    {% if asset.asset_type == 1 %} <!-- or etf -->
+                            {% if asset.asset_type == 1 %} <!-- or etf -->
 
 
-                    <h1 class="ui sub header">
-                        <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&stock={{ asset.id }}">{{
-                            asset.title
-                            }}</a>
-                    </h1>
-                    <span>
-                        <div class="ui mini label">
+                            <h1 class="ui sub header">
+                                <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&stock={{ asset.id }}">{{
+                                    asset.title
+                                    }}</a>
+                            </h1>
+                            <span>
+                        <div class="ui label">
                             x {{ asset.quantity }}
                         </div>
-                        <div class="ui mini label" style="background: none !important;">
+                        <div class="ui label" style="background: none !important;">
                              {{ asset.asset_value }}
                         </div>
                     </span>
 
-                    {% else %}
-                    <a href="/asset?id={{ asset.id }}">{{ asset.title }}</a>
-                    {% endif %}
-                </th>
-
-                <!--                <td>{{ asset.symbol }}</td>-->
-
-                <!--                <td>{{ asset.buyIn }}</td>-->
-                <!--                <td>{{ asset.regularMarketPrice }}</td>-->
-                <!--                <td>{{ asset.profit_today_absolute }} ({{ "%.2f"|format(asset.profit_today_relative) }} %)</td>-->
-                <!--                <td>{{ asset.profit_total_absolute }} ({{ asset.profit_total_relative }}%)</td>-->
-                <td>
+                            {% else %}
+                            <a href="/asset?id={{ asset.id }}">{{ asset.title }}</a>
+                            {% endif %}
+                        </th>
+                        <td>
 
                     <span class="profit_label" counter="0"
                           data-val="{{ asset.profit_total_absolute }}~{{ asset.profit_total_relative }}~{{ asset.profit_today_absolute }}~{{ asset.profit_today_relative }}">
-                        {% if asset.profit_today_absolute >= 0 %}
+                        {% if asset.profit_total_absolute >= 0 %}
                         <div class="ui label green">
-                            <i class="fas fa-caret-up"></i> {{ asset.profit_total_absolute }}
+                            <i class="fas fa-caret-up"></i> <span>{{ asset.profit_total_absolute }}</span>
                         </div>
                         {% else %}
                         <div class="ui label red">
-                            <i class="fas fa-caret-down"></i> {{ asset.profit_total_absolute }}
+                            <i class="fas fa-caret-down"></i> <span>{{ asset.profit_total_absolute }}</span>
 
                         </div>
                         {% endif %}
                     </span>
-                </td>
-                <td>
-                    <div class="dropdown">
+                        </td>
+                        <td>
 
                         <span class="edit_stock_button" portfolio_id="{{ portfolio_id }}"
-                                   asset_id="{{ asset.id }}"><i
+                              asset_id="{{ asset.id }}"><i
                                 class="fas fa-ellipsis-v"></i></span>
 
 
+                        </td>
+                    </tr>
+                    {% endfor %}
 
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-            </tbody>
-        </table>
     </div>
 
     <div class="col-md-8 mb-4">
@@ -160,6 +151,45 @@
                      label-val="{{doughnut_sector_label}}">
                     <div class="card-header"></div>
                     <div class="card-body"></div>
+                    <div class="card-footer">
+
+
+                        <table id="sector_stocks" class="table">
+
+                            <tbody>
+
+                            <tr>
+                                <th scope="row">
+                                    <h2><i class="fas fa-plus"></i></h2>
+                                </th>
+                                <td>
+                                    <h1 class="ui sub header">
+                                        <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&stock=1">title</a>
+                                    </h1>
+                                    <span>
+                                       <div class="progress">
+                                           <div class="progress-bar bg-success" role="progressbar" style="width: 25%"
+                                                aria-valuenow="25" aria-valuemin="0"
+                                                aria-valuemax="100"></div>
+                                       </div>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="profit_label">
+                                        <div class="ui label">
+                                            25 %
+                                        </div>
+                                    </span>
+                                </td>
+                            </tr>
+
+
+                            </tbody>
+                        </table>
+
+
+                    </div>
                 </div>
             </div>
             {% endif %}

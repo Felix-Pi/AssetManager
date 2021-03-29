@@ -1,4 +1,4 @@
-* {
+.step, .steps, .card{
     border-radius: 0 !important;
 }
 
@@ -37,4 +37,19 @@
     font-family: inherit;
     font-weight: 700;
     justify-content: right;
+}
+
+
+.profit_label .label {
+    float: right;
+    min-width: 55px !important;
+    display: inline-block !important
+}
+
+#profit_label_title {
+    text-align: right;
+}
+
+.ui.sub.header {
+    font-size: 1.205714286em !important;
 }

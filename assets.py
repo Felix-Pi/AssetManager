@@ -9,7 +9,7 @@ def get_stock_data(assets):
     symbols = [symbol['symbol'] for symbol in assets if symbol['symbol'] is not None]
     symbols = 'symbols=' + ','.join(symbols)
 
-    # print(api + symbols)
+    print(api + symbols)
 
     req = requests.get(api + symbols)
     return req.json()['quoteResponse']['result']
@@ -40,10 +40,8 @@ def calc_asset_dividend(dividended_rate, dividended_yield, quantity):
 def prepare_assets(assets, conn):
     data = get_stock_data(assets)
 
-    print(len(data), data)
 
     for i in range(len(data)):
-        print(assets[i]['id'])
         price = data[i]['regularMarketPrice']
         priceOpen = data[i]['regularMarketOpen']
 
@@ -60,7 +58,8 @@ def prepare_assets(assets, conn):
         assets[i]['trailingAnnualDividendYield'] = dividended_yield
         assets[i]['dividend'] = my_dividend
 
-        print(assets[i]['symbol'], data[i]['symbol'])
+        print(data)
+        print('prepare_assets: ', assets[i]['symbol'], data[i]['symbol'])
 
     return assets
 

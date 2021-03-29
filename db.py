@@ -61,7 +61,7 @@ def select_all_symbols(conn):
     """
     cur = conn.cursor()
 
-    cur.execute('SELECT * FROM assets')
+    cur.execute('SELECT * FROM assets WHERE asset_type != 4')
 
     return cur.fetchall()
 

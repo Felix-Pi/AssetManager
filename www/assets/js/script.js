@@ -136,6 +136,22 @@ $(document).ready(function () {
     toggle profit label
      */
 
+    $('.profit_label').each(function () {
+        elem = $(this)
+        profit_val = parseFloat(elem.text())
+
+        elem_text = elem.find('.label').find('span')
+
+        suffix = ' €'
+
+        if (profit_val < 0) {
+            profit_val = profit_val * (-1)
+            elem_text.text('  ' + profit_val)
+        }
+
+        elem_text.append(suffix)
+    });
+
     const zeroPad = (num, places) => String(num).padStart(places, '0')
     $(document).on('click', '.profit_label', function () {
         $('.profit_label').each(function () {
@@ -144,8 +160,15 @@ $(document).ready(function () {
             let counter = parseInt(elem.attr('counter'))
             let content = elem.attr('data-val').split('~')
 
+            if (counter < 1) {
+                suffix = ' €'
+            } else {
+                suffix = ' %'
+            }
+
             if (counter === content.length - 1) {
                 counter = 0
+                suffix = ' €'
             } else {
                 counter += 1
             }
@@ -172,7 +195,7 @@ $(document).ready(function () {
 
 
             elem.attr('counter', counter)
-            target_elem.html('<i class="' + icon + '"></i> ' + content_val)
+            target_elem.html('<i class="' + icon + '"></i> ' + content_val + suffix)
 
             profit_label_titles = ['profit total (absolute)', 'profit total (relative)', ' profit today (absolute)', 'profit today (absolute)']
             $('#profit_label_title').text(profit_label_titles[counter])

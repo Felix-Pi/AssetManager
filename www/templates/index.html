@@ -11,7 +11,7 @@
                     <div class="description">{{ all_portfolios['profit_today_absolute'] }} €</div>
                     <div class="title">Performance today</div>
                 </div>
-                <div class="ordered_step_number">{{ all_portfolios['profit_today_relative'] }}%</div>
+                <div class="ordered_step_number">{{ all_portfolios['profit_today_relative'] }} %</div>
             </div>
         </div>
     </div>
@@ -22,7 +22,7 @@
                     <div class="description">{{ all_portfolios['profit_total_absolute'] }} €</div>
                     <div class="title"> overall return</div>
                 </div>
-                <div class="ordered_step_number">{{ all_portfolios['profit_total_relative'] }}%</div>
+                <div class="ordered_step_number">{{ all_portfolios['profit_total_relative'] }} %</div>
             </div>
         </div>
     </div>
@@ -87,7 +87,7 @@
                                     }}</a>
                             </h1>
                             <span>
-                            <div class="ui mini label">
+                            <div class="ui label">
                                 {{ portfolio.portfolio_value }}
                             </div>
             </span>
@@ -97,13 +97,13 @@
 
                             <span class="profit_label" counter="0"
                                   data-val="{{ portfolio.profit_total_absolute }}~{{ portfolio.profit_total_relative }}~{{ portfolio.profit_today_absolute }}~{{ portfolio.profit_today_relative }}">
-                            {% if portfolio.profit_today_absolute >= 0 %}
+                            {% if portfolio.profit_total_absolute >= 0 %}
                             <div class="ui label green">
-                                <i class="fas fa-caret-up"></i> {{ portfolio.profit_total_absolute }}
+                                <i class="fas fa-caret-up"></i> <span>{{ portfolio.profit_total_absolute }}</span>
                             </div>
                             {% else %}
                             <div class="ui label red">
-                                <i class="fas fa-caret-down"></i> {{ portfolio.profit_total_absolute }}
+                                <i class="fas fa-caret-down"></i> <span>{{ portfolio.profit_total_absolute }}</span>
 
                             </div>
                             {% endif %}
