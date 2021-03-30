@@ -56,16 +56,15 @@
 
 <div class="row row-cols-1">
 
-
     <!-- table -->
-    <div class="col-md-4 mb-4">
+    <div class="col-md-3 mb-4">
         <div class="card mb-4">
             <div class="card-body" style="padding: 0;">
                 <table id="portfolio_stocks" class="table">
                     <thead class="thead-dark">
                     <tr>
                         <th scope="col">Investment</th>
-                        <th scope="col" id="profit_label_title">profit total (absolute)</th>
+                        <th scope="col" id="profit_label_title">profit total</th>
                         <th scope="col">
                             <span id="add_stock_button"><i class="fas fa-plus"></i></span>
                         </th>
@@ -73,7 +72,7 @@
                     </thead>
                     <tbody>
                     {% for asset in assets %}
-                    <tr>
+                    <tr class="asset_elem" data-symbol="{{ asset.symbol }}">
                         <th scope="row">
 
 
@@ -131,29 +130,54 @@
 
     </div>
 
-    <div class="col-md-8 mb-4">
-        <div class="row ">
+    <div class="col-md-9 mb-4">
+        <div class="row row-cols-2">
             <!-- doughnut assets-->
-            <div class="col-md-6">
 
-                {% include "portfolio/portfolio_stock_distribution.html" %}
-            </div>
-            {% if portfolio[0]['portfolio_type'] == 1 or portfolio[0]['portfolio_type'] == 4 %} <!-- stock or cash -->
-            <div class="col-md-6">
-                <!-- doughnut sectors -->
-                {% include "portfolio/portfolio_sector_distribution.html" %}
-            </div>
-            {% endif %}
+
             <!-- news -->
-            <div class="card mb-4" id="portfolio_news">
-
-                <div class="card-body">
-                    {% include "newsfeed.html" %}
+            <div class="col-md-8 mb-4">
+                <div class="card" id="linechart_all_portfolios">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <!-- [2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo] -->
+                        <div class="settings ui mini basic icon buttons">
+                            <button class="ui button active" id="today" data-days="1" data-period="15m">Today</button>
+                            <button class="ui button" id="week" data-days="7" data-period="60m">Week</button>
+                            <button class="ui button" id="month" data-days="30" data-period="1d">Month</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="col-md-4">
+                {% include "portfolio/portfolio_stock_distribution.html" %}
+            </div>
+
+
+            <div class="col-md-12 mb-4">
+                <div class="row row-cols-2">
+
+                    <div class="col-md-8">
+                        <div class="card" id="portfolio_news">
+                            <div class="card-body">
+                                {% include "newsfeed.html" %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if portfolio[0]['portfolio_type'] == 1 or portfolio[0]['portfolio_type'] == 4 %}
+                    <!-- stock or cash -->
+                    <div class="col-md-4">
+                        <!-- doughnut sectors -->
+                        {% include "portfolio/portfolio_sector_distribution.html" %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+
         </div>
-
-
     </div>
 
 </div>
@@ -279,15 +303,14 @@
 <script>
     portfolio_assets_doughnut_data = JSON.parse($('#portfolio_assets_doughnut').attr('data-val').replaceAll('\'', '\"'))
     portfolio_assets_doughnut_label = JSON.parse($('#portfolio_assets_doughnut').attr('label-val').replaceAll('\'', '\"'))
-    chart_doughnut('#portfolio_assets_doughnut', 'Stock distrubution', portfolio_assets_doughnut_data, portfolio_assets_doughnut_label, '€', true)
+    chart_doughnut('#portfolio_assets_doughnut', 'Stock distrubution', portfolio_assets_doughnut_data, portfolio_assets_doughnut_label, '€', 'auto', "300")
 
 
     doughnut_sector_data = JSON.parse($('#doughnut_sector').attr('data-val').replaceAll('\'', '\"'))
     doughnut_sector_label = JSON.parse($('#doughnut_sector').attr('label-val').replaceAll('\'', '\"'))
-    var sector_chart = chart_doughnut('#doughnut_sector', 'Sector distribution', doughnut_sector_data, doughnut_sector_label, '%', true)
+    var sector_chart = chart_doughnut('#doughnut_sector', 'Sector distribution', doughnut_sector_data, doughnut_sector_label, '%', 'auto', "300")
 
-    var test = 'hallo'
-    // chart_linechart('portfolio_stock_sectore_doughnut', 'Line chart', data_asset_allocation, labels_asset_allocation)
+
 
 
 </script>

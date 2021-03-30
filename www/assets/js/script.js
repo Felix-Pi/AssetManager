@@ -18,7 +18,7 @@ function get_random_color(amount) {
 }
 
 
-function chart_doughnut(id, title, data, labels, label_suffix, more) {
+function chart_doughnut(id, title, data, labels, label_suffix, width, height) {
     var config = {
         type: 'doughnut',
         data: {
@@ -31,11 +31,12 @@ function chart_doughnut(id, title, data, labels, label_suffix, more) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             title: {
                 display: false,
             },
             animation: {
-                animateScale: true,
+                animateScale: false,
                 animateRotate: true
             },
             legend: {
@@ -60,98 +61,131 @@ function chart_doughnut(id, title, data, labels, label_suffix, more) {
 
 
     $(id + ' .card-header').text(title);
-    $(id + ' .card-body').html('<canvas id="' + id + '_canvas"></canvas>');
+    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
 
-    if (more == true) {
-        $(id).append('<div class="more ui top right attached label">more ...</div>');
-    }
 
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    // window.id = new Chart(ctx, config);
     return new Chart(ctx, config);
 }
 
 
-function chart_linechart(id, title, data, labels) {
-    console.log('chart_linechart id', id)
-    console.log('chart_linechart data', data)
-    console.log('chart_linechart labels', labels)
+function chart_linechart(id, title, input) {
+    let color = get_random_color(input.length);
 
-
-    unit = $(id + " .unit").val()
-    console.log(unit)
-
-    data_final = []
-    labels_final = []
-
-    for (let i = 0; i < 3; i++) {
-        label = labels[i]
-
-        console.log(label)
-        console.log(Date.parse(label))
-
-        if (i % 5 == 0) {
-            data_final.push(data[i])
-            labels_final.push(labels[i])
-        }
+    var datasets = []
+    for (let i = 0; i < input.length; i++) {
+        datasets.push({
+            backgroundColor: color[i],
+            borderColor: color[i],
+            label: input[i]['title'],
+            data: input[i]['data'],
+            lineTension: 0,
+            borderWidth: 2,
+            fill: false
+        })
     }
-
-    console.log(data.length)
-
-    color = get_random_color(data.length);
-    var lineChartData = {
-        labels: labels_final,
-        datasets: [{
-            label: title,
-            borderColor: colors[0],
-            backgroundColor: colors[0],
-            fill: false,
-            data: data_final,
-            yAxisID: 'y-axis-1',
-            cubicInterpolationMode: 'monotone'
-
-        }]
-    };
-
 
     var config = {
         type: 'line',
-        data: lineChartData,
+        data: {
+            labels: input[0]['labels'],
+            datasets: datasets
+        },
         options: {
             responsive: true,
-            hoverMode: 'index',
-            stacked: false,
+            bezierCurve: false,
             title: {
                 display: false,
+            },
+            elements: {
+                point: {
+                    radius: 0
+                }
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                    title: function (item, data) {
+                        return item[0].xLabel
+                    },
+                    label: function (item, data) {
+                        let symbol = data.datasets[0].label
+                        let value = item.yLabel.toFixed(2)
+
+
+                        return symbol + ': ' + value
+                    }
+                }
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
             },
             legend: {
                 display: false,
             },
             scales: {
-                yAxes: [{
+                xAxes: [{
                     display: true,
-                    position: 'left',
-                    id: 'y-axis-1',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
                 }],
+                yAxes: [{
+                    beginAtZero: true,
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Value'
+                    }
+                }]
             }
         }
-    }
 
+    };
     $(id + ' .card-header').text(title);
-    $(id + ' .card-body').html('<canvas id="' + id + '_canvas"></canvas>');
+    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas"></canvas>');
 
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    window.myLine = new Chart(ctx, config);
-
-
+    return new Chart(ctx, config);
 }
 
 
 $(document).ready(function () {
+
+    $('.ui.accordion').accordion();
+
+    $(document).on('click', '#update_data', function (e, f) {
+        $.ajax({
+            method: "GET",
+            url: "/api/refresh/",
+            success: function (data) {
+                console.log(data)
+            }
+        });
+    });
+
+    $(document).on('click', '.card .settings button', function (e, f) {
+        elem = $(this)
+
+        elem.parent().find('.active').removeClass('active');
+        elem.addClass('active');
+
+    });
+    $(document).on('click', '.card .settings button', function (e, f) {
+        elem = $(this)
+
+        elem.parent().find('.active').removeClass('active');
+        elem.addClass('active');
+
+    });
+
     $(document).on('click', '.card .more', function (e, f) {
         elem = $(this)
-        console.log('elemmm',elem.parent().find('.card-footer'))
-        elem.parent().find('.card-footer').slideToggle()
+        console.log('elemmm', elem.parent().parent().find('.card-footer'))
+        elem.parent().parent().parent().find('.card-footer').slideToggle()
 
     });
     /*
@@ -219,7 +253,7 @@ $(document).ready(function () {
             elem.attr('counter', counter)
             target_elem.html('<i class="' + icon + '"></i> ' + content_val + suffix)
 
-            profit_label_titles = ['profit total (absolute)', 'profit total (relative)', ' profit today (absolute)', 'profit today (absolute)']
+            profit_label_titles = ['profit total', 'profit total', ' profit today', 'profit today']
             $('#profit_label_title').text(profit_label_titles[counter])
 
         });

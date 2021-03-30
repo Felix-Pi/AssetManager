@@ -145,4 +145,80 @@ $(document).ready(function () {
     });
 
 
+    /*
+    Line Chart
+     */
+
+
+    symbols = []
+
+    let max_symbols_for_chart = 1;
+    let counter = 0;
+
+    $('.asset_elem').each(function () {
+        if (counter < max_symbols_for_chart) {
+            symbols = $(this).attr('data-symbol');
+            counter += 1;
+        }
+    })
+
+    elem = $('#linechart_all_portfolios .settings button.active')
+    $.ajax({
+        method: "POST",
+        url: "/api/stock/historical_data/",
+        data: {'symbols': symbols, 'days': elem.attr('data-days'), 'period': elem.attr('data-period')},
+        success: function (data) {
+            //console.log(data)
+
+            linechart_all_portfolios = chart_linechart('#linechart_all_portfolios', 'Line chart', JSON.parse(data))
+        }
+    });
+
+    $(document).on('click', '#linechart_all_portfolios .settings button', function () {
+        let elem = $(this)
+
+        $.ajax({
+            method: "POST",
+            url: "/api/stock/historical_data/",
+            data: {'symbols': symbols, 'days': elem.attr('data-days'), 'period': elem.attr('data-period')},
+            success: function (dataset) {
+                dataset = JSON.parse(dataset)
+
+                linechart_all_portfolios.data.datasets[0].data = dataset[0].data;
+                linechart_all_portfolios.data.labels = dataset[0].labels;
+                linechart_all_portfolios.update();
+            }
+        });
+
+
+        //set clicked btn active
+        elem.parent().find('.active').removeClass('active');
+        elem.addClass('active');
+    });
+
+    $(document).on('click', '.asset_elem', function () {
+        let elem = $(this)
+        let settings = $('#linechart_all_portfolios .settings button.active')
+        symbols = elem.attr('data-symbol')
+
+        $.ajax({
+            method: "POST",
+            url: "/api/stock/historical_data/",
+            data: {'symbols': symbols, 'days': settings.attr('data-days'), 'period': settings.attr('data-period')},
+            success: function (dataset) {
+                dataset = JSON.parse(dataset)
+
+                linechart_all_portfolios.data.datasets[0].data = dataset[0].data;
+                linechart_all_portfolios.data.labels = dataset[0].labels;
+                linechart_all_portfolios.update();
+            }
+        });
+
+
+        //set clicked btn active
+        elem.parent().find('.active').removeClass('active');
+        elem.addClass('active');
+    });
+
+
 });

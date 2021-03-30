@@ -55,25 +55,16 @@
 </div>
 
 <div class="row row-cols-1">
+
     <!-- table portfolios -->
-    <div class="col-md-6 mb-4">
-        <div class="row">
-            <div class="col-md-12 mb-4">
-                <div class="card" id="linechart_all_portfolios" data-val="{{doughnut_asset_allocation_data}}"
-                     label-val="{{doughnut_asset_allocation_label}}">
-                    <div class="card-header"></div>
-
-                    <div class="card-body"></div>
-                </div>
-            </div>
-
-            <div class="col-md-12 mb-4">
-
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body" style="padding: 0;">
                 <table class="table">
                     <thead class="thead-dark">
                     <tr>
                         <th scope="col">Portfolio</th>
-                        <th scope="col" id="profit_label_title">profit total (absolute)</th>
+                        <th scope="col" id="profit_label_title">profit total</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -115,47 +106,53 @@
                     {% endfor %}
                     </tbody>
                 </table>
-
             </div>
-
         </div>
     </div>
 
+    <!-- line chart -->
     <div class="col-md-6 mb-4">
-        <div class="row">
-            <!-- doughnut -->
-            <div class="col-md-12 mb-4">
-                <div class="card" id="doughnut_asset_allocation" data-val="{{doughnut_asset_allocation_data}}"
-                     label-val="{{doughnut_asset_allocation_label}}">
-                    <div class="card-header"></div>
+        <div class="card" id="linechart_all_portfolios" data-val="{{doughnut_asset_allocation_data}}"
+             label-val="{{doughnut_asset_allocation_label}}">
+            <div class="card-header"></div>
 
-                    <div class="card-body"></div>
-                </div>
-            </div>
-
-            <hr/>
-            <!-- news -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">filler</div>
-                    <div class="card-body"></div>
-
-                </div>
-            </div>
-
-            <!-- news -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">News</div>
-                    <div class="card-body">
-                        {% include "newsfeed.html" %}
-                    </div>
-                </div>
-            </div>
+            <div class="card-body"></div>
         </div>
     </div>
 
 
+    <!-- doughnut -->
+    <div class="col-md-3 mb-4">
+        <div class="card" id="doughnut_asset_allocation" data-val="{{doughnut_asset_allocation_data}}"
+             label-val="{{doughnut_asset_allocation_label}}">
+            <div class="card-header"></div>
+
+            <div class="card-body"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row row-cols-2">
+
+    <!-- filler -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">filler</div>
+            <div class="card-body"></div>
+
+        </div>
+    </div>
+
+    <!-- news -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">News</div>
+            <div class="card-body">
+                {% include "newsfeed.html" %}
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -165,17 +162,15 @@
 {% block footer -%}
 <script>
 
-
-    var data_asset_allocation = [1200, 65, 55, 380, 1900,];
-    var labels_asset_allocation = ['Stocks', 'RiskStocks', 'ETFs', 'Crypto', 'Cash'];
-
     doughnut_asset_allocation_data = JSON.parse($('#doughnut_asset_allocation').attr('data-val').replaceAll('\'', '\"'))
     doughnut_asset_allocation_label = JSON.parse($('#doughnut_asset_allocation').attr('label-val').replaceAll('\'', '\"'))
 
-    chart_doughnut('#doughnut_asset_allocation', 'Distrubution', doughnut_asset_allocation_data, doughnut_asset_allocation_label)
+    chart_doughnut('#doughnut_asset_allocation', 'Distrubution', doughnut_asset_allocation_data, doughnut_asset_allocation_label, '€', 'auto', 300)
 
-
-    chart_linechart('#linechart_all_portfolios', 'Portfolios', data_asset_allocation, labels_asset_allocation)
+    data = []
+    data.append({'title': 'Stock1', 'data': doughnut_sector_data})
+    data.append({'title': 'Stock2', 'data': portfolio_assets_doughnut_data})
+    chart_linechart('#linechart_all_portfolios', 'Portfolios', data, doughnut_sector_label)
 
 </script>
 {%- endblock footer %}

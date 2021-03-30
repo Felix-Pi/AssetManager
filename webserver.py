@@ -80,7 +80,7 @@ def portfolio():
         'percentage_doughnut_label': [asset['title'] for asset in assets],
         'doughnut_sector_data': [asset['percentage'] for asset in all_sectors],
         'doughnut_sector_label': [asset['title'] for asset in all_sectors],
-        'news': get_news_for_ticker([asset['symbol']  for asset in assets if 'symbol' in asset])
+        'news': get_news_for_ticker([asset['symbol'] for asset in assets if 'symbol' in asset])
     }
     return render_template('portfolio/portfolio.html', **templateData)
 
@@ -93,11 +93,10 @@ def stock():
     with conn:
         stock = select_single_asset_from_portfolio(conn, portfolio_id, stock_id)[0]
 
-        stock_price_linechart = get_historical_data(stock['symbol'])
-
     templateData = {
         'pagetitle': 'Portfolio',
-        'stock_price_linechart': {'data': stock_price_linechart[0], 'label': stock_price_linechart[1]},
+        'stock': stock,
+        #'stock_price_linechart': get_historical_data(stock['symbol']),
         'news': get_news_for_ticker(stock['symbol'])
     }
     return render_template('assets/stock.html', **templateData)
@@ -141,9 +140,16 @@ def api_portfolio_edit_stock():
             api_portfolio_update_stock(conn, request.form)
 
         update_data()
+
+        return "true"
         # redirect(url_for('portfolio') + '?id=' + po) #todo portfolio id
 
-    return "true"
+
+@app.route('/api/stock/historical_data/', methods=['POST'])
+def api_stock_historical_data():
+    if request.method == 'POST':
+        return get_historical_data(request.form['symbols'], request.form['days'], request.form['period'])
+
 
 if __name__ == '__main__':
-    app.run(debug=True, port=81, host='0.0.0.0')
+    app.run(debug=True, port=80, host='0.0.0.0')

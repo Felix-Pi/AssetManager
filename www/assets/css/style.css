@@ -18,12 +18,12 @@ a, a:hover, a:active {
     background: none;
 }
 
-.card .more {
-    border-top-right-radius: 0px;
+.card .more, .button.active {
+    border-radius: 0px !important;
     cursor: pointer;
 }
 
-#portfolio_stocks .edit_stock_button, #portfolio_stocks #add_stock_button, .profit_label {
+#portfolio_stocks .edit_stock_button, #portfolio_stocks #add_stock_button, .profit_label, .asset_elem {
     cursor: pointer;
 }
 
@@ -83,3 +83,14 @@ a, a:hover, a:active {
     padding: 0;
     display: none;
 }
+
+.card .settings {
+    position: absolute;
+    display: block;
+    right: 0;
+    top: 0;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    border-radius: 0 !important;
+}
+

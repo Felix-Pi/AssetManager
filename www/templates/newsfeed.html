@@ -4,21 +4,22 @@
     {% else %}
     {% for event in news %}
     <div class="event">
-
-        <div class="content">
-            <div class="summary">
-                <a href="{{ event.link }}" target="_blank">{{event.title}}n</a>
+        <div class="ui accordion content">
+            <div class="title summary">
+                <i class="dropdown icon"></i>
+                {{event.title}}
                 <div class="date">
                     {{event.pubDate}}
                 </div>
             </div>
+            <div class="content">
+                <p class="transition hidden"> {{event.description_prev}}</p>
+                <p class="transition hidden">  <a href="{{ event.link }}" target="_blank">go to article...</a></p>
 
-            <div class="extra text">
-                {{event.description_prev}}
             </div>
         </div>
     </div>
-    {% endfor %}
+        {% endfor %}
     {% endif %}
-    
+
 </div>
