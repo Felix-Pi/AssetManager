@@ -31,8 +31,8 @@ def get_historical_data(symbols, days, interval):
 
         high = data['chart']['result'][0]['indicators']['quote'][0]['high']
         low = data['chart']['result'][0]['indicators']['quote'][0]['low']
-        open = data['chart']['result'][0]['indicators']['quote'][0]['low']
-        close = data['chart']['result'][0]['indicators']['quote'][0]['low']
+        open = data['chart']['result'][0]['indicators']['quote'][0]['open']
+        close = data['chart']['result'][0]['indicators']['quote'][0]['close']
 
         assert (len(low) == len(high) == len(timestamps) == len(open) == len(close))
         data_dict = {'timestamps': [], 'timestamps_raw': [], 'high': [], 'low': [], 'open': [], 'close': [], 'median': []}
@@ -41,6 +41,7 @@ def get_historical_data(symbols, days, interval):
             if high[i] is not None:
                 data_dict['title'] = symbol
                 data_dict['timestamps'].append(parse_historical_data(timestamps[i], days, interval))
+                print(timestamps[i])
                 data_dict['timestamps_raw'].append(timestamps[i])
                 data_dict['high'].append(high[i])
                 data_dict['low'].append(low[i])

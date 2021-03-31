@@ -17,7 +17,6 @@ function get_random_color(amount) {
     return bgcolors;
 }
 
-
 function chart_doughnut(id, title, data, labels, label_suffix, width, height) {
     var config = {
         type: 'doughnut',
@@ -69,26 +68,53 @@ function chart_doughnut(id, title, data, labels, label_suffix, width, height) {
 }
 
 
-function chart_linechart(id, title, input) {
+function chart_linechart(id, title, input, label_suffix) {
+    Chart.controllers.LineWithLine = Chart.controllers.line.extend({
+        draw: function (ease) {
+            Chart.controllers.line.prototype.draw.call(this, ease);
+
+            if (this.chart.tooltip._active && this.chart.tooltip._active.length) {
+                var activePoint = this.chart.tooltip._active[0],
+                    ctx = this.chart.ctx,
+                    x = activePoint.tooltipPosition().x,
+                    topY = this.chart.legend.bottom,
+                    bottomY = this.chart.chartArea.bottom;
+
+                // draw line
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x, topY);
+                ctx.lineTo(x, bottomY);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#aba8a8';
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    });
+
     let color = get_random_color(input.length);
+
+    console.log('input', input)
 
     var datasets = []
     for (let i = 0; i < input.length; i++) {
         datasets.push({
             backgroundColor: color[i],
             borderColor: color[i],
-            label: input[i]['title'],
-            data: input[i]['data'],
+            label: input[i].title,
+            data: input[i].median,
             lineTension: 0,
             borderWidth: 2,
             fill: false
         })
     }
 
+
     var config = {
-        type: 'line',
+        type: 'LineWithLine',
         data: {
-            labels: input[0]['labels'],
+            labels: input[0].timestamps,
             datasets: datasets
         },
         options: {
@@ -111,10 +137,14 @@ function chart_linechart(id, title, input) {
                     },
                     label: function (item, data) {
                         let symbol = data.datasets[0].label
-                        let value = item.yLabel.toFixed(2)
+                        //let value = item.yLabel.toFixed(2)
+                        let value = item.yLabel.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 5
+                        })
 
 
-                        return symbol + ': ' + value
+                        return symbol + ': ' + value + ' ' + label_suffix
                     }
                 }
             },
@@ -145,13 +175,56 @@ function chart_linechart(id, title, input) {
         }
 
     };
-    $(id + ' .card-header').text(title);
+    $(id + ' .card-header').text(input[0].title);
     $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas"></canvas>');
 
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
     return new Chart(ctx, config);
 }
 
+function drawCandleBarChart(id, title, input) {
+    let data = []
+    for (let i = 0; i < input[0].median.length; i++) {
+        data.push({
+                t: input[0].timestamps_raw[i] * 1000, //time
+                o: input[0].open[i], //open
+                h: input[0].high[i], //high
+                l: input[0].low[i], //low
+                c: input[0].close[i], //close
+                m: input[0].median[i], //median
+            }
+        )
+    }
+
+
+    let data_line = []
+    let data_label = []
+
+    for (let i = 0; i < data.length; i++) {
+        data_line.push(data[i].m)
+        data_label.push(data[i].t)
+    }
+
+    console.log(data_line, data_label)
+
+    var config = {
+        type: 'candlestick',
+        data: {
+            labels: data_label,
+            datasets: [{
+                label: title,
+                data: data
+            }]
+        }
+    }
+
+
+    $(id + ' .card-header').text(title);
+    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas"></canvas>');
+
+    var ctx = document.getElementById(id + '_canvas').getContext('2d');
+    return new Chart(ctx, config);
+}
 
 $(document).ready(function () {
 

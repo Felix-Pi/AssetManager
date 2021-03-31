@@ -99,14 +99,14 @@ def stock():
         #'stock_price_linechart': get_historical_data(stock['symbol']),
         'news': get_news_for_ticker(stock['symbol'])
     }
+
     return render_template('assets/stock.html', **templateData)
 
 
 @app.route('/api/refresh/')
 def refresh_data():
     update_data()
-
-    return redirect(url_for('index'))
+    return redirect(url_for(request.args.get('redirect')))
 
 
 @app.route('/api/select_single_asset_from_portfolio/', methods=['POST'])

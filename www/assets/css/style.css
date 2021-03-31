@@ -23,7 +23,7 @@ a, a:hover, a:active {
     cursor: pointer;
 }
 
-#portfolio_stocks .edit_stock_button, #portfolio_stocks #add_stock_button, .profit_label, .asset_elem {
+#portfolio_stocks .edit_stock_button, #portfolio_stocks #add_stock_button, .profit_label {
     cursor: pointer;
 }
 
@@ -94,3 +94,11 @@ a, a:hover, a:active {
     border-radius: 0 !important;
 }
 
+.asset_elem {
+    /*transition: .2s;*/
+}
+
+.asset_elem:hover, .portfolio_elem:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, .05);
+}

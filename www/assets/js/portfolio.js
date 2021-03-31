@@ -151,16 +151,26 @@ $(document).ready(function () {
 
 
     symbols = []
+    titles = []
 
     let max_symbols_for_chart = 1;
     let counter = 0;
 
     $('.asset_elem').each(function () {
         if (counter < max_symbols_for_chart) {
-            symbols = $(this).attr('data-symbol');
+            symbols.push($(this).attr('data-symbol'));
+            titles.push($(this).attr('data-title'));
             counter += 1;
         }
+
     })
+    if (symbols.length > 1) {
+        symbols = symbols.join(',');
+        titles = titles.join(',');
+    } else {
+        symbols = symbols[0];
+        titles = titles[0];
+    }
 
     elem = $('#linechart_all_portfolios .settings button.active')
     $.ajax({
@@ -168,9 +178,9 @@ $(document).ready(function () {
         url: "/api/stock/historical_data/",
         data: {'symbols': symbols, 'days': elem.attr('data-days'), 'period': elem.attr('data-period')},
         success: function (data) {
-            //console.log(data)
-
-            linechart_all_portfolios = chart_linechart('#linechart_all_portfolios', 'Line chart', JSON.parse(data))
+            let id = '#linechart_all_portfolios'
+            linechart_all_portfolios = chart_linechart(id, 'Line chart', JSON.parse(data), '€')
+              $(id + ' .card-header').text(titles + ' - ' + symbols);
         }
     });
 
@@ -184,8 +194,8 @@ $(document).ready(function () {
             success: function (dataset) {
                 dataset = JSON.parse(dataset)
 
-                linechart_all_portfolios.data.datasets[0].data = dataset[0].data;
-                linechart_all_portfolios.data.labels = dataset[0].labels;
+                linechart_all_portfolios.data.datasets[0].data = dataset[0].median;
+                linechart_all_portfolios.data.labels = dataset[0].timestamps;
                 linechart_all_portfolios.update();
             }
         });
@@ -198,18 +208,21 @@ $(document).ready(function () {
 
     $(document).on('click', '.asset_elem', function () {
         let elem = $(this)
-        let settings = $('#linechart_all_portfolios .settings button.active')
-        symbols = elem.attr('data-symbol')
+        let id = '#linechart_all_portfolios'
+        let settings = $(id + ' .settings button.active')
+
+        title = elem.attr('data-title')
+        let symbol = elem.attr('data-symbol')
 
         $.ajax({
             method: "POST",
             url: "/api/stock/historical_data/",
-            data: {'symbols': symbols, 'days': settings.attr('data-days'), 'period': settings.attr('data-period')},
+            data: {'symbols': symbol, 'days': settings.attr('data-days'), 'period': settings.attr('data-period')},
             success: function (dataset) {
                 dataset = JSON.parse(dataset)
 
-                linechart_all_portfolios.data.datasets[0].data = dataset[0].data;
-                linechart_all_portfolios.data.labels = dataset[0].labels;
+                linechart_all_portfolios.data.datasets[0].data = dataset[0].median;
+                linechart_all_portfolios.data.labels = dataset[0].timestamps;
                 linechart_all_portfolios.update();
             }
         });
@@ -218,6 +231,10 @@ $(document).ready(function () {
         //set clicked btn active
         elem.parent().find('.active').removeClass('active');
         elem.addClass('active');
+
+        //set card title
+        console.log(elem.find('.asset_title').attr('text'))
+        $(id + ' .card-header').text(title + ' - ' + symbol);
     });
 
 

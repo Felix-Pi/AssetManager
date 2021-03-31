@@ -42,7 +42,8 @@
                 <span data-feather="file-text"></span>
                 Sentiment analysis
             </a>
-            <a class="nav-link" href="{{ url_for('refresh_data') }}?rederict="> <!-- todo rederict to url-->
+            <a class="nav-link" href="{{ url_for('refresh_data') }}?redirect={{request.url_rule.endpoint}}">
+                <!-- todo rederict to url-->
                 <span data-feather="file-text"></span>
                 Update data
             </a>

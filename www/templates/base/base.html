@@ -11,10 +11,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-    <script src="{{ url_for('static', filename='js/font-awesome.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/semantic.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/frameworks/font-awesome.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/frameworks/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/frameworks/semantic.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/frameworks/bootstrap.min.js') }}"></script>
+
 </head>
 <body>
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
@@ -47,8 +48,8 @@
 </div>
 
 
-<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/frameworks/chart2.9.4.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% block footer %}{% endblock footer %}
 </body>
 </html>

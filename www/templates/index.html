@@ -8,10 +8,16 @@
         <div class="ui steps">
             <div class="step">
                 <div class="content">
-                    <div class="description">{{ all_portfolios['profit_today_absolute'] }} €</div>
+                    <div class="description">
+                        {% if all_portfolios['profit_today_absolute'] >= 0 %} + {% endif %}
+                        {{ all_portfolios['profit_today_absolute'] }} €
+                    </div>
                     <div class="title">Performance today</div>
                 </div>
-                <div class="ordered_step_number">{{ all_portfolios['profit_today_relative'] }} %</div>
+                <div class="ordered_step_number">
+                    {% if all_portfolios['profit_today_relative'] >= 0 %} + {% endif %}{{
+                    all_portfolios['profit_today_relative'] }} %
+                </div>
             </div>
         </div>
     </div>
@@ -19,10 +25,15 @@
         <div class="ui steps">
             <div class="step">
                 <div class="content">
-                    <div class="description">{{ all_portfolios['profit_total_absolute'] }} €</div>
+                    <div class="description">
+                        {% if all_portfolios['profit_total_absolute'] >= 0 %} +{% endif %}{{
+                        all_portfolios['profit_total_absolute'] }} €
+                    </div>
                     <div class="title"> overall return</div>
                 </div>
-                <div class="ordered_step_number">{{ all_portfolios['profit_total_relative'] }} %</div>
+                <div class="ordered_step_number">{% if all_portfolios['profit_total_relative'] >= 0 %} +{% endif %}{{
+                    all_portfolios['profit_total_relative'] }} %
+                </div>
             </div>
         </div>
     </div>
@@ -54,7 +65,7 @@
 
 </div>
 
-<div class="row row-cols-1">
+<div class="row row-cols-3">
 
     <!-- table portfolios -->
     <div class="col-md-3 mb-4">
@@ -69,7 +80,7 @@
                     </thead>
                     <tbody>
                     {% for portfolio in portfolios %}
-                    <tr>
+                    <tr class="portfolio_elem">
                         <th scope="row">
 
 
@@ -110,16 +121,6 @@
         </div>
     </div>
 
-    <!-- line chart -->
-    <div class="col-md-6 mb-4">
-        <div class="card" id="linechart_all_portfolios" data-val="{{doughnut_asset_allocation_data}}"
-             label-val="{{doughnut_asset_allocation_label}}">
-            <div class="card-header"></div>
-
-            <div class="card-body"></div>
-        </div>
-    </div>
-
 
     <!-- doughnut -->
     <div class="col-md-3 mb-4">
@@ -130,21 +131,7 @@
             <div class="card-body"></div>
         </div>
     </div>
-</div>
 
-
-<div class="row row-cols-2">
-
-    <!-- filler -->
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">filler</div>
-            <div class="card-body"></div>
-
-        </div>
-    </div>
-
-    <!-- news -->
     <div class="col-md-6 mb-4">
         <div class="card">
             <div class="card-header">News</div>
@@ -160,17 +147,5 @@
 
 
 {% block footer -%}
-<script>
-
-    doughnut_asset_allocation_data = JSON.parse($('#doughnut_asset_allocation').attr('data-val').replaceAll('\'', '\"'))
-    doughnut_asset_allocation_label = JSON.parse($('#doughnut_asset_allocation').attr('label-val').replaceAll('\'', '\"'))
-
-    chart_doughnut('#doughnut_asset_allocation', 'Distrubution', doughnut_asset_allocation_data, doughnut_asset_allocation_label, '€', 'auto', 300)
-
-    data = []
-    data.append({'title': 'Stock1', 'data': doughnut_sector_data})
-    data.append({'title': 'Stock2', 'data': portfolio_assets_doughnut_data})
-    chart_linechart('#linechart_all_portfolios', 'Portfolios', data, doughnut_sector_label)
-
-</script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {%- endblock footer %}
