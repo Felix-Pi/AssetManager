@@ -25,63 +25,49 @@ def get_historical_data(symbols, days, interval):
     datasets = []
     symbols = symbols.split(',')
     for symbol in symbols:
-        print(symbols, symbol)
         data = request_historical_data(symbol, days, interval)
 
         timestamps = data['chart']['result'][0]['timestamp']
 
-        data_high = data['chart']['result'][0]['indicators']['quote'][0]['high']
-        data_low = data['chart']['result'][0]['indicators']['quote'][0]['low']
+        high = data['chart']['result'][0]['indicators']['quote'][0]['high']
+        low = data['chart']['result'][0]['indicators']['quote'][0]['low']
+        open = data['chart']['result'][0]['indicators']['quote'][0]['low']
+        close = data['chart']['result'][0]['indicators']['quote'][0]['low']
 
-        assert (len(data_low) == len(data_low) == len(timestamps))
-        data_dict = {}
+        assert (len(low) == len(high) == len(timestamps) == len(open) == len(close))
+        data_dict = {'timestamps': [], 'high': [], 'low': [], 'open': [], 'close': [], 'median': []}
 
-        for i in range(len(data_high)):
-            if data_high[i] is not None:
-                data_dict[timestamps[i]] = (data_high[i] + data_low[i]) / 2
+        for i in range(len(high)):
+            if high[i] is not None:
+                data_dict['title'] = symbol
+                data_dict['timestamps'].append(parse_historical_data(timestamps[i], days, interval))
+                data_dict['timestamps_raw'].append(timestamps[i])
+                data_dict['high'].append(high[i])
+                data_dict['low'].append(low[i])
+                data_dict['open'].append(open[i])
+                data_dict['close'].append(close[i])
+                data_dict['median'].append((high[i] + low[i]) / 2)
 
-        datasets.append(parse_historical_data(symbol, data_dict, interval))
+        datasets.append(data_dict)
 
     return json.dumps(datasets)
 
 
-def parse_historical_data(symbol, data, interval):
-    ts = [elem for elem in data.keys()]
-
+def parse_historical_data(timestamp, days, period):
     now = datetime.now()
 
-    dataset = {}
-    dataset['labels'] = []
-    dataset['data'] = []
+    ts_formatted = str(datetime.fromtimestamp(timestamp))
+    ts_formatted = datetime.strptime(ts_formatted, '%Y-%m-%d %H:%M:%S')
 
-    for elem in ts:
-        elem = datetime.fromtimestamp(elem)
+    if '2m' == period or '5m' == period or '15m' == period:
+        ts_formatted = ts_formatted.strftime("%H:%M")
+    if '60m' == period:
+        ts_formatted = ts_formatted.strftime("%m.%d %H:%M")
+    if '1d' == period:
+        ts_formatted = ts_formatted.strftime("%m.%d %H:%M")
+    if '5d' == period:
+        ts_formatted = ts_formatted.strftime("%m.%d.%Y %H:%M")
+    if '1mo' == period:
+        ts_formatted = ts_formatted.strftime("%m.%d.%Y %H:%M")
 
-        timestamp = datetime.timestamp(elem)
-        timestamp_formatted = str(datetime.fromtimestamp(timestamp))
-        timestamp_formatted = datetime.strptime(timestamp_formatted, '%Y-%m-%d %H:%M:%S')
-
-        #timestamp_formatted = timestamp_formatted.strftime('%Y-%m-%d %H:%M:%S')
-
-        if '2m' == interval or '5m' == interval or '15m' == interval:
-            timestamp_formatted = timestamp_formatted.strftime("%H:%M")
-        if '60m' == interval:
-            timestamp_formatted = timestamp_formatted.strftime("%m.%d %H:%M")
-        if '1d' == interval:
-            timestamp_formatted = timestamp_formatted.strftime("%m.%d %H:%M")
-        if '5d' == interval:
-            timestamp_formatted = timestamp_formatted.strftime("%m.%d.%Y %H:%M")
-        if '1mo' == interval:
-            timestamp_formatted = timestamp_formatted.strftime("%m.%d.%Y %H:%M")
-
-            # data-days="1" data-period="15m"
-            # data-days="7" data-period="60m"
-            # data-days="30" data-period="1d"
-            # data-days="365" data-period="5d"
-            # data-days="1800" data-period="1mo"
-
-        dataset['labels'].append(timestamp_formatted)
-        dataset['data'].append(data[timestamp])
-
-    dataset['title'] = symbol
-    return dataset
+    return ts_formatted
