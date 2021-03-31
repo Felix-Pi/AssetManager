@@ -35,7 +35,7 @@ def get_historical_data(symbols, days, interval):
         close = data['chart']['result'][0]['indicators']['quote'][0]['low']
 
         assert (len(low) == len(high) == len(timestamps) == len(open) == len(close))
-        data_dict = {'timestamps': [], 'high': [], 'low': [], 'open': [], 'close': [], 'median': []}
+        data_dict = {'timestamps': [], 'timestamps_raw': [], 'high': [], 'low': [], 'open': [], 'close': [], 'median': []}
 
         for i in range(len(high)):
             if high[i] is not None:
