@@ -2,67 +2,7 @@
 {% block content -%}
 
 <div class="row row-cols-1" id="top_steps">
-
-    <div class="col-md-3 mb-4">
-        <div class="ui steps">
-            <div class="step">
-                <div class="content">
-                    <div class="description">
-                        {% if portfolio[0]['profit_today_absolute'] >= 0 %} +{% endif %}{{
-                        portfolio[0]['profit_today_absolute'] }} €
-                    </div>
-                    <div class="title">Performance today</div>
-                </div>
-                <div class="ordered_step_number">
-                    {% if portfolio[0]['profit_today_relative'] >= 0 %} +{% endif %}{{
-                    portfolio[0]['profit_today_relative'] }} %
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-4">
-        <div class="ui steps">
-            <div class="step">
-                <div class="content">
-                    <div class="description">
-                        {% if portfolio[0]['profit_total_absolute'] >= 0 %} +{% endif %}{{
-                        portfolio[0]['profit_total_absolute'] }} €
-                    </div>
-                    <div class="title"> overall return</div>
-                </div>
-                <div class="ordered_step_number">
-                    {% if portfolio[0]['profit_total_relative'] >= 0 %} +{% endif %}{{
-                    portfolio[0]['profit_total_relative'] }} %
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 mb-4">
-        <div class="ui steps">
-            <div class="step">
-                <div class="content">
-                    <div class="description">&nbsp;</div>
-                    <div class="title">portfolio value</div>
-                </div>
-                <div class="ordered_step_number"> {{ portfolio[0]['portfolio_value'] }} €</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 mb-4">
-        <div class="ui steps">
-            <div class="step">
-                <div class="content">
-                    <div class="description"> &nbsp;</div>
-                    <div class="title">dividends</div>
-                </div>
-                <div class="ordered_step_number"> {{ portfolio[0]['dividend'] }} €</div>
-            </div>
-        </div>
-    </div>
-
-
+    {% include "portfolio/top_steps.html" %}
 </div>
 
 <div class="row row-cols-1">

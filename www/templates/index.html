@@ -9,14 +9,14 @@
             <div class="step">
                 <div class="content">
                     <div class="description">
-                        {% if all_portfolios['profit_today_absolute'] >= 0 %} + {% endif %}
-                        {{ all_portfolios['profit_today_absolute'] }} €
+                        {% if all_portfolios['profit_today_relative'] >= 0 %} + {% endif %}{{
+                        all_portfolios['profit_today_relative'] }} %
                     </div>
                     <div class="title">Performance today</div>
                 </div>
                 <div class="ordered_step_number">
-                    {% if all_portfolios['profit_today_relative'] >= 0 %} + {% endif %}{{
-                    all_portfolios['profit_today_relative'] }} %
+                    {% if all_portfolios['profit_today_absolute'] >= 0 %} + {% endif %}
+                    {{ all_portfolios['profit_today_absolute'] }} €
                 </div>
             </div>
         </div>
@@ -26,13 +26,14 @@
             <div class="step">
                 <div class="content">
                     <div class="description">
-                        {% if all_portfolios['profit_total_absolute'] >= 0 %} +{% endif %}{{
-                        all_portfolios['profit_total_absolute'] }} €
+                        {% if all_portfolios['profit_total_relative'] >= 0 %} +{% endif %}{{
+                        all_portfolios['profit_total_relative'] }} %
                     </div>
                     <div class="title"> overall return</div>
                 </div>
-                <div class="ordered_step_number">{% if all_portfolios['profit_total_relative'] >= 0 %} +{% endif %}{{
-                    all_portfolios['profit_total_relative'] }} %
+                <div class="ordered_step_number">
+                    {% if all_portfolios['profit_total_absolute'] >= 0 %} +{% endif %}{{
+                    all_portfolios['profit_total_absolute'] }} €
                 </div>
             </div>
         </div>

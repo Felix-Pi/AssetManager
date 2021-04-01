@@ -102,3 +102,20 @@ a, a:hover, a:active {
     cursor: pointer;
     background-color: rgba(0, 0, 0, .05);
 }
+
+.ui.label.red {
+    background-color: rgb(252, 239, 235) !important;
+    color: rgb(235, 110, 67) !important;
+}
+
+.ui.label.green {
+    background-color: rgba(237, 251, 242) !important;
+    color: rgb(122, 221, 139) !important;
+}
+
+.ui.label {
+    background-color: rgba(246, 246, 247) !important;
+    color: rgb(140, 140, 146) !important;
+}
+
+
