@@ -6,6 +6,7 @@ from portfolio import *
 from db import *
 from stock import *
 from newsfeed import *
+from utils import *
 
 app = Flask(__name__, template_folder='www/templates/', static_folder='www/assets/')
 
@@ -30,6 +31,7 @@ def index():
 
         doughnut_asset_allocation = select_assets_from_portfolio_grouped_by_sector(conn, USER_ID)
         all_assets = select_all_assets(conn)
+        keys = select_api_keys(conn)
 
     all_portfolios = {'value': calc_all_portfolios_value(portfolios),
                       'profit_total_absolute': (calc_portfolio_profit(portfolios))[0],
@@ -45,7 +47,7 @@ def index():
         'all_portfolios': all_portfolios,
         'doughnut_asset_allocation_data': [asset['val'] for asset in doughnut_asset_allocation],
         'doughnut_asset_allocation_label': [asset['title'] for asset in doughnut_asset_allocation],
-        'news': get_news_for_ticker([asset['symbol'] for asset in all_assets])
+        'news': get_news_for_ticker([asset['symbol'] for asset in all_assets], keys['news'])
     }
     return render_template('index.html', **templateData)
 
@@ -61,6 +63,7 @@ def portfolio():
         user_portfolios = select_portfolios_from_user(conn, USER_ID)
         assets = select_all_assets_from_portfolio(conn, portfolio_id)
         all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
+        keys = select_api_keys(conn)
 
     # portfolio percentage
     for data in assets:
@@ -80,7 +83,7 @@ def portfolio():
         'percentage_doughnut_label': [asset['title'] for asset in assets],
         'doughnut_sector_data': [asset['percentage'] for asset in all_sectors],
         'doughnut_sector_label': [asset['title'] for asset in all_sectors],
-        'news': get_news_for_ticker([asset['symbol'] for asset in assets if 'symbol' in asset])
+        'news': get_news_for_ticker([asset['symbol'] for asset in assets if 'symbol' in asset], keys['news'])
     }
     return render_template('portfolio/portfolio.html', **templateData)
 
@@ -90,14 +93,17 @@ def stock():
     portfolio_id = request.args.get('portfolio', type=int)
     stock_id = request.args.get('stock', type=int)
     conn = create_connection(database)
+
     with conn:
         stock = select_single_asset_from_portfolio(conn, portfolio_id, stock_id)[0]
+        symbol = stock['symbol']
+        keys = select_api_keys(conn)
 
     templateData = {
         'pagetitle': 'Portfolio',
         'stock': stock,
-        #'stock_price_linechart': get_historical_data(stock['symbol']),
-        'news': get_news_for_ticker(stock['symbol'])
+        'general_info': get_asset_profile(symbol),
+        'news': get_news_for_ticker(symbol, keys['news'])
     }
 
     return render_template('assets/stock.html', **templateData)
@@ -106,7 +112,7 @@ def stock():
 @app.route('/api/refresh/')
 def refresh_data():
     update_data()
-    return redirect(url_for(request.args.get('redirect')))
+    return redirect(url_for(request.args.get('redirect').replace('\'', '')))
 
 
 @app.route('/api/select_single_asset_from_portfolio/', methods=['POST'])
@@ -149,7 +155,34 @@ def api_portfolio_edit_stock():
 def api_stock_historical_data():
     if request.method == 'POST':
         return get_historical_data(request.form['symbols'], request.form['days'], request.form['period'])
+    return "False"
+
+
+@app.route('/api/stock/get_recommendation_trend/', methods=['POST'])
+def get_recommendation_trend_data():
+    if request.method == 'POST':
+        return get_recommendation_trend(request.form['symbol'])
+    return "False"
+
+
+@app.route('/api/stock/yahoo_search/', methods=['GET'])
+def yahoo_search():
+    if request.method == 'GET':
+        return yahoo_search_request(request.args.get('input'))
+    return "False"
+
+
+@app.route('/api/stock/country_data/', methods=['GET'])
+def db_get_country_data_for_portfolio_path():
+    if request.method == 'GET':
+        conn = create_connection(database)
+        with conn:
+            data = json.dumps(db_get_country_data_for_portfolio(conn, request.args.get('portfolio_id')))
+
+        print(data)
+        return data
+    return "False"
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=80, host='0.0.0.0')
+    app.run(debug=True, port=81, host='0.0.0.0')

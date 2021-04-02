@@ -1,231 +1,3 @@
-var colors = ['rgb(255, 99, 132)',
-    'rgb(255, 159, 64)',
-    'rgb(255, 205, 86)',
-    'rgb(75, 192, 192)',
-    'rgb(54, 162, 235)',
-    'rgb(153, 102, 255)',
-    'rgb(201, 203, 207)'
-];
-
-window.randomScalingFactor = function () {
-    return Math.random(1, 500)
-};
-
-function get_random_color(amount) {
-    let bgcolors = [];
-    for (let i = 0; i < amount; ++i) bgcolors.push(colors[i % colors.length]);
-    return bgcolors;
-}
-
-function chart_doughnut(id, title, data, labels, label_suffix, width, height) {
-    var config = {
-        type: 'doughnut',
-        data: {
-            datasets: [{
-                data: data,
-                backgroundColor: get_random_color(data.length),
-                label: 'Dataset 1'
-            }],
-            labels: labels
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            title: {
-                display: false,
-            },
-            animation: {
-                animateScale: false,
-                animateRotate: true
-            },
-            legend: {
-                display: false,
-            },
-            tooltips: {
-                callbacks: {
-                    label: function (item, data) {
-
-                        let index = item.index;
-                        let symbol = data.labels[index];
-                        let value = data.datasets[0].data[index];
-                        let parsed_value = parseFloat(value);
-                        let formatted_value = parsed_value.toFixed(2);
-
-                        return ' ' + symbol + ': ' + formatted_value + ' ' + label_suffix
-                    }
-                }
-            }
-        }
-    };
-
-
-    $(id + ' .card-header').text(title);
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
-
-
-    var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    return new Chart(ctx, config);
-}
-
-
-function chart_linechart(id, title, input, label_suffix) {
-    Chart.controllers.LineWithLine = Chart.controllers.line.extend({
-        draw: function (ease) {
-            Chart.controllers.line.prototype.draw.call(this, ease);
-
-            if (this.chart.tooltip._active && this.chart.tooltip._active.length) {
-                var activePoint = this.chart.tooltip._active[0],
-                    ctx = this.chart.ctx,
-                    x = activePoint.tooltipPosition().x,
-                    topY = this.chart.legend.bottom,
-                    bottomY = this.chart.chartArea.bottom;
-
-                // draw line
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(x, topY);
-                ctx.lineTo(x, bottomY);
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = '#aba8a8';
-                ctx.stroke();
-                ctx.restore();
-            }
-        }
-    });
-
-    let color = get_random_color(input.length);
-
-    console.log('input', input)
-
-    var datasets = []
-    for (let i = 0; i < input.length; i++) {
-        datasets.push({
-            backgroundColor: color[i],
-            borderColor: color[i],
-            label: input[i].title,
-            data: input[i].median,
-            lineTension: 0,
-            borderWidth: 2,
-            fill: false
-        })
-    }
-
-
-    var config = {
-        type: 'LineWithLine',
-        data: {
-            labels: input[0].timestamps,
-            datasets: datasets
-        },
-        options: {
-            responsive: true,
-            bezierCurve: false,
-            title: {
-                display: false,
-            },
-            elements: {
-                point: {
-                    radius: 0
-                }
-            },
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-                callbacks: {
-                    title: function (item, data) {
-                        return item[0].xLabel
-                    },
-                    label: function (item, data) {
-                        let symbol = data.datasets[0].label
-                        //let value = item.yLabel.toFixed(2)
-                        let value = item.yLabel.toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 5
-                        })
-
-
-                        return symbol + ': ' + value + ' ' + label_suffix
-                    }
-                }
-            },
-            hover: {
-                mode: 'nearest',
-                intersect: true
-            },
-            legend: {
-                display: false,
-            },
-            scales: {
-                xAxes: [{
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Date'
-                    }
-                }],
-                yAxes: [{
-                    beginAtZero: true,
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Value'
-                    }
-                }]
-            }
-        }
-
-    };
-    $(id + ' .card-header').text(input[0].title);
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas"></canvas>');
-
-    var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    return new Chart(ctx, config);
-}
-
-function drawCandleBarChart(id, title, input) {
-    let data = []
-    for (let i = 0; i < input[0].median.length; i++) {
-        data.push({
-                t: input[0].timestamps_raw[i] * 1000, //time
-                o: input[0].open[i], //open
-                h: input[0].high[i], //high
-                l: input[0].low[i], //low
-                c: input[0].close[i], //close
-                m: input[0].median[i], //median
-            }
-        )
-    }
-
-
-    let data_line = []
-    let data_label = []
-
-    for (let i = 0; i < data.length; i++) {
-        data_line.push(data[i].m)
-        data_label.push(data[i].t)
-    }
-
-    console.log(data_line, data_label)
-
-    var config = {
-        type: 'candlestick',
-        data: {
-            labels: data_label,
-            datasets: [{
-                label: title,
-                data: data
-            }]
-        }
-    }
-
-
-    $(id + ' .card-header').text(title);
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas"></canvas>');
-
-    var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    return new Chart(ctx, config);
-}
-
 $(document).ready(function () {
 
     $('.ui.accordion').accordion();
@@ -259,6 +31,41 @@ $(document).ready(function () {
         elem = $(this)
         console.log('elemmm', elem.parent().parent().find('.card-footer'))
         elem.parent().parent().parent().find('.card-footer').slideToggle()
+
+    });
+
+    /* search box: search yahoo finance */
+
+
+    $(document).on('input', '#searchbar', function (e, f) {
+        elem = $('#searchbar');
+
+        $('#searchbar_results').show()
+        $('#searchbar_results').html('')
+
+        $.ajax({
+            method: "GET",
+            url: '/api/stock/yahoo_search/',
+            data: {'input': elem.val()},
+            success: function (data) {
+                data = JSON.parse(data);
+                data = data['ResultSet']['Result'];
+                console.log(data)
+                for (let i = 0; i < data.length; i++) {
+                    var item = data[i]
+                    console.log(item)
+                    html = '' +
+                        '<a class="result" href="https://de.finance.yahoo.com/quote/da' + item['symbol'] + '">' +
+                        '   <div class="content">' +
+                        '       <div class="title">' + item['name'] + '</div>' +
+                        '       <div class="description">' + item['symbol'] + ' - ' + item['exch'] + '</div>' +
+                        '   </div>' +
+                        '</a>'
+                    $('#searchbar_results').append(html)
+                }
+
+            }
+        });
 
     });
     /*

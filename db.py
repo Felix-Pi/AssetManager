@@ -1,6 +1,8 @@
 import sqlite3
 from sqlite3 import Error
 
+import requests
+
 
 def dict_factory(cursor, row):
     d = {}
@@ -40,7 +42,6 @@ def update_all_assets(conn, assets):
                    data['trailingAnnualDividendYield'],
                    data['id'])
 
-
         sql = ''' UPDATE assets
                   SET regularMarketPrice          = ? ,
                       regularMarketOpen           = ? ,
@@ -63,6 +64,26 @@ def select_all_symbols(conn):
     cur.execute('SELECT * FROM assets WHERE asset_type != 4')
 
     return cur.fetchall()
+
+
+def select_api_keys(conn):
+    """
+    Query tasks by priority
+    :param conn: the Connection object
+    :return:
+    """
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM api_keys')
+
+    data = cur.fetchall()
+
+    result = {}
+    for elem in data:
+        result[elem['domain']] = elem['key']
+
+    print(result)
+    return result
 
 
 def select_all_portfolios(conn):
@@ -234,7 +255,7 @@ def select_single_asset_from_portfolio(conn, portfolio_id, asset_id):
     sql = 'SELECT * FROM portfolio_data, assets WHERE portfolio_data.asset = assets.id AND portfolio_data.portfolio={} AND assets.id={} ORDER BY asset_value DESC'.format(
         portfolio_id, asset_id)
 
-    #print(sql)
+    # print(sql)
     cur.execute(sql)
 
     return cur.fetchall()
@@ -257,6 +278,7 @@ def select_assets_from_portfolio_grouped_by_sector(conn, portfolio_id):
 
     return cur.fetchall()
 
+
 def select_all_sectors(conn):
     """
     selects all secotrs. format: id, title
@@ -265,6 +287,21 @@ def select_all_sectors(conn):
     """
     cur = conn.cursor()
     sql = 'SELECT * FROM sectors'
+
+    cur.execute(sql)
+
+    return cur.fetchall()
+
+
+def db_get_country_data_for_portfolio(conn, portfolio_id):
+    """
+    selects all secotrs. format: id, title
+    :param conn: the Connection object
+    :return:
+    """
+    cur = conn.cursor()
+    sql = 'SELECT country, COUNT(country) as amount FROM assets join portfolio_data pd on assets.id = pd.asset GROUP BY country HAVING pd.portfolio = {} ORDER BY amount'.format(
+        portfolio_id)
 
     cur.execute(sql)
 
@@ -294,7 +331,8 @@ def api_portfolio_insert_stock(conn, data):
     else:
         # insert into asset
         cur = conn.cursor()
-        sql = "INSERT INTO assets (symbol, asset_type) VALUES ('{}', {})".format(data['symbol'], data['portfolio_type'])
+        sql = "INSERT INTO assets (symbol, asset_type) VALUES ('{}', {})".format(data['symbol'],
+                                                                                 data['portfolio_type'])  # todo country
 
         cur.execute(sql)
 
@@ -320,3 +358,57 @@ def api_portfolio_update_stock(conn, data):
 
     cur.close()
     return data
+
+# def asdasd(conn, ):
+#     sql = "SELECT symbol FROM assets WHERE asset_type = 1"
+#
+#     cur = conn.cursor()
+#     cur.execute(sql)
+#
+#     data = cur.fetchall()
+#     sectors = []
+#     industries = []
+#
+#     for symbol in data:
+#         result = {}
+#         url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=assetProfile'.format(
+#             symbol['symbol'])
+#
+#         data = requests.get(url).json()['quoteSummary']['result']
+#
+#
+#         if data != None:
+#             data = data[0]['assetProfile']
+#             result['country'] = ''
+#             result['website'] = ''
+#             result['industry'] = ''
+#             result['sector'] = ''
+#             result['longBusinessSummary'] = ''
+#             result['fullTimeEmployees'] = ''
+#
+#             if 'country' in data:
+#                 result['country'] = data['country']
+#             if 'website' in data:
+#                 result['website'] = data['website']
+#             if 'industry' in data:
+#                 result['industry'] = data['industry']
+#             if 'sector' in data:
+#                 result['sector'] = data['sector']
+#             if 'longBusinessSummary' in data:
+#                 result['longBusinessSummary'] = data['longBusinessSummary']
+#             if 'fullTimeEmployees' in data:
+#                 result['fullTimeEmployees'] = data['fullTimeEmployees']
+#
+#             sql = "UPDATE assets SET country='{}' WHERE symbol='{}'".format(
+#                 result['country'],
+#                 symbol['symbol']
+#             )
+#
+#
+#             sectors.append(result['sector'])
+#             industries.append(result['industry'])
+#
+#             print(sql)
+#
+#     print( list(dict.fromkeys(sectors)))
+#     print( list(dict.fromkeys(industries)))

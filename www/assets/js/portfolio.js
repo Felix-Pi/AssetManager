@@ -180,7 +180,34 @@ $(document).ready(function () {
         success: function (data) {
             let id = '#linechart_all_portfolios'
             linechart_all_portfolios = chart_linechart(id, 'Line chart', JSON.parse(data), '€')
-              $(id + ' .card-header').text(titles + ' - ' + symbols);
+            $(id + ' .card-header').text(titles + ' - ' + symbols);
+        }
+    });
+
+
+    $.ajax({
+        method: "GET",
+        url: "/api/stock/country_data/",
+        data: {'portfolio_id': portfolio_id},
+        success: function (result) {
+           result = JSON.parse(result)
+
+            data = []
+            labels = []
+
+
+
+            console.log(result)
+            for (let i = 0; i < result.length; i++) {
+                data.push(result[i]['amount'])
+                labels.push(result[i]['country'])
+            }
+
+            console.log(data, labels)
+
+            let id = '#doughnut_country'
+            doughnut_country = chart_doughnut(id, 'Country distribution', data, labels, '', 'auto', '300')
+            $(id + ' .card-header').text(titles + ' - ' + symbols);
         }
     });
 

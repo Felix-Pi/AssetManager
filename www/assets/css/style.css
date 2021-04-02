@@ -119,3 +119,10 @@ a, a:hover, a:active {
 }
 
 
+#searchbar_wrapper, #searchbar {
+    width: 100% !important;
+}
+
+#searchbar {
+    border-radius: 0 !important;
+}

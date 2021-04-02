@@ -24,7 +24,11 @@
             data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+    <div class="ui search" id="searchbar_wrapper">
+        <input class="prompt" id="searchbar" type="text" placeholder="Common passwords...">
+        <div id="searchbar_results" class="results"></div>
+    </div>
+
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
             <a id="update_data" href="#">Update</a>
@@ -49,6 +53,7 @@
 
 
 <script src="{{ url_for('static', filename='js/frameworks/chart2.9.4.js') }}"></script>
+<script src="{{ url_for('static', filename='js/myCharts.js') }}"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% block footer %}{% endblock footer %}
 </body>

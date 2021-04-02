@@ -35,13 +35,13 @@ def get_historical_data(symbols, days, interval):
         close = data['chart']['result'][0]['indicators']['quote'][0]['close']
 
         assert (len(low) == len(high) == len(timestamps) == len(open) == len(close))
-        data_dict = {'timestamps': [], 'timestamps_raw': [], 'high': [], 'low': [], 'open': [], 'close': [], 'median': []}
+        data_dict = {'timestamps': [], 'timestamps_raw': [], 'high': [], 'low': [], 'open': [], 'close': [],
+                     'median': []}
 
         for i in range(len(high)):
             if high[i] is not None:
                 data_dict['title'] = symbol
                 data_dict['timestamps'].append(parse_historical_data(timestamps[i], days, interval))
-                print(timestamps[i])
                 data_dict['timestamps_raw'].append(timestamps[i])
                 data_dict['high'].append(high[i])
                 data_dict['low'].append(low[i])
@@ -72,3 +72,60 @@ def parse_historical_data(timestamp, days, period):
         ts_formatted = ts_formatted.strftime("%m.%d.%Y %H:%M")
 
     return ts_formatted
+
+
+def get_asset_profile(symbol):
+    url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=assetProfile'.format(symbol)
+
+    data = requests.get(url).json()['quoteSummary']['result']
+
+    result = {'country': '', 'website': '', 'industry': '', 'sector': '', 'longBusinessSummary': '',
+              'fullTimeEmployees': ''}
+
+    if data != None:
+        data = data[0]['assetProfile']
+        print(data)
+
+        if 'country' in data:
+            result['country'] = data['country']
+        if 'website' in data:
+            result['website'] = data['website']
+        if 'industry' in data:
+            result['industry'] = data['industry']
+        if 'sector' in data:
+            result['sector'] = data['sector']
+        if 'longBusinessSummary' in data:
+            result['longBusinessSummary'] = data['longBusinessSummary']
+        if 'fullTimeEmployees' in data:
+            result['fullTimeEmployees'] = data['fullTimeEmployees']
+
+    print(result)
+    return result
+
+
+def get_recommendation_trend(symbol):
+    url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=recommendationTrend'.format(
+        symbol)
+
+    data = requests.get(url).json()['quoteSummary']['result']
+
+    result = []
+    if data != None:
+        data = data[0]['recommendationTrend']['trend']
+
+        for trend in data:
+            tmp = {}
+            tmp['period'] = trend['period']
+            tmp['strongSell'] = trend['strongSell']
+            tmp['sell'] = trend['sell']
+            tmp['hold'] = trend['hold']
+            tmp['buy'] = trend['buy']
+            tmp['strongBuy'] = trend['strongBuy']
+            result.append(tmp)
+    print(result)
+    return json.dumps(result)
+
+
+def get_calendar_events(symbol):
+    url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}D&modules=calendarEvents'.format(symbol)
+    data = requests.get(url).json()
