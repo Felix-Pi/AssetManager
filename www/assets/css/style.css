@@ -120,9 +120,19 @@ a, a:hover, a:active {
 
 
 #searchbar_wrapper, #searchbar {
-    width: 100% !important;
+    width: 98% !important;
+    margin: 0 1%;
 }
 
 #searchbar {
     border-radius: 0 !important;
+}
+
+#portfolio_stocks_card {
+    max-height: 414px !important;
+    overflow-y: hidden;
+}
+
+#portfolio_stocks_card::-webkit-scrollbar {
+    display: none;
 }

@@ -4,6 +4,8 @@ from dateutil.relativedelta import relativedelta
 
 import requests
 
+from utils import yahoo_search_request
+
 
 def request_historical_data(symbol, days, interval):
     now = datetime.now()
@@ -99,7 +101,6 @@ def get_asset_profile(symbol):
         if 'fullTimeEmployees' in data:
             result['fullTimeEmployees'] = data['fullTimeEmployees']
 
-    print(result)
     return result
 
 
@@ -122,7 +123,21 @@ def get_recommendation_trend(symbol):
             tmp['buy'] = trend['buy']
             tmp['strongBuy'] = trend['strongBuy']
             result.append(tmp)
-    print(result)
+
+    # ToDo
+    # if len(result) == 0:
+    #     # get stock title
+    #     data = yahoo_search_request(symbol, 'DE', 'de-DE')
+    #     title = data['ResultSet']['Result'][0]['name']
+    #
+    #     print(title)
+    #     all_symbols = yahoo_search_request(title, 'US', 'en-US')
+    #     print(all_symbols)
+
+    # search for nyse symbol
+
+    # get data from syse symbol
+
     return json.dumps(result)
 
 

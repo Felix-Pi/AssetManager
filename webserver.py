@@ -161,14 +161,14 @@ def api_stock_historical_data():
 @app.route('/api/stock/get_recommendation_trend/', methods=['POST'])
 def get_recommendation_trend_data():
     if request.method == 'POST':
-        return get_recommendation_trend(request.form['symbol'])
+        data = get_recommendation_trend(request.form['symbol'])
     return "False"
 
 
 @app.route('/api/stock/yahoo_search/', methods=['GET'])
 def yahoo_search():
     if request.method == 'GET':
-        return yahoo_search_request(request.args.get('input'))
+        return yahoo_search_request(request.args.get('input'), 'US', 'en-US')
     return "False"
 
 

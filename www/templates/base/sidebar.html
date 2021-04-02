@@ -1,4 +1,20 @@
 <div class="sidebar-sticky pt-3">
+
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="{{ url_for('index') }}">AssetManager</a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse"
+                data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <br/>
+    <div class="ui search" id="searchbar_wrapper">
+        <input class="prompt" id="searchbar" type="text" placeholder="Search symbol...">
+        <div id="searchbar_results" class="results"></div>
+    </div>
+    <br>
     <ul class="nav flex-column">
         <li class="nav-item">
             <a class="nav-link active" href="{{ url_for('index') }}">
@@ -42,7 +58,7 @@
                 <span data-feather="file-text"></span>
                 Sentiment analysis
             </a>
-            <a class="nav-link" href="{{ url_for('refresh_data') }}?redirect={{request.url_rule.endpoint}}?{{request.query_string}}">
+            <a class="nav-link" id="update_data">
                 <!-- todo rederict to url-->
                 <span data-feather="file-text"></span>
                 Update data

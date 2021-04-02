@@ -55,7 +55,7 @@ $(document).ready(function () {
                     var item = data[i]
                     console.log(item)
                     html = '' +
-                        '<a class="result" href="https://de.finance.yahoo.com/quote/da' + item['symbol'] + '">' +
+                        '<a class="result" href="https://de.finance.yahoo.com/quote/' + item['symbol'] + '" target="_blank">' +
                         '   <div class="content">' +
                         '       <div class="title">' + item['name'] + '</div>' +
                         '       <div class="description">' + item['symbol'] + ' - ' + item['exch'] + '</div>' +

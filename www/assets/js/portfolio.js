@@ -190,11 +190,10 @@ $(document).ready(function () {
         url: "/api/stock/country_data/",
         data: {'portfolio_id': portfolio_id},
         success: function (result) {
-           result = JSON.parse(result)
+            result = JSON.parse(result)
 
             data = []
             labels = []
-
 
 
             console.log(result)
@@ -206,8 +205,16 @@ $(document).ready(function () {
             console.log(data, labels)
 
             let id = '#doughnut_country'
-            doughnut_country = chart_doughnut(id, 'Country distribution', data, labels, '', 'auto', '300')
+            doughnut_country = chart_doughnut(id, 'Country distribution', data, labels, '', 'auto', '150')
+
+            doughnut_country.options.circumference = Math.PI;
+            doughnut_country.options.rotation = -Math.PI;
+            doughnut_country.update();
+
+
             $(id + ' .card-header').text(titles + ' - ' + symbols);
+
+
         }
     });
 

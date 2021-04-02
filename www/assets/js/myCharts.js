@@ -1,16 +1,17 @@
 colors = {
-    pink: 'rgb(207,43,89)',
-    red: 'rgb(248,117,109)',
     orange: 'rgb(255,159,64)',
     yellow: 'rgb(255, 205, 86)',
     lightgreen: 'rgb(0,208,127)',
-    green: 'rgb(0,152,77)',
+    green: 'rgb(3,117,63)',
     teal: 'rgb(75, 192, 192)',
     blue: 'rgb(54, 162, 235)',
     darkblue: 'rgb(77,89,128)',
     purple: 'rgb(153, 102, 255)',
-    grey: 'rgb(201, 203, 207)'
+    grey: 'rgb(201, 203, 207)',
+    pink: 'rgb(160,0,48)',
+    red: 'rgb(248,117,109)',
 };
+
 
 window.randomScalingFactor = function () {
     return Math.random(1, 500)
@@ -100,9 +101,12 @@ function chart_linechart(id, title, input, label_suffix) {
         }
     });
 
-    let color = get_random_color(input.length);
 
-    console.log('input', input)
+    if (input.length > 1) {
+        var color = get_random_color(input.length);
+    } else {
+        var color = [colors.blue];
+    }
 
     var datasets = []
     for (let i = 0; i < input.length; i++) {
