@@ -39,10 +39,6 @@ def get_news_for_ticker(symbols, key=''):
                 else:
                     event['description_prev'] = event['description']
 
-                # format pubDate
-                # Sat, 03 Apr 2021 12:00:26 +0000
-                # pubDate = datetime.strptime(event['pubDate'], '%Y-%m-%d %H:%M:%S')
-
                 pubDate = datetime.strptime(event['pubDate'], '%a, %d %b %Y %H:%M:%S +0000')
                 event['pubDate'] = pubDate.strftime("%a, %m %b, %H:%M")
             return data['item']

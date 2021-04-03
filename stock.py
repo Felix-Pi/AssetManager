@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
@@ -64,17 +65,17 @@ def parse_historical_data(timestamp, days, period):
 
     ts_formatted = str(datetime.fromtimestamp(timestamp))
     ts_formatted = datetime.strptime(ts_formatted, '%Y-%m-%d %H:%M:%S')
-
+    # pubDate.strftime("%a, %m %b, %H:%M")
     if '2m' == period or '5m' == period or '15m' == period:
-        ts_formatted = ts_formatted.strftime("%H:%M")
+        ts_formatted = ts_formatted.strftime("%a, %H:%M")
     if '60m' == period:
-        ts_formatted = ts_formatted.strftime("%m.%d %H:%M")
+        ts_formatted = ts_formatted.strftime("%a, %d %b %H:%M")
     if '1d' == period:
-        ts_formatted = ts_formatted.strftime("%m.%d %H:%M")
+        ts_formatted = ts_formatted.strftime("%d %b")
     if '5d' == period:
-        ts_formatted = ts_formatted.strftime("%m.%d.%Y %H:%M")
+        ts_formatted = ts_formatted.strftime("%d %b %Y")
     if '1mo' == period:
-        ts_formatted = ts_formatted.strftime("%m.%d.%Y %H:%M")
+        ts_formatted = ts_formatted.strftime("%b %Y")
 
     return ts_formatted
 
@@ -115,21 +116,36 @@ def get_recommendation_trend(symbol):
         return data
 
     def parse_data(data):
+        def parse_label(label):
+            # format: 0m, -1m, -2m, -3m
+            interval = int(re.findall('[0-3]', label)[0])
+
+            if interval > 0:
+                d = datetime.timestamp(datetime.now() - relativedelta(months=interval))
+            else:
+                d = datetime.timestamp(datetime.now())
+
+            date_time = datetime.fromtimestamp(d)
+            return date_time.strftime("%b")
+
         result = None
 
         if data is not None:
-            result = []
+            result = {'data': [], 'labels': []}
             data = data[0]['recommendationTrend']['trend']
 
             for trend in data:
                 tmp = {}
-                tmp['period'] = trend['period']
+
                 tmp['strongSell'] = trend['strongSell']
                 tmp['sell'] = trend['sell']
                 tmp['hold'] = trend['hold']
                 tmp['buy'] = trend['buy']
                 tmp['strongBuy'] = trend['strongBuy']
-                result.append(tmp)
+
+                result['data'].append(tmp)
+                result['labels'].append(parse_label(trend['period']))
+
         return result
 
     def check_alternative_symbols(symbols):

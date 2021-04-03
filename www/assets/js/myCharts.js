@@ -1,17 +1,23 @@
 colors = {
-    orange: 'rgb(255,159,64)',
-    yellow: 'rgb(255, 205, 86)',
     lightgreen: 'rgb(0,208,127)',
     green: 'rgb(3,117,63)',
     teal: 'rgb(75, 192, 192)',
-    blue: 'rgb(54, 162, 235)',
-    darkblue: 'rgb(77,89,128)',
-    purple: 'rgb(153, 102, 255)',
     grey: 'rgb(201, 203, 207)',
-    pink: 'rgb(160,0,48)',
-    red: 'rgb(248,117,109)',
+    red_dark: 'rgb(160,0,48)',
 };
 
+chartcolors = {
+    yellow: 'rgb(243,169,60)',
+    orange: 'rgb(239,130,80)',
+    red: 'rgb(229,102,108)',
+    pink: 'rgb(192,88,131)',
+    purple: 'rgb(144,83,141)',
+    purple_dark: 'rgb(91,78,134)',
+    blue: 'rgb(46,69,112)',
+    blue_dark: 'rgb(20,55,80)',
+    blue_light: 'rgb(84,161,229)',
+};
+colors = Object.assign({}, colors, chartcolors);
 
 window.randomScalingFactor = function () {
     return Math.random(1, 500)
@@ -19,23 +25,23 @@ window.randomScalingFactor = function () {
 
 function get_random_color(amount) {
     let bgcolors = [];
-    var keys = Object.keys(colors);
+    var keys = Object.keys(chartcolors);
     for (let i = 0; i < amount; ++i) {
-        bgcolors.push(colors[keys[i % keys.length]]);
+        bgcolors.push(chartcolors[keys[i % keys.length]]);
     }
     return bgcolors;
 }
 
-function chart_doughnut(id, title, data, labels, label_suffix, width, height) {
+function chart_doughnut(id, title, data, label_suffix, width, height) {
     var config = {
         type: 'doughnut',
         data: {
             datasets: [{
-                data: data,
-                backgroundColor: get_random_color(data.length),
+                data: data.data,
+                backgroundColor: get_random_color(data.data.length),
                 label: 'Dataset 1'
             }],
-            labels: labels
+            labels: data.labels
         },
         options: {
             responsive: true,
@@ -112,7 +118,8 @@ function chart_linechart(id, title, input, label_suffix) {
     for (let i = 0; i < input.length; i++) {
         datasets.push({
             backgroundColor: color[i],
-            borderColor: color[i],
+            //borderColor: color[i],
+            borderColor: chartcolors.blue_light,
             label: input[i].title,
             data: input[i].median,
             lineTension: 0,
@@ -193,19 +200,65 @@ function chart_linechart(id, title, input, label_suffix) {
     return new Chart(ctx, config);
 }
 
+function draw_bar_chart(id, title, input, width, height) {
+
+    var barChartData = {
+        labels: input.labels,
+        datasets: [{
+            label: 'Stocks',
+            data: input.data,
+            //backgroundColor: get_random_color(input.data.length)
+            backgroundColor: colors.blue_light
+        }],
+    };
+    config = {
+        type: 'bar',
+        data: barChartData,
+        options: {
+            title: {
+                display: false,
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false
+            },
+            legend: {
+                display: false,
+            },
+            responsive: true,
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                }],
+                yAxes: [{
+                    stacked: true
+                }]
+            }
+        }
+    }
+    $(id + ' .card-header').text(title);
+    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
+
+
+    var ctx = document.getElementById(id + '_canvas').getContext('2d');
+    return new Chart(ctx, config);
+
+}
+
 function draw_stacked_recommendation_bar_chart(id, title, input, width, height) {
-    var colors_ = [colors.red, colors.orange, colors.teal, colors.blue, colors.green];
+    var colors_ = [colors.red_dark, colors.orange, colors.teal, colors.blue, colors.green];
+    input_data = input.data
 
     var datasets = [];
     var data = []
-    var keys = Object.keys(input[0]);
+    var keys = Object.keys(input_data[0]);
+
+
     for (let j = 1; j < keys.length; j++) {
         data[j] = []
-        for (let i = 0; i < input.length; i++) {
-            console.log(input[i][keys[j]])
-            data[j].push(input[i][keys[j]])
+        for (let i = 0; i < input_data.length; i++) {
+            data[j].push(input_data[i][keys[j]])
         }
-
         datasets.push({
             label: keys[j],
             data: data[j],
@@ -213,8 +266,10 @@ function draw_stacked_recommendation_bar_chart(id, title, input, width, height) 
         })
     }
 
+
     var barChartData = {
-        labels: ['now', '-1m', '-2m', '-3m', '-4m'],
+        //labels: ['now', '-1m', '-2m', '-3m', '-4m'],
+        labels: input.labels,
         datasets: datasets
     };
     config = {
@@ -275,7 +330,6 @@ function draw_candle_bar_chart(id, title, input) {
         data_label.push(data[i].t)
     }
 
-    console.log(data_line, data_label)
 
     var config = {
         type: 'candlestick',

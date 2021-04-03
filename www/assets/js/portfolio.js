@@ -1,50 +1,72 @@
-function setFormValuesFromDatabase(form_id, data) {
-    console.log(data)
-    //format: .dbcol needs attr: col="col_dame_in_data"
-    $(form_id + ' .dbcol').each(function () {
-        elem = $(this)
-        col = elem.attr("col")
+function setup() {
 
-        elem.val(data[col])
+    /* setup line chart */
+    target = $('.asset_elem:first-child')
+    elem = $('#linechart .settings button.active')
+
+    title = target.attr('data-title');
+    symbol = target.attr('data-symbol');
+    price = target.attr('data-price');
+
+    $.ajax({
+        url: "/api/stock/historical_data/",
+        data: {
+            'symbols': target.attr('data-symbol'),
+            'days': elem.attr('data-days'),
+            'period': elem.attr('data-period')
+        },
+        success: function (result) {
+            result = JSON.parse(result)
+
+            var id = '#linechart'
+            $(id).attr('data-symbol', symbol)
+
+            linechart = chart_linechart(id, 'Line chart', result, '€')
+            $(id + ' .card-header').text(title + ' - ' + symbol + ': ' + price);
+        }
     });
 
-    $(form_id + ' .dbcol-opt').each(function () {
-        elem = $(this)
-        col = elem.attr("col")
 
-        elem.val(data[col])
-        $(form_id + '_' + col + '_' + data[col]).prop('selected', true);
+    /* setup stock distribution */
+    $.ajax({
+        url: "/api/portfolio/get_stock_distribution/",
+        data: {'portfolio_id': portfolio_id},
+        success: function (result) {
+            result = JSON.parse(result)
+
+            var id = '#stock_distribution'
+            stock_distribution_chart = chart_doughnut(id, 'Stock distrubution', result, '€', 'auto', "300")
+        }
     });
 
+    /* setup sector distribution */
+    $.ajax({
+        url: "/api/portfolio/get_sector_distribution/",
+        data: {'portfolio_id': portfolio_id},
+        success: function (result) {
+            result = JSON.parse(result)
+            var id = '#sector_distribution'
+
+            var sector_distribution_chart = chart_doughnut('#sector_distribution', 'Sector distribution', result, '%', 'auto', "300")
+        }
+    });
+
+    /* setup country data */
+    $.ajax({
+        url: "/api/portfolio/get_country_data/",
+        data: {'portfolio_id': portfolio_id},
+        success: function (result) {
+            data = JSON.parse(result)
+
+            let id = '#country_distribution'
+            country_distribution_chart = draw_bar_chart(id, 'Country distribution', data, 'auto', '300')
+        }
+    });
 }
 
-
-function serializeFormForDatabase(form_id) {
-
-    result = {}
-
-    $(form_id + ' .dbcol').each(function () {
-        let elem = $(this);
-        let val = elem.val();
-        let key = elem.attr('col');
-
-        result[key] = val;
-    });
-
-    $(form_id + ' .dbcol-opt').each(function () {
-        let elem = $(this);
-        let val = elem.children(':selected').attr('db-id');
-        let key = elem.attr('col');
-
-        result[key] = val;
-    });
-
-    return result;
-
-}
 
 $(document).ready(function () {
-
+    setup();
     /* update stock */
     $(document).on('click', '.edit_stock_button', function () {
         let portfolio_id = $(this).attr("portfolio_id");
@@ -149,88 +171,22 @@ $(document).ready(function () {
     Line Chart
      */
 
-
-    symbols = []
-    titles = []
-
-    let max_symbols_for_chart = 1;
-    let counter = 0;
-
-    $('.asset_elem').each(function () {
-        if (counter < max_symbols_for_chart) {
-            symbols.push($(this).attr('data-symbol'));
-            titles.push($(this).attr('data-title'));
-            counter += 1;
-        }
-
-    })
-    if (symbols.length > 1) {
-        symbols = symbols.join(',');
-        titles = titles.join(',');
-    } else {
-        symbols = symbols[0];
-        titles = titles[0];
-    }
-
-    elem = $('#linechart_all_portfolios .settings button.active')
-    $.ajax({
-        method: "POST",
-        url: "/api/stock/historical_data/",
-        data: {'symbols': symbols, 'days': elem.attr('data-days'), 'period': elem.attr('data-period')},
-        success: function (data) {
-            let id = '#linechart_all_portfolios'
-            linechart_all_portfolios = chart_linechart(id, 'Line chart', JSON.parse(data), '€')
-            $(id + ' .card-header').text(titles + ' - ' + symbols);
-        }
-    });
-
-
-    $.ajax({
-        method: "GET",
-        url: "/api/stock/country_data/",
-        data: {'portfolio_id': portfolio_id},
-        success: function (result) {
-            result = JSON.parse(result)
-
-            data = []
-            labels = []
-
-
-            console.log(result)
-            for (let i = 0; i < result.length; i++) {
-                data.push(result[i]['amount'])
-                labels.push(result[i]['country'])
-            }
-
-            console.log(data, labels)
-
-            let id = '#doughnut_country'
-            doughnut_country = chart_doughnut(id, 'Country distribution', data, labels, '', 'auto', '150')
-
-            doughnut_country.options.circumference = Math.PI;
-            doughnut_country.options.rotation = -Math.PI;
-            doughnut_country.update();
-
-
-            $(id + ' .card-header').text(titles + ' - ' + symbols);
-
-
-        }
-    });
-
-    $(document).on('click', '#linechart_all_portfolios .settings button', function () {
+    $(document).on('click', '#linechart .settings button', function () {
         let elem = $(this)
 
         $.ajax({
-            method: "POST",
             url: "/api/stock/historical_data/",
-            data: {'symbols': symbols, 'days': elem.attr('data-days'), 'period': elem.attr('data-period')},
+            data: {
+                'symbols': $('#linechart').attr('data-symbol'),
+                'days': elem.attr('data-days'),
+                'period': elem.attr('data-period')
+            },
             success: function (dataset) {
                 dataset = JSON.parse(dataset)
 
-                linechart_all_portfolios.data.datasets[0].data = dataset[0].median;
-                linechart_all_portfolios.data.labels = dataset[0].timestamps;
-                linechart_all_portfolios.update();
+                linechart.data.datasets[0].data = dataset[0].median;
+                linechart.data.labels = dataset[0].timestamps;
+                linechart.update();
             }
         });
 
@@ -242,22 +198,22 @@ $(document).ready(function () {
 
     $(document).on('click', '.asset_elem', function () {
         let elem = $(this)
-        let id = '#linechart_all_portfolios'
+        let id = '#linechart'
         let settings = $(id + ' .settings button.active')
 
-        title = elem.attr('data-title')
+        let title = elem.attr('data-title')
         let symbol = elem.attr('data-symbol')
+        let price = elem.attr('data-price')
 
         $.ajax({
-            method: "POST",
             url: "/api/stock/historical_data/",
             data: {'symbols': symbol, 'days': settings.attr('data-days'), 'period': settings.attr('data-period')},
             success: function (dataset) {
                 dataset = JSON.parse(dataset)
 
-                linechart_all_portfolios.data.datasets[0].data = dataset[0].median;
-                linechart_all_portfolios.data.labels = dataset[0].timestamps;
-                linechart_all_portfolios.update();
+                linechart.data.datasets[0].data = dataset[0].median;
+                linechart.data.labels = dataset[0].timestamps;
+                linechart.update();
             }
         });
 
@@ -268,7 +224,7 @@ $(document).ready(function () {
 
         //set card title
         console.log(elem.find('.asset_title').attr('text'))
-        $(id + ' .card-header').text(title + ' - ' + symbol);
+        $(id + ' .card-header').text(title + ' - ' + symbol + ': ' + price);
     });
 
 

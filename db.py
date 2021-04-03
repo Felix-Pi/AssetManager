@@ -299,7 +299,7 @@ def db_get_country_data_for_portfolio(conn, portfolio_id):
     :return:
     """
     cur = conn.cursor()
-    sql = 'SELECT country, COUNT(country) as amount FROM assets join portfolio_data pd on assets.id = pd.asset GROUP BY country HAVING pd.portfolio = {} ORDER BY amount'.format(
+    sql = 'SELECT country, COUNT(country) as amount FROM assets join portfolio_data pd on assets.id = pd.asset GROUP BY country HAVING pd.portfolio = {} ORDER BY amount DESC'.format(
         portfolio_id)
 
     cur.execute(sql)

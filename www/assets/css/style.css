@@ -79,7 +79,7 @@ a, a:hover, a:active {
     border-radius: 5px;
 }
 
-#portfolio_assets_doughnut .card-footer, #doughnut_sector .card-footer {
+#sector_distribution .card-footer, #stock_distribution .card-footer {
     padding: 0;
     display: none;
 }

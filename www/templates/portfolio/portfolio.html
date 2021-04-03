@@ -23,7 +23,7 @@
                     </thead>
                     <tbody>
                     {% for asset in assets %}
-                    <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title="{{ asset.title }}">
+                    <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title="{{ asset.title }}"data-price="{{ asset.regularMarketPrice }}">
                         <th scope="row">
                             {% if asset.asset_type == 1 %} <!-- or etf -->
                             <h5 class="ui sub header">
@@ -74,7 +74,7 @@
 
     <!-- news -->
     <div class="col-md-6 mb-4">
-        <div class="card" id="linechart_all_portfolios">
+        <div class="card" id="linechart">
             <div class="card-header"></div>
             <div class="card-body">
                 <!-- [2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo] -->
@@ -111,29 +111,6 @@
         </div>
     </div>
 </div>
-    <div class="col-md-9 mb-4">
-        <div class="row row-cols-2">
-            <!-- doughnut assets-->
-
-
-
-
-
-
-            <div class="col-md-12 mb-4">
-                <div class="row row-cols-2">
-
-                    <div class="col-md-8">
-
-                    </div>
-
-
-                </div>
-            </div>
-
-
-        </div>
-    </div>
 
 </div>
 
@@ -255,17 +232,7 @@
 {% block footer -%}
 
 <script>
-    portfolio_assets_doughnut_data = JSON.parse($('#portfolio_assets_doughnut').attr('data-val').replaceAll('\'', '\"'))
-    portfolio_assets_doughnut_label = JSON.parse($('#portfolio_assets_doughnut').attr('label-val').replaceAll('\'', '\"'))
-    chart_doughnut('#portfolio_assets_doughnut', 'Stock distrubution', portfolio_assets_doughnut_data, portfolio_assets_doughnut_label, '€', 'auto', "300")
-
-
-    doughnut_sector_data = JSON.parse($('#doughnut_sector').attr('data-val').replaceAll('\'', '\"'))
-    doughnut_sector_label = JSON.parse($('#doughnut_sector').attr('label-val').replaceAll('\'', '\"'))
-    var sector_chart = chart_doughnut('#doughnut_sector', 'Sector distribution', doughnut_sector_data, doughnut_sector_label, '%', 'auto', "300")
-
     portfolio_id = {{ portfolio_id }}
-
 </script>
 <script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>
 

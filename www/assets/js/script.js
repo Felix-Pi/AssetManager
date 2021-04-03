@@ -1,3 +1,47 @@
+function setFormValuesFromDatabase(form_id, data) {
+    console.log(data)
+    //format: .dbcol needs attr: col="col_dame_in_data"
+    $(form_id + ' .dbcol').each(function () {
+        elem = $(this)
+        col = elem.attr("col")
+
+        elem.val(data[col])
+    });
+
+    $(form_id + ' .dbcol-opt').each(function () {
+        elem = $(this)
+        col = elem.attr("col")
+
+        elem.val(data[col])
+        $(form_id + '_' + col + '_' + data[col]).prop('selected', true);
+    });
+
+}
+
+function serializeFormForDatabase(form_id) {
+
+    result = {}
+
+    $(form_id + ' .dbcol').each(function () {
+        let elem = $(this);
+        let val = elem.val();
+        let key = elem.attr('col');
+
+        result[key] = val;
+    });
+
+    $(form_id + ' .dbcol-opt').each(function () {
+        let elem = $(this);
+        let val = elem.children(':selected').attr('db-id');
+        let key = elem.attr('col');
+
+        result[key] = val;
+    });
+
+    return result;
+
+}
+
 $(document).ready(function () {
 
     $('.ui.accordion').accordion();
@@ -89,6 +133,7 @@ $(document).ready(function () {
     });
 
     const zeroPad = (num, places) => String(num).padStart(places, '0')
+
     $(document).on('click', '.profit_label', function () {
         $('.profit_label').each(function () {
             let elem = $(this)
