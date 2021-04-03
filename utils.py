@@ -44,8 +44,9 @@ def search_alternative_symbols(symbol, match_ratio=80):
     # select tickers with matching title
     result = []
     for symbol in alternative_symbols:
-        ratio = difflib.SequenceMatcher(None, title.lower(), symbol['name'].lower()).ratio()
-        if (match_ratio > 80):
+        ratio = int(difflib.SequenceMatcher(None, title.lower(), symbol['name'].lower()).ratio() * 100)
+        # print(title.lower(), '|', symbol['name'].lower(), ratio)
+        if ratio > match_ratio:
             result.append(symbol)
 
     return result
