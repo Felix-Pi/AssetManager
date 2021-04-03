@@ -82,7 +82,6 @@ def select_api_keys(conn):
     for elem in data:
         result[elem['domain']] = elem['key']
 
-    print(result)
     return result
 
 

@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 
 import requests
 
-from utils import yahoo_search_request
+from utils import yahoo_search_request, search_alternative_symbols
 
 
 def request_historical_data(symbol, days, interval):
@@ -28,13 +28,16 @@ def get_historical_data(symbols, days, interval):
     symbols = symbols.split(',')
     for symbol in symbols:
         data = request_historical_data(symbol, days, interval)
+        data = data['chart']['result'][0]
+        if 'timestamp' not in data:
+            return None
 
-        timestamps = data['chart']['result'][0]['timestamp']
+        timestamps = data['timestamp']
 
-        high = data['chart']['result'][0]['indicators']['quote'][0]['high']
-        low = data['chart']['result'][0]['indicators']['quote'][0]['low']
-        open = data['chart']['result'][0]['indicators']['quote'][0]['open']
-        close = data['chart']['result'][0]['indicators']['quote'][0]['close']
+        high = data['indicators']['quote'][0]['high']
+        low = data['indicators']['quote'][0]['low']
+        open = data['indicators']['quote'][0]['open']
+        close = data['indicators']['quote'][0]['close']
 
         assert (len(low) == len(high) == len(timestamps) == len(open) == len(close))
         data_dict = {'timestamps': [], 'timestamps_raw': [], 'high': [], 'low': [], 'open': [], 'close': [],
@@ -86,7 +89,6 @@ def get_asset_profile(symbol):
 
     if data != None:
         data = data[0]['assetProfile']
-        print(data)
 
         if 'country' in data:
             result['country'] = data['country']
@@ -105,40 +107,72 @@ def get_asset_profile(symbol):
 
 
 def get_recommendation_trend(symbol):
-    url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=recommendationTrend'.format(
-        symbol)
+    def send_request(symbol):
+        url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=recommendationTrend'.format(
+            symbol)
 
-    data = requests.get(url).json()['quoteSummary']['result']
+        data = requests.get(url).json()['quoteSummary']['result']
+        return data
 
-    result = []
-    if data != None:
-        data = data[0]['recommendationTrend']['trend']
+    def parse_data(data):
+        result = None
 
-        for trend in data:
-            tmp = {}
-            tmp['period'] = trend['period']
-            tmp['strongSell'] = trend['strongSell']
-            tmp['sell'] = trend['sell']
-            tmp['hold'] = trend['hold']
-            tmp['buy'] = trend['buy']
-            tmp['strongBuy'] = trend['strongBuy']
-            result.append(tmp)
+        if data is not None:
+            result = []
+            data = data[0]['recommendationTrend']['trend']
 
-    # ToDo
-    # if len(result) == 0:
-    #     # get stock title
-    #     data = yahoo_search_request(symbol, 'DE', 'de-DE')
-    #     title = data['ResultSet']['Result'][0]['name']
-    #
-    #     print(title)
-    #     all_symbols = yahoo_search_request(title, 'US', 'en-US')
-    #     print(all_symbols)
+            for trend in data:
+                tmp = {}
+                tmp['period'] = trend['period']
+                tmp['strongSell'] = trend['strongSell']
+                tmp['sell'] = trend['sell']
+                tmp['hold'] = trend['hold']
+                tmp['buy'] = trend['buy']
+                tmp['strongBuy'] = trend['strongBuy']
+                result.append(tmp)
+        return result
 
-    # search for nyse symbol
+    def check_alternative_symbols(symbols):
+        for symbol in symbols:
+            data = send_request(symbol['symbol'])
+            result = parse_data(data)
+            if result is not None:
+                # print('Alternative result found: \'{}\''.format(symbol['symbol']))
+                # print('Data: \'{}\''.format(data))
+                return result
 
-    # get data from syse symbol
+    data = send_request(symbol)
+    result = parse_data(data)
+
+    if result is None:
+        alternative_symbols = search_alternative_symbols(symbol)
+        result = check_alternative_symbols(alternative_symbols)
 
     return json.dumps(result)
+
+
+# def get_recommendation_trend(symbol):
+#     url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=recommendationTrend'.format(
+#         'MSFT')
+#
+#     data = requests.get(url).json()['quoteSummary']['result']
+#
+#
+#     result = []
+#     if data is not None:
+#         data = data[0]['recommendationTrend']['trend']
+#
+#         for trend in data:
+#             tmp = {}
+#             tmp['period'] = trend['period']
+#             tmp['strongSell'] = trend['strongSell']
+#             tmp['sell'] = trend['sell']
+#             tmp['hold'] = trend['hold']
+#             tmp['buy'] = trend['buy']
+#             tmp['strongBuy'] = trend['strongBuy']
+#             result.append(tmp)
+#
+#     return json.dumps(result)
 
 
 def get_calendar_events(symbol):

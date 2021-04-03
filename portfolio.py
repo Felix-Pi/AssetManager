@@ -59,7 +59,6 @@ def calc_sector_percentage(portfolio_data, portfolio_value, all_sectors):
         sector['percentage'] = round(sector['value'] / portfolio_value * 100, 2)
 
     for data in portfolio_data:
-        print(data['sector'])
         sector_value = [sector['value'] for sector in all_sectors if data['sector'] == sector['id'] and 'value' in sector]
         data['sector_percentage'] = round(data['asset_value'] / sector_value[0] * 100, 2)
 

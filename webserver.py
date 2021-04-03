@@ -63,7 +63,6 @@ def portfolio():
         user_portfolios = select_portfolios_from_user(conn, USER_ID)
         assets = select_all_assets_from_portfolio(conn, portfolio_id)
         all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
-        keys = select_api_keys(conn)
 
     # portfolio percentage
     for data in assets:
@@ -83,7 +82,7 @@ def portfolio():
         'percentage_doughnut_label': [asset['title'] for asset in assets],
         'doughnut_sector_data': [asset['percentage'] for asset in all_sectors],
         'doughnut_sector_label': [asset['title'] for asset in all_sectors],
-        'news': get_news_for_ticker([asset['symbol'] for asset in assets if 'symbol' in asset], keys['news'])
+        'news': get_news_for_ticker([asset['symbol'] for asset in assets if 'symbol' in asset])
     }
     return render_template('portfolio/portfolio.html', **templateData)
 
@@ -158,10 +157,10 @@ def api_stock_historical_data():
     return "False"
 
 
-@app.route('/api/stock/get_recommendation_trend/', methods=['POST'])
+@app.route('/api/stock/get_recommendation_trend/', methods=['GET'])
 def get_recommendation_trend_data():
-    if request.method == 'POST':
-        data = get_recommendation_trend(request.form['symbol'])
+    if request.method == 'GET':
+        return get_recommendation_trend(request.args.get('symbol'))
     return "False"
 
 
@@ -179,7 +178,6 @@ def db_get_country_data_for_portfolio_path():
         with conn:
             data = json.dumps(db_get_country_data_for_portfolio(conn, request.args.get('portfolio_id')))
 
-        print(data)
         return data
     return "False"
 
