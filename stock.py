@@ -167,30 +167,33 @@ def get_recommendation_trend(symbol):
     return json.dumps(result)
 
 
-# def get_recommendation_trend(symbol):
-#     url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=recommendationTrend'.format(
-#         'MSFT')
-#
-#     data = requests.get(url).json()['quoteSummary']['result']
-#
-#
-#     result = []
-#     if data is not None:
-#         data = data[0]['recommendationTrend']['trend']
-#
-#         for trend in data:
-#             tmp = {}
-#             tmp['period'] = trend['period']
-#             tmp['strongSell'] = trend['strongSell']
-#             tmp['sell'] = trend['sell']
-#             tmp['hold'] = trend['hold']
-#             tmp['buy'] = trend['buy']
-#             tmp['strongBuy'] = trend['strongBuy']
-#             result.append(tmp)
-#
-#     return json.dumps(result)
-
-
 def get_calendar_events(symbol):
-    url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}D&modules=calendarEvents'.format(symbol)
-    data = requests.get(url).json()
+    def send_request(symbol):
+        url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=calendarEvents'.format(
+            symbol)
+
+        print('send_request for:', 'symbol', requests.get(url).json())
+        return requests.get(url).json()['quoteSummary']['result']
+
+    def parse_result(data):
+        if data is not None:
+            data = data[0]['calendarEvents']
+
+            return data
+        return None
+
+    data = send_request(symbol)
+    result = parse_result(data)
+
+    if result is None or (result is not None and len(result['earnings']['earningsDate']) == 0):
+        alternative_symbols = search_alternative_symbols(symbol)
+        if len(alternative_symbols) > 0:
+            symbols = [symbol['symbol'] for symbol in alternative_symbols]
+
+            for symbol in symbols:
+                data = send_request(symbol)
+                data = parse_result(data)
+                if data is not None and len(data['earnings']['earningsDate']) > 0:
+                    result = data
+
+    return result

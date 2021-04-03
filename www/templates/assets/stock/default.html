@@ -1,0 +1,57 @@
+<div class="row">
+    <!-- line -->
+    <div class="col-md-6 mb-4">
+        <div class="card" id="stock_price_linechart">
+            <div class="card-header">{{stock.title}}</div>
+            <div class="card-body">
+                <!-- [2m, 5m, 15m, 30m, 60m 1d, 5d, 1wk, 1mo, 3mo] -->
+                <div class="settings ui mini basic icon buttons">
+                    <button class="ui button active" data-id="today" data-days="2" data-period="5m">Today</button>
+                    <button class="ui button" data-id="week" data-days="7" data-period="60m">Week</button>
+                    <button class="ui button" data-id="month" data-days="30" data-period="1d">Month</button>
+                    <button class="ui button" data-id="year" data-days="365" data-period="5d">Year</button>
+                    <button class="ui button" data-id="max" data-days="1800" data-period="1mo">Max</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- recommendations -->
+    <div class="col-md-3 mb-4">
+        <div class="card" id="recommendations">
+            <div class="card-header">Recommendations</div>
+            <div class="card-body"></div>
+        </div>
+    </div>
+
+
+</div>
+<div class="row">
+    <!-- news -->
+    <div class="col-md-6 mb-4">
+        <div class="card" id="stock_boxplot">
+            <div class="card-header">{{stock.title}}</div>
+            <div class="card-body">
+                <!-- [2m, 5m, 15m, 30m, 60m 1d, 5d, 1wk, 1mo, 3mo] -->
+                <div class="settings ui mini basic icon buttons">
+                    <button class="ui button active" data-id="today" data-days="2" data-period="5m">Today</button>
+                    <button class="ui button" data-id="week" data-days="7" data-period="60m">Week</button>
+                    <button class="ui button" data-id="month" data-days="30" data-period="1d">Month</button>
+                    <button class="ui button" data-id="year" data-days="365" data-period="5d">Year</button>
+                    <button class="ui button" data-id="max" data-days="1800" data-period="1mo">Max</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- news -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">News</div>
+            <div class="card-body">
+                {% include "newsfeed.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+

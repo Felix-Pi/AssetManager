@@ -27,7 +27,6 @@ def get_news_for_ticker(symbols, key=''):
         data = requests.get(url).text
         data = json.loads(json.dumps(xmltodict.parse(data)))
 
-        print('data', type(data), data)
         return data['rss']['channel']
 
     def parse_data(data):
@@ -55,7 +54,7 @@ def get_news_for_ticker(symbols, key=''):
         alternative_symbols = search_alternative_symbols(symbols)
         if len(alternative_symbols) > 0:
             symbols = [symbol['symbol'] for symbol in alternative_symbols]
-            print('Alternative symbols: ', len(symbols))
+            #print('Alternative symbols: ', len(symbols))
             symbols = ','.join(symbols)
             data = send_request(symbols)
             result = parse_data(data)

@@ -107,10 +107,11 @@ def stock():
         'pagetitle': 'Portfolio',
         'stock': stock,
         'general_info': get_asset_profile(symbol),
-        'news': get_news_for_ticker(symbol, keys['news'])
+        'news': get_news_for_ticker(symbol, keys['news']),
+        'calendarEvents': get_calendar_events(symbol)
     }
 
-    return render_template('assets/stock.html', **templateData)
+    return render_template('assets/stock/stock.html', **templateData)
 
 
 @app.route('/api/refresh/')

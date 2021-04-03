@@ -2,6 +2,10 @@
     display: none;
 }
 
+.shown {
+    display: block;
+}
+
 a, a:hover, a:active {
     color: rgba(0, 0, 0, .87);
 }
