@@ -74,15 +74,10 @@ function chart_doughnut(id, title, data, label_suffix, width, height) {
     };
 
 
-    $(id + ' .card-header').text(title);
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
-
-
-    var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    return new Chart(ctx, config);
+    return insert_chart(id, title, config, width, height);
 }
 
-function chart_linechart(id, title, input, label_suffix) {
+function chart_linechart(id, title, input, label_suffix, width = '', height = '') {
     Chart.controllers.LineWithLine = Chart.controllers.line.extend({
         draw: function (ease) {
             Chart.controllers.line.prototype.draw.call(this, ease);
@@ -108,13 +103,21 @@ function chart_linechart(id, title, input, label_suffix) {
     });
 
 
+    var datasets = []
+    var labels = []
+
+    //in case of empty input
+    if (input.length > 0) {
+        labels = input[0].timestamps
+        title = input[0].title
+    }
     if (input.length > 1) {
         var color = get_random_color(input.length);
     } else {
         var color = [colors.blue];
     }
 
-    var datasets = []
+
     for (let i = 0; i < input.length; i++) {
         datasets.push({
             backgroundColor: color[i],
@@ -132,7 +135,7 @@ function chart_linechart(id, title, input, label_suffix) {
     var config = {
         type: 'LineWithLine',
         data: {
-            labels: input[0].timestamps,
+            labels: labels,
             datasets: datasets
         },
         options: {
@@ -193,11 +196,7 @@ function chart_linechart(id, title, input, label_suffix) {
         }
 
     };
-    $(id + ' .card-header').text(input[0].title);
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas"></canvas>');
-
-    var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    return new Chart(ctx, config);
+    return insert_chart(id, title, config, width, height);
 }
 
 function draw_bar_chart(id, title, input, width, height) {
@@ -207,11 +206,10 @@ function draw_bar_chart(id, title, input, width, height) {
         datasets: [{
             label: 'Stocks',
             data: input.data,
-            //backgroundColor: get_random_color(input.data.length)
             backgroundColor: colors.blue_light
         }],
     };
-    config = {
+    var config = {
         type: 'bar',
         data: barChartData,
         options: {
@@ -236,12 +234,7 @@ function draw_bar_chart(id, title, input, width, height) {
             }
         }
     }
-    $(id + ' .card-header').text(title);
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
-
-
-    var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    return new Chart(ctx, config);
+    return insert_chart(id, title, config, width, height);
 
 }
 
@@ -272,13 +265,12 @@ function draw_stacked_recommendation_bar_chart(id, title, input, width, height) 
         labels: input.labels,
         datasets: datasets
     };
-    config = {
+    var config = {
         type: 'bar',
         data: barChartData,
         options: {
             title: {
                 display: false,
-                text: 'Chart.js Bar Chart - Stacked'
             },
             tooltips: {
                 mode: 'index',
@@ -298,54 +290,66 @@ function draw_stacked_recommendation_bar_chart(id, title, input, width, height) 
             }
         }
     }
-    $(id + ' .card-header').text(title);
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
-
-
-    var ctx = document.getElementById(id + '_canvas').getContext('2d');
-    return new Chart(ctx, config);
+    return insert_chart(id, title, config, width, height)
 
 }
 
 function draw_candle_bar_chart(id, title, input) {
-    let data = []
-    for (let i = 0; i < input[0].median.length; i++) {
-        data.push({
-                t: input[0].timestamps_raw[i] * 1000, //time
-                o: input[0].open[i], //open
-                h: input[0].high[i], //high
-                l: input[0].low[i], //low
-                c: input[0].close[i], //close
-                m: input[0].median[i], //median
-            }
-        )
-    }
+    if (input.length > 0) {
 
-
-    let data_line = []
-    let data_label = []
-
-    for (let i = 0; i < data.length; i++) {
-        data_line.push(data[i].m)
-        data_label.push(data[i].t)
-    }
-
-
-    var config = {
-        type: 'candlestick',
-        data: {
-            labels: data_label,
-            datasets: [{
-                label: title,
-                data: data
-            }]
+        let data = []
+        for (let i = 0; i < input[0].median.length; i++) {
+            data.push({
+                    t: input[0].timestamps_raw[i] * 1000, //time
+                    o: input[0].open[i], //open
+                    h: input[0].high[i], //high
+                    l: input[0].low[i], //low
+                    c: input[0].close[i], //close
+                    m: input[0].median[i], //median
+                }
+            )
         }
+
+
+        let data_line = []
+        let data_label = []
+
+        for (let i = 0; i < data.length; i++) {
+            data_line.push(data[i].m)
+            data_label.push(data[i].t)
+        }
+
+
+        var config = {
+            type: 'candlestick',
+            data: {
+                labels: data_label,
+                datasets: [{
+                    label: title,
+                    data: data
+                }]
+            }
+        }
+
     }
 
+    return insert_chart(id, title, config)
+}
 
+function insert_chart(id, title, config, width = 'auto', height = 300) {
     $(id + ' .card-header').text(title);
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas"></canvas>');
-
+    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
     return new Chart(ctx, config);
+}
+
+function update_chart(chart, data, labels) { //ToDo
+    console.log(chart.data)
+
+    if (chart.data.datasets.length === 0) {
+        chart.data.datasets = [{data: []}];
+    }
+    chart.data.datasets[0].data = data;
+    chart.data.labels = labels;
+    chart.update();
 }

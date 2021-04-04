@@ -137,9 +137,12 @@ def api_stock_endpoint(endpoint):
         if 'get_recommendation_trend' == endpoint:
             return get_recommendation_trend(request.args.get('symbol'))
         if 'historical_data' == endpoint:
-            print(request.args)
-            return get_historical_data(request.args.get('symbols'), request.args.get('days'),
+            print('historical_data', request.args)
+            data = get_historical_data(request.args.get('symbols'), request.args.get('days'),
                                        request.args.get('period'))
+
+            print('webserver.py: data', data)
+            return data
         if 'endpoint' == endpoint:
             print(endpoint)
 
