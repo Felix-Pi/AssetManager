@@ -35,9 +35,10 @@ function setup() {
         success: function (result) {
             result = JSON.parse(result)
             result.colored = true;
+            result.data = result.data_relative;
 
             var id = '#stock_distribution'
-            stock_distribution_chart = chart_doughnut(id, 'Stock distrubution', result, '€', 'auto', "300")
+            stock_distribution_chart = chart_doughnut(id, 'Stock distrubution', result, '%', 'auto', "300")
             //stock_distribution_chart = draw_bar_chart(id, 'Stock distrubution', result, '€', 'auto', "300")
 
         }
@@ -57,6 +58,7 @@ function setup() {
         success: function (result) {
             result = JSON.parse(result)
             result.colored = true;
+            result.data = result.data_relative;
 
             var id = '#sector_distribution'
 
@@ -71,9 +73,10 @@ function setup() {
         success: function (result) {
             result = JSON.parse(result)
             result.colored = true;
+            result.data = result.data_relative;
 
             let id = '#country_distribution'
-            country_distribution_chart = draw_bar_chart(id, 'Country distribution', result, '', 'auto', '300')
+            country_distribution_chart = draw_bar_chart(id, 'Country distribution', result, '%', 'auto', '300')
 
         }
     });

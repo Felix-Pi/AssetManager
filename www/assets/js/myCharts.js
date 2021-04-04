@@ -23,6 +23,7 @@ window.randomScalingFactor = function () {
     return Math.random(1, 500)
 };
 
+
 function get_random_color(amount) {
     let bgcolors = [];
     var keys = Object.keys(chartcolors);
@@ -79,11 +80,23 @@ function chart_doughnut(id, title, data, label_suffix, width, height) {
     return insert_chart(id, title, config, width, height);
 }
 
+function chart_half_doughnut(id, title, data, label_suffix, width, height) {
+    let chart = chart_doughnut(id, title, data, label_suffix, width, height);
+
+    chart.options.circumference = Math.PI;
+    chart.options.rotation = -Math.PI;
+    chart.options.borderWidth = 0;
+    chart.options.cutoutPercentage = 65;
+    chart.update();
+
+    return chart;
+}
+
 function chart_linechart(id, title, input, label_suffix, width = '', height = '') {
     var colors = get_color_sheme(input);
     var datasets = [{
-        backgroundColor: chartcolors.blue_light,
-        borderColor: chartcolors.blue_light,
+        backgroundColor: colors,
+        borderColor: colors,
         label: '',
         data: [],
         lineTension: 0,
@@ -120,6 +133,7 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
             datasets: datasets
         },
         options: {
+            plugins: {},
             responsive: true,
             bezierCurve: false,
             title: {
@@ -200,7 +214,19 @@ function draw_bar_chart(id, title, input, label_suffix, width, height) {
             },
             tooltips: {
                 mode: 'index',
-                intersect: false
+                intersect: false,
+                callbacks: {
+                    label: function (item, data) {
+
+                        let index = item.index;
+                        let symbol = data.labels[index];
+                        let value = data.datasets[0].data[index];
+                        let parsed_value = parseFloat(value);
+                        let formatted_value = parsed_value.toFixed(2);
+
+                        return ' ' + symbol + ': ' + formatted_value + ' ' + label_suffix
+                    }
+                }
             },
             legend: {
                 display: false,
@@ -349,7 +375,7 @@ function get_color_sheme(input) {
     if (input.colored === true) {
         var colors = get_random_color(input.data.length);
     } else {
-        var colors = get_random_color(1)[0];
+        var colors = chartcolors.blue_light;
     }
     return colors;
 }

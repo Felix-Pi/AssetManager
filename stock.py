@@ -10,11 +10,15 @@ from utils import yahoo_search_request, search_alternative_symbols
 
 def request_historical_data(symbol, days, interval):
     now = datetime.now()
-    period2 = str(datetime.timestamp(now)).split('.')[0]  # prev format: 1617109848.86177
-    period1 = str(datetime.timestamp(now - relativedelta(days=int(days)))).split('.')[0]
-    period2 = period2.split('.')[0]
-    period1 = period1.split('.')[0]
+    now = str(now).split('.')[0]
+    now = datetime.strptime(now, '%Y-%m-%d %H:%M:%S')
 
+    period2 = str(datetime.timestamp(now))  # prev format: 1617109848.86177
+    period1 = str(datetime.timestamp(now - relativedelta(days=int(days))))
+    period2 = str(period2).split('.')[0]
+    period1 = str(period1).split('.')[0]
+
+    print('stock.py: period1, period2=', period1, period2)
     url = 'https://query1.finance.yahoo.com/v8/finance/chart/?symbol={}&period1={}&period2={}&interval={}&chart'.format(
         symbol, period1, period2, interval)
 

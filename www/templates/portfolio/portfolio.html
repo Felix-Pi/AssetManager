@@ -23,12 +23,16 @@
                     </thead>
                     <tbody>
                     {% for asset in assets %}
-                    <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title="{{ asset.title }}"data-price="{{ asset.regularMarketPrice }}">
+                    <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title="{{ asset.title }}"
+                        data-price="{{ asset.regularMarketPrice }}">
                         <th scope="row">
-                            {% if asset.asset_type == 1 %} <!-- or etf -->
                             <h5 class="ui sub header">
+                                {% if asset.asset_type == 1 %} <!-- or etf -->
                                 <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&stock={{ asset.id }}">
                                     {{ asset.title }} </a>
+                                {% else %}
+                                <a href="/asset?id={{ asset.id }}">{{ asset.title }}</a>
+                                {% endif %}
                             </h5>
                             <span>
                                 <div class="ui mini label">
@@ -38,9 +42,7 @@
                                      {{ asset.asset_value }}
                                 </div>
                             </span>
-                            {% else %}
-                            <a href="/asset?id={{ asset.id }}">{{ asset.title }}</a>
-                            {% endif %}
+
                         </th>
                         <td>
                             <span class="profit_label" counter="0"
@@ -232,7 +234,7 @@
 {% block footer -%}
 
 <script>
-    portfolio_id = {{ portfolio_id }}
+    portfolio_id = {{ portfolio_id}}
 </script>
 <script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>
 

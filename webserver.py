@@ -127,6 +127,84 @@ def api_select_single_asset_from_portfolio():
                 select_single_asset_from_portfolio(conn, request.form['portfolio_id'], request.form['asset_id']))
 
 
+@app.route('/api/index/<endpoint>/', methods=['GET', 'POST'])
+def api_index_endpoint(endpoint):
+    if request.method == 'GET':
+        if 'get_asset_distribution' == endpoint:
+            conn = create_connection(database)
+            with conn:
+                doughnut_asset_allocation = select_assets_from_portfolio_grouped_by_sector(conn, USER_ID)
+
+                portfolio_value = sum(asset['val'] for asset in doughnut_asset_allocation)
+
+                return json.dumps({
+                    'data_relative': [round((asset['val'] / portfolio_value) * 100, 1) for asset in
+                                      doughnut_asset_allocation],
+                    'data_absolute': [asset['val'] for asset in doughnut_asset_allocation],
+                    'labels': [asset['title'] for asset in doughnut_asset_allocation],
+                })
+        if 'endpoint' == endpoint:
+            print(endpoint)
+    return endpoint
+
+
+@app.route('/api/portfolio/<endpoint>/', methods=['GET', 'POST'])
+def api_portfolio_endpoint(endpoint):
+    if request.method == 'GET':
+        if 'get_country_data' == endpoint:
+            conn = create_connection(database)
+            with conn:
+                data = db_get_country_data_for_portfolio(conn, request.args.get('portfolio_id'))
+                print(data)
+                return json.dumps({'data_relative': [data['amount'] for data in data],  # ToDo
+                                   'data_absolute': [data['amount'] for data in data],
+                                   'labels': [data['country'] for data in data]})
+        if 'get_stock_distribution' == endpoint:
+            conn = create_connection(database)
+            with conn:
+                portfolio_id = request.args.get('portfolio_id')
+                portfolio = select_portfolio(conn, portfolio_id)
+                portfolio_value = portfolio[0]['portfolio_value']
+                assets = select_all_assets_from_portfolio(conn, portfolio_id)
+                all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
+
+                return json.dumps(
+                    {'data_relative': [round((asset['asset_value'] / portfolio_value) * 100, 1) for asset in assets],
+                     'data_absolute': [asset['asset_value'] for asset in assets],
+                     'labels': [asset['title'] for asset in assets]})
+        if 'get_sector_distribution' == endpoint:
+            conn = create_connection(database)
+            with conn:
+                portfolio_id = request.args.get('portfolio_id')
+                portfolio = select_portfolio(conn, portfolio_id)
+                portfolio_value = portfolio[0]['portfolio_value']
+                assets = select_all_assets_from_portfolio(conn, portfolio_id)
+                all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
+
+                return json.dumps(
+                    {'data_relative': [asset['percentage'] for asset in all_sectors if asset['value'] != 0],
+                     'data_absolute': [asset['value'] for asset in all_sectors if asset['value'] != 0],
+                     'labels': [asset['title'] for asset in all_sectors if asset['value'] != 0]})
+        if 'endpoint' == endpoint:
+            print(endpoint)
+    if request.method == 'POST':
+        if 'update_stock' == endpoint:
+            conn = create_connection(database)
+            with conn:
+                api_portfolio_update_stock(conn, request.form)
+        if 'add_stock' == endpoint:
+            conn = create_connection(database)
+            with conn:
+                if check_if_asset_symbol_exists(request.form['symbol']):
+                    api_portfolio_insert_stock(conn, request.form)
+
+            update_data()
+            return 'True'
+        if 'endpoint' == endpoint:
+            print(endpoint)
+    return endpoint
+
+
 @app.route('/api/stock/<endpoint>/', methods=['GET', 'POST'])
 def api_stock_endpoint(endpoint):
     if request.method == 'GET':
@@ -148,74 +226,6 @@ def api_stock_endpoint(endpoint):
         if 'endpoint' == endpoint:
             print(endpoint)
 
-    return endpoint
-
-
-@app.route('/api/portfolio/<endpoint>/', methods=['GET', 'POST'])
-def api_portfolio_endpoint(endpoint):
-    if request.method == 'GET':
-        if 'get_country_data' == endpoint:
-            conn = create_connection(database)
-            with conn:
-                data = db_get_country_data_for_portfolio(conn, request.args.get('portfolio_id'))
-                print(data)
-                return json.dumps({'data': [data['amount'] for data in data],
-                                   'labels': [data['country'] for data in data]})
-        if 'get_stock_distribution' == endpoint:
-            conn = create_connection(database)
-            with conn:
-                portfolio_id = request.args.get('portfolio_id')
-                portfolio = select_portfolio(conn, portfolio_id)
-                portfolio_value = portfolio[0]['portfolio_value']
-                assets = select_all_assets_from_portfolio(conn, portfolio_id)
-                all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
-
-                return json.dumps({'data': [asset['asset_value'] for asset in assets],
-                                   'labels': [asset['title'] for asset in assets]})
-        if 'get_sector_distribution' == endpoint:
-            conn = create_connection(database)
-            with conn:
-                portfolio_id = request.args.get('portfolio_id')
-                portfolio = select_portfolio(conn, portfolio_id)
-                portfolio_value = portfolio[0]['portfolio_value']
-                assets = select_all_assets_from_portfolio(conn, portfolio_id)
-                all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
-
-                return json.dumps({'data': [asset['percentage'] for asset in all_sectors if asset['value'] != 0],
-                                   'labels': [asset['title'] for asset in all_sectors if asset['value'] != 0]})
-        if 'endpoint' == endpoint:
-            print(endpoint)
-    if request.method == 'POST':
-        if 'update_stock' == endpoint:
-            conn = create_connection(database)
-            with conn:
-                api_portfolio_update_stock(conn, request.form)
-        if 'add_stock' == endpoint:
-            conn = create_connection(database)
-            with conn:
-                if check_if_asset_symbol_exists(request.form['symbol']):
-                    api_portfolio_insert_stock(conn, request.form)
-
-            update_data()
-            return 'True'
-        if 'endpoint' == endpoint:
-            print(endpoint)
-    return endpoint
-
-
-@app.route('/api/index/<endpoint>/', methods=['GET', 'POST'])
-def api_index_endpoint(endpoint):
-    if request.method == 'GET':
-        if 'get_asset_distribution' == endpoint:
-            conn = create_connection(database)
-            with conn:
-                doughnut_asset_allocation = select_assets_from_portfolio_grouped_by_sector(conn, USER_ID)
-                return json.dumps({
-                    'data': [asset['val'] for asset in doughnut_asset_allocation],
-                    'labels': [asset['title'] for asset in doughnut_asset_allocation],
-                })
-        if 'endpoint' == endpoint:
-            print(endpoint)
     return endpoint
 
 

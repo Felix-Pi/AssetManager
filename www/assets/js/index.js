@@ -5,16 +5,14 @@ $(document).ready(function () {
     $.ajax({
         url: "/api/index/get_asset_distribution/",
         success: function (result) {
-            data = JSON.parse(result)
+            result = JSON.parse(result)
             var id = '#asset_distribution'
 
-            asset_distribution_chart = chart_doughnut(id, 'Asset distribution', data, '€', 'auto', 150)
+            result.data = result.data_relative;
 
-            asset_distribution_chart.options.circumference = Math.PI;
-            asset_distribution_chart.options.rotation = -Math.PI;
-            asset_distribution_chart.options.borderWidth = 0;
-            asset_distribution_chart.options.cutoutPercentage = 65;
-            asset_distribution_chart.update();
+            asset_distribution_chart = chart_half_doughnut(id, 'Asset distribution', result, '%', 'auto', 150)
+
+
         }
     });
 
