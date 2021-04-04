@@ -1,24 +1,14 @@
 <div class="row">
-        <!-- general info -->
+    <!-- general info -->
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-header">General info</div>
             <div class="card-body">
-                <table class="table">
-                    {% for info in general_info if info != 'longBusinessSummary' %}
-                    <tr>
-                        <th scope="row">{{ info }}</th>
-                        <td>{{ general_info[info] }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                {{calendar_events}}
             </div>
         </div>
     </div>
     <div class="col-md-9 mb-4">
-        <div class="card">
-            <div class="card-header">Description</div>
-            <div class="card-body"> {{ general_info['longBusinessSummary'] }}</div>
-        </div>
+
     </div>
 </div>

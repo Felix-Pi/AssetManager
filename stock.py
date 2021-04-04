@@ -144,8 +144,9 @@ def get_recommendation_trend(symbol):
                 tmp['buy'] = trend['buy']
                 tmp['strongBuy'] = trend['strongBuy']
 
-                result['data'].append(tmp)
-                result['labels'].append(parse_label(trend['period']))
+                if not all(x == 0 for x in tmp.values()):  # check if all values in tmp are zero
+                    result['data'].append(tmp)
+                    result['labels'].append(parse_label(trend['period']))
 
         return result
 

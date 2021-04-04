@@ -17,6 +17,7 @@ function setup() {
         },
         success: function (result) {
             result = JSON.parse(result)
+            result.colored = false;
 
             var id = '#linechart'
             $(id).attr('data-symbol', symbol)
@@ -33,11 +34,21 @@ function setup() {
         data: {'portfolio_id': portfolio_id},
         success: function (result) {
             result = JSON.parse(result)
+            result.colored = true;
 
             var id = '#stock_distribution'
             stock_distribution_chart = chart_doughnut(id, 'Stock distrubution', result, '€', 'auto', "300")
+            //stock_distribution_chart = draw_bar_chart(id, 'Stock distrubution', result, '€', 'auto', "300")
+
         }
     });
+
+    // function update_chart_type(id, type1, type2) {
+    //     var chart = $(id).getContext('2d');
+    //     var data = {data: chart.data.datasets[0].data, labels: chart.data.labels = labels}
+    //
+    //     chart.destroy()
+    // }
 
     /* setup sector distribution */
     $.ajax({
@@ -45,9 +56,11 @@ function setup() {
         data: {'portfolio_id': portfolio_id},
         success: function (result) {
             result = JSON.parse(result)
+            result.colored = true;
+
             var id = '#sector_distribution'
 
-            var sector_distribution_chart = chart_doughnut('#sector_distribution', 'Sector distribution', result, '%', 'auto', "300")
+            var sector_distribution_chart = draw_bar_chart('#sector_distribution', 'Sector distribution', result, '%', 'auto', "300")
         }
     });
 
@@ -56,10 +69,12 @@ function setup() {
         url: "/api/portfolio/get_country_data/",
         data: {'portfolio_id': portfolio_id},
         success: function (result) {
-            data = JSON.parse(result)
+            result = JSON.parse(result)
+            result.colored = true;
 
             let id = '#country_distribution'
-            country_distribution_chart = draw_bar_chart(id, 'Country distribution', data, 'auto', '300')
+            country_distribution_chart = draw_bar_chart(id, 'Country distribution', result, '', 'auto', '300')
+
         }
     });
 }

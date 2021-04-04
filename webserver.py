@@ -106,9 +106,7 @@ def stock():
     templateData = {
         'pagetitle': 'Portfolio',
         'stock': stock,
-        'general_info': get_asset_profile(symbol),
         'news': get_news_for_ticker(symbol, keys['news']),
-        'calendarEvents': get_calendar_events(symbol)
     }
 
     return render_template('assets/stock/stock.html', **templateData)
@@ -156,8 +154,6 @@ def api_stock_endpoint(endpoint):
 @app.route('/api/portfolio/<endpoint>/', methods=['GET', 'POST'])
 def api_portfolio_endpoint(endpoint):
     if request.method == 'GET':
-        if 'get_stock_distribution' == endpoint:
-            print(endpoint)
         if 'get_country_data' == endpoint:
             conn = create_connection(database)
             with conn:
@@ -165,10 +161,6 @@ def api_portfolio_endpoint(endpoint):
                 print(data)
                 return json.dumps({'data': [data['amount'] for data in data],
                                    'labels': [data['country'] for data in data]})
-        if 'get_country_dataold' == endpoint:
-            conn = create_connection(database)
-            with conn:
-                return json.dumps(db_get_country_data_for_portfolio(conn, request.args.get('portfolio_id')))
         if 'get_stock_distribution' == endpoint:
             conn = create_connection(database)
             with conn:
@@ -189,8 +181,8 @@ def api_portfolio_endpoint(endpoint):
                 assets = select_all_assets_from_portfolio(conn, portfolio_id)
                 all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
 
-                return json.dumps({'data': [asset['percentage'] for asset in all_sectors],
-                                   'labels': [asset['title'] for asset in all_sectors]})
+                return json.dumps({'data': [asset['percentage'] for asset in all_sectors if asset['value'] != 0],
+                                   'labels': [asset['title'] for asset in all_sectors if asset['value'] != 0]})
         if 'endpoint' == endpoint:
             print(endpoint)
     if request.method == 'POST':
@@ -225,6 +217,37 @@ def api_index_endpoint(endpoint):
         if 'endpoint' == endpoint:
             print(endpoint)
     return endpoint
+
+
+@app.route('/api/render_template/', methods=['GET'])
+def api_render_template():
+    if request.method == 'GET':
+        print('webserver.py: request.args=', request.args)
+        if 'stock' == request.args.get('endpoint'):
+            symbol = request.args.get('symbol')
+            action = request.args.get('action')
+            if 'menu_load_default' == action:
+                templateData = {
+                    'general_info': get_asset_profile(symbol),
+                }
+
+                return render_template('assets/stock/info.html', **templateData)
+
+            if 'menu_load_info' == action:
+                templateData = {
+                    'general_info': get_asset_profile(symbol),
+                }
+
+                return render_template('assets/stock/info.html', **templateData)
+
+            if 'menu_load_calendar_events' == action:
+                templateData = {
+                    'calendar_events': get_calendar_events(symbol)
+                }
+
+                return render_template('assets/stock/calendar_events.html', **templateData)
+
+    return "lala"
 
 
 if __name__ == '__main__':

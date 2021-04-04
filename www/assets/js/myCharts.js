@@ -33,12 +33,14 @@ function get_random_color(amount) {
 }
 
 function chart_doughnut(id, title, data, label_suffix, width, height) {
+    var colors = get_color_sheme(data);
+
     var config = {
         type: 'doughnut',
         data: {
             datasets: [{
                 data: data.data,
-                backgroundColor: get_random_color(data.data.length),
+                backgroundColor: colors,
                 label: 'Dataset 1'
             }],
             labels: data.labels
@@ -78,32 +80,16 @@ function chart_doughnut(id, title, data, label_suffix, width, height) {
 }
 
 function chart_linechart(id, title, input, label_suffix, width = '', height = '') {
-    Chart.controllers.LineWithLine = Chart.controllers.line.extend({
-        draw: function (ease) {
-            Chart.controllers.line.prototype.draw.call(this, ease);
-
-            if (this.chart.tooltip._active && this.chart.tooltip._active.length) {
-                var activePoint = this.chart.tooltip._active[0],
-                    ctx = this.chart.ctx,
-                    x = activePoint.tooltipPosition().x,
-                    topY = this.chart.legend.bottom,
-                    bottomY = this.chart.chartArea.bottom;
-
-                // draw line
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(x, topY);
-                ctx.lineTo(x, bottomY);
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = '#aba8a8';
-                ctx.stroke();
-                ctx.restore();
-            }
-        }
-    });
-
-
-    var datasets = []
+    var colors = get_color_sheme(input);
+    var datasets = [{
+        backgroundColor: chartcolors.blue_light,
+        borderColor: chartcolors.blue_light,
+        label: '',
+        data: [],
+        lineTension: 0,
+        borderWidth: 2,
+        fill: false
+    }]
     var labels = []
 
     //in case of empty input
@@ -111,16 +97,11 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
         labels = input[0].timestamps
         title = input[0].title
     }
-    if (input.length > 1) {
-        var color = get_random_color(input.length);
-    } else {
-        var color = [colors.blue];
-    }
 
 
     for (let i = 0; i < input.length; i++) {
         datasets.push({
-            backgroundColor: color[i],
+            backgroundColor: colors[i],
             //borderColor: color[i],
             borderColor: chartcolors.blue_light,
             label: input[i].title,
@@ -199,14 +180,15 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
     return insert_chart(id, title, config, width, height);
 }
 
-function draw_bar_chart(id, title, input, width, height) {
+function draw_bar_chart(id, title, input, label_suffix, width, height) {
+    var colors = get_color_sheme(input);
 
     var barChartData = {
         labels: input.labels,
         datasets: [{
             label: 'Stocks',
             data: input.data,
-            backgroundColor: colors.blue_light
+            backgroundColor: colors
         }],
     };
     var config = {
@@ -239,7 +221,7 @@ function draw_bar_chart(id, title, input, width, height) {
 }
 
 function draw_stacked_recommendation_bar_chart(id, title, input, width, height) {
-    var colors_ = [colors.red_dark, colors.orange, colors.teal, colors.blue, colors.green];
+    var colors_ = [colors.red, colors.orange, colors.grey, colors.blue, colors.blue_light];
     input_data = input.data
 
     var datasets = [];
@@ -247,7 +229,7 @@ function draw_stacked_recommendation_bar_chart(id, title, input, width, height) 
     var keys = Object.keys(input_data[0]);
 
 
-    for (let j = 1; j < keys.length; j++) {
+    for (let j = 0; j < keys.length; j++) {
         data[j] = []
         for (let i = 0; i < input_data.length; i++) {
             data[j].push(input_data[i][keys[j]])
@@ -255,7 +237,7 @@ function draw_stacked_recommendation_bar_chart(id, title, input, width, height) 
         datasets.push({
             label: keys[j],
             data: data[j],
-            backgroundColor: colors_[j - 1]
+            backgroundColor: colors_[j]
         })
     }
 
@@ -334,6 +316,42 @@ function draw_candle_bar_chart(id, title, input) {
     }
 
     return insert_chart(id, title, config)
+}
+
+Chart.controllers.LineWithLine = Chart.controllers.line.extend({
+    draw: function (ease) {
+        Chart.controllers.line.prototype.draw.call(this, ease);
+
+        if (this.chart.tooltip._active && this.chart.tooltip._active.length) {
+            var activePoint = this.chart.tooltip._active[0],
+                ctx = this.chart.ctx,
+                x = activePoint.tooltipPosition().x,
+                topY = this.chart.legend.bottom,
+                bottomY = this.chart.chartArea.bottom;
+
+            // draw line
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x, topY);
+            ctx.lineTo(x, bottomY);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#aba8a8';
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+});
+
+
+//if input.colored = true: multiple colors
+//if input.colored = false: one colors
+function get_color_sheme(input) {
+    if (input.colored === true) {
+        var colors = get_random_color(input.data.length);
+    } else {
+        var colors = get_random_color(1)[0];
+    }
+    return colors;
 }
 
 function insert_chart(id, title, config, width = 'auto', height = 300) {
