@@ -2,6 +2,7 @@ import time
 
 from flask import Flask, render_template, request, url_for, jsonify, redirect, g
 from assets import *
+from etf import get_top_holdings
 from portfolio import *
 from db import *
 from stock import *
@@ -93,23 +94,48 @@ def portfolio():
 @app.route('/stock/')
 def stock():
     portfolio_id = request.args.get('portfolio', type=int)
-    stock_id = request.args.get('stock', type=int)
+    stock_id = request.args.get('asset', type=int)
     conn = create_connection(database)
 
     with conn:
-        stock = select_single_asset_from_portfolio(conn, portfolio_id, stock_id)[0]
-        symbol = stock['symbol']
+        asset = select_single_asset_from_portfolio(conn, portfolio_id, stock_id)[0]
+        symbol = asset['symbol']
         keys = select_api_keys(conn)
         if UPDATE_ALWAYS:
             update_data(conn)
 
     templateData = {
         'pagetitle': 'Portfolio',
-        'stock': stock,
+        'asset': asset,
         'news': get_news_for_ticker(symbol, keys['news']),
     }
 
     return render_template('assets/stock/stock.html', **templateData)
+
+
+@app.route('/etf/')
+def etf():
+    portfolio_id = request.args.get('portfolio', type=int)
+    asset_id = request.args.get('asset', type=int)
+
+    print('webserver.py: portfolio_id, asset_id=', portfolio_id, asset_id)
+    conn = create_connection(database)
+    with conn:
+        asset = select_single_asset_from_portfolio(conn, portfolio_id, asset_id)[0]
+        symbol = asset['symbol']
+        if UPDATE_ALWAYS:
+            update_data(conn)
+
+    holdings = get_top_holdings(symbol)
+    print('webserver.py: type(holdings), holdings=', type(holdings), holdings)
+    templateData = {
+        'pagetitle': 'Portfolio',
+        'asset': asset,
+        'news': get_news_for_ticker(symbol),
+        'top_holdings': holdings,
+    }
+
+    return render_template('assets/etf/etf.html', **templateData)
 
 
 @app.route('/api/refresh/')
@@ -219,6 +245,21 @@ def api_stock_endpoint(endpoint):
 
             print('webserver.py: data', data)
             return data
+        if 'endpoint' == endpoint:
+            print(endpoint)
+
+    if request.method == 'POST':
+        if 'endpoint' == endpoint:
+            print(endpoint)
+
+    return endpoint
+
+
+@app.route('/api/etf/<endpoint>/', methods=['GET', 'POST'])
+def api_etf_endpoint(endpoint):
+    if request.method == 'GET':
+        if 'get_top_holdings' == endpoint:
+            return get_top_holdings(request.args.get('input'))
         if 'endpoint' == endpoint:
             print(endpoint)
 

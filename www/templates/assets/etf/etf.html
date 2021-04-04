@@ -1,0 +1,39 @@
+{% extends "base/base.html" -%}
+{% block content -%}
+
+
+<h1>{{asset.title}}</h1>
+
+<div id="stock_navigation" class="ui secondary pointing menu">
+    <a class="active item" data-attr="default">
+        Home
+    </a>
+    <a class="item" data-attr="info">
+        Info
+    </a>
+
+
+    <div class="right menu">
+        <a class="ui item">
+            Logout
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    <div class="elem" data-attr="default">
+        {% include "assets/etf/default.html" %}
+    </div>
+    <div class="elem hidden" data-attr="info"></div>
+</div>
+
+{%- endblock content %}
+
+{% block footer -%}
+
+
+<script src="{{ url_for('static', filename='js/etf.js') }}"></script>
+<script>
+    let symbol = '{{ asset.symbol }}';
+</script>
+{%- endblock footer %}

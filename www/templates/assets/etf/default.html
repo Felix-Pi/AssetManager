@@ -1,0 +1,50 @@
+<div class="row">
+    <!-- top holdings -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">General info</div>
+            <div class="card-body">
+
+
+                <table class="table">
+                    {% for holding in top_holdings.holdings %}
+                    <tr>
+                        <th scope="row">{{ holding.symbol }}</th>
+                        <td>{{ holding.holdingName }}
+                        <td>{{ holding.holdingPercent.fmt }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- sector weightings -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">sectorWeightings</div>
+            <div class="card-body">
+
+
+                <table class="table">
+                    {% for sector in top_holdings.sectorWeightings %}
+                    {% for sectorname in sector %}
+                    {% if sector[sectorname].raw > 0 %}
+                    <tr>
+                        <th scope="row"></th>
+                        <td>{{ sectorname }}
+                        <td>{{ sector[sectorname].fmt }}
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9 mb-4">
+        <div class="card">
+            <div class="card-header">Description</div>
+        </div>
+    </div>
+</div>

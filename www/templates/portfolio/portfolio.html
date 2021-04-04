@@ -28,10 +28,11 @@
                         <th scope="row">
                             <h5 class="ui sub header">
                                 {% if asset.asset_type == 1 %} <!-- or etf -->
-                                <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&stock={{ asset.id }}">
+                                <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&asset={{ asset.id }}">
                                     {{ asset.title }} </a>
                                 {% else %}
-                                <a href="/asset?id={{ asset.id }}">{{ asset.title }}</a>
+                                <a href="{{ url_for('etf') }}?portfolio={{ portfolio_id }}&asset={{ asset.id }}">
+                                    {{ asset.title }}</a>
                                 {% endif %}
                             </h5>
                             <span>
@@ -234,7 +235,7 @@
 {% block footer -%}
 
 <script>
-    portfolio_id = {{ portfolio_id}}
+    let portfolio_id = '{{ portfolio_id }}';
 </script>
 <script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>
 
