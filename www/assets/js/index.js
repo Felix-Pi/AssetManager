@@ -9,6 +9,7 @@ $(document).ready(function () {
             var id = '#asset_distribution'
 
             result.data = result.data_relative;
+            result.colored = true;
 
             asset_distribution_chart = chart_half_doughnut(id, 'Asset distribution', result, '%', 'auto', 150)
 

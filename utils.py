@@ -28,7 +28,7 @@ def html_encode(html):
 
 def yahoo_search_request(input, region, lang):
     url = 'http://d.yimg.com/aq/autoc?query={}&region={}&lang={}'.format(
-        html_encode(input), region, lang)
+        html_encode(input), region, lang)  # ToDO: return data['ResultSet']['Result'], need to fix every usage
     return requests.get(url).json()
 
 
@@ -50,3 +50,20 @@ def search_alternative_symbols(symbol, match_ratio=80):
             result.append(symbol)
 
     return result
+
+
+def get_usd_eur():
+    def send_request():
+        url = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=USDEUR=X'
+
+        data = requests.get(url).json()
+        return data['quoteResponse']['result'][0]
+
+    def parse_result(data):
+        if data is not None and 'regularMarketPrice' in data:
+            return data['regularMarketPrice']
+
+        return float(1)
+
+    data = send_request()
+    return parse_result(data)

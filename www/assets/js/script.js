@@ -25,7 +25,11 @@ function serializeFormForDatabase(form_id) {
     $(form_id + ' .dbcol').each(function () {
         let elem = $(this);
         let val = elem.val();
-        let key = elem.attr('col');
+        var key = elem.attr('col');
+
+        if (elem.attr('type') === 'number') {
+            key = key.replaceAll(',', '.');
+        }
 
         result[key] = val;
     });
@@ -79,9 +83,7 @@ $(document).ready(function () {
     });
 
     /* search box: search yahoo finance */
-
-
-    $(document).on('input', '#searchbar', function (e, f) {
+    $(document).on('input', '#searchbar', function () {
         elem = $('#searchbar');
 
         $('#searchbar_results').show()

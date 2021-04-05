@@ -17,12 +17,10 @@ UPDATE_ALWAYS = True
 database = r"data/database.db"
 
 
-def update_data():
-    conn = create_connection(database)
-    update_data(conn)
+def update_data(conn=None):
+    if conn is None:
+        conn = create_connection(database)
 
-
-def update_data(conn):
     with conn:
         update_assets(conn)
         update_portfolio_data(conn)
@@ -34,11 +32,12 @@ def update_data(conn):
 def index():
     conn = create_connection(database)
     with conn:
+        if UPDATE_ALWAYS:
+            update_data(conn)
+
         portfolios = select_portfolios_from_user(conn, USER_ID)
         all_assets = select_all_assets(conn)
         keys = select_api_keys(conn)
-        if UPDATE_ALWAYS:
-            update_data(conn)
 
     all_portfolios = {'value': calc_all_portfolios_value(portfolios),
                       'profit_total_absolute': (calc_portfolio_profit(portfolios))[0],
@@ -64,13 +63,15 @@ def portfolio():
 
     conn = create_connection(database)
     with conn:
+        if UPDATE_ALWAYS:
+            update_data(conn)
+
         portfolio = select_portfolio(conn, portfolio_id)
         portfolio_value = portfolio[0]['portfolio_value']
         user_portfolios = select_portfolios_from_user(conn, USER_ID)
         assets = select_all_assets_from_portfolio(conn, portfolio_id)
         all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
-        if UPDATE_ALWAYS:
-            update_data(conn)
+
 
     # portfolio percentage
     for data in assets:
@@ -98,11 +99,13 @@ def stock():
     conn = create_connection(database)
 
     with conn:
+        if UPDATE_ALWAYS:
+            update_data(conn)
+
         asset = select_single_asset_from_portfolio(conn, portfolio_id, stock_id)[0]
         symbol = asset['symbol']
         keys = select_api_keys(conn)
-        if UPDATE_ALWAYS:
-            update_data(conn)
+
 
     templateData = {
         'pagetitle': 'Portfolio',
@@ -121,10 +124,12 @@ def etf():
     print('webserver.py: portfolio_id, asset_id=', portfolio_id, asset_id)
     conn = create_connection(database)
     with conn:
-        asset = select_single_asset_from_portfolio(conn, portfolio_id, asset_id)[0]
-        symbol = asset['symbol']
         if UPDATE_ALWAYS:
             update_data(conn)
+
+        asset = select_single_asset_from_portfolio(conn, portfolio_id, asset_id)[0]
+        symbol = asset['symbol']
+
 
     holdings = get_top_holdings(symbol)
     print('webserver.py: type(holdings), holdings=', type(holdings), holdings)
@@ -141,7 +146,7 @@ def etf():
 @app.route('/api/refresh/')
 def refresh_data():
     update_data()
-    return redirect(url_for(request.args.get('redirect').replace('\'', '')))
+    return "True"
 
 
 @app.route('/api/select_single_asset_from_portfolio/', methods=['POST'])

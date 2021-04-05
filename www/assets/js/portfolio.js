@@ -149,6 +149,53 @@ $(document).ready(function () {
 
     });
 
+    /* add stock modal */
+    /* input box for symbol: search yahoo finance */
+    $(document).on('input', '#add_stock_modal .dbcol[col=symbol]', function () {
+        let elem = $('#add_stock_modal .dbcol[col=symbol]');
+        let results = elem.parent().find('.results');
+
+        console.log('val: ', elem.val());
+        results.show()
+        results.html('')
+
+        $.ajax({
+            method: "GET",
+            url: '/api/stock/yahoo_search/',
+            data: {'input': elem.val()},
+            success: function (data) {
+                console.log('data', data);
+                //data = JSON.parse(data);
+                data = data['ResultSet']['Result'];
+                console.log(data);
+                for (let i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    console.log(item)
+                    html = '' +
+                        '<a class="result" href="" data-symbol="' + item['symbol'] + '">' +
+                        '   <div class="content">' +
+                        '       <div class="title">' + item['name'] + '</div>' +
+                        '       <div class="description">' + item['symbol'] + ' - ' + item['exch'] + '</div>' +
+                        '   </div>' +
+                        '</a>';
+                    results.append(html);
+                }
+
+            }
+        });
+
+    });
+
+    $(document).on('click', '#add_stock_modal #search_symbol .results .result', function (e) {
+        e.preventDefault();
+
+        let elem = $(this);
+        let target = $('#add_stock_modal .dbcol[col=symbol]');
+
+        target.val(elem.attr('data-symbol'));
+        $('#add_stock_modal #search_symbol .results').html('').hide();
+
+    });
 
     $(document).on('click', '#doughnut_sector', function (e, f) {
 

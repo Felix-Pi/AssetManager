@@ -1,18 +1,36 @@
 import requests
 import json
 from db import *
+from utils import get_usd_eur
 
 
 def get_stock_data(assets):
+    exchange_rate = get_usd_eur()
+
+    def convert_usd_to_eur(data, exchange_rate):
+        convert_fields = ['regularMarketPrice', 'regularMarketOpen', 'trailingAnnualDividendYield']
+
+        for symbol in data:
+            if 'currency' in symbol and symbol['currency'] == 'USD':
+                for field in convert_fields:
+                    if field in symbol:
+                        symbol[field] = float(symbol[field]) * exchange_rate
+
+        return data
+
     api = 'https://query1.finance.yahoo.com/v7/finance/quote?'
 
     symbols = [symbol['symbol'] for symbol in assets if symbol['symbol'] is not None]
     symbols = 'symbols=' + ','.join(symbols)
 
-    #print(api + symbols)
+    req = requests.get(api + symbols).json()
 
-    req = requests.get(api + symbols)
-    return req.json()['quoteResponse']['result']
+    data = req['quoteResponse']['result']
+    data = convert_usd_to_eur(data, exchange_rate)
+
+    print(data)
+
+    return data
 
 
 def check_if_asset_symbol_exists(symbol):
@@ -38,7 +56,6 @@ def calc_asset_dividend(dividended_rate, dividended_yield, quantity):
 def prepare_assets(assets, conn):
     data = get_stock_data(assets)
 
-
     for i in range(len(data)):
         price = data[i]['regularMarketPrice']
         priceOpen = data[i]['regularMarketOpen']
@@ -56,8 +73,7 @@ def prepare_assets(assets, conn):
         assets[i]['trailingAnnualDividendYield'] = dividended_yield
         assets[i]['dividend'] = my_dividend
 
-
-        #print('prepare_assets: ', assets[i]['symbol'], data[i]['symbol'])
+        # print('prepare_assets: ', assets[i]['symbol'], data[i]['symbol'])
 
     return assets
 
