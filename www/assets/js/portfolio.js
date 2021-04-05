@@ -290,7 +290,7 @@ $(document).ready(function () {
 
         //set card title
         console.log(elem.find('.asset_title').attr('text'))
-        $(id + ' .card-header').text(title + ' - ' + symbol + ': ' + price);
+        $(id + ' .card-header span').text(title + ' - ' + symbol + ': ' + price);
     });
 
     $(document).on('click', '.asset_elem_subheader_absolute', function () {
