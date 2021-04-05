@@ -1,157 +1,45 @@
 function setup() {
+    load_newsfeed(symbol);
 
-    /* setup stock distribution */
+    /* setup stock and sector distribution */
     $.ajax({
-        url: "/api/etf/get_top_holdings/",
-        data: {'portfolio_id': portfolio_id},
-        success: function (result) {
-            result = JSON.parse(result)
-            result.colored = true;
-            result.data = result.data_relative;
+            url: "/api/etf/get_top_holdings/",
+            data: {'portfolio_id': portfolio_id, 'symbol': symbol},
+            success: function (result) {
+                let holdings = {'data': result.holdings.data, 'labels': result.holdings.labels, colored: true};
+                let sectors = {
+                    'data': result.sectorWeightings.data,
+                    'labels': result.sectorWeightings.labels,
+                    colored: true
+                };
+
+                let top_holdings_chart = chart_doughnut('#top_holdings', 'Top holdings', holdings, '%', 'auto', "300");
+                let sector_distribution_chart = bar_chart('#top_sectors', 'Sector distribution', sectors, '%', 'auto', "300");
+            }
+        }
+    );
 
 
+    elem = $('#linechart .settings button.active')
+    $.ajax({
+        url: "/api/stock/historical_data/",
+        data: {'symbols': symbol, 'days': elem.attr('data-days'), 'period': elem.attr('data-period')},
+        success: function (data) {
+            data = JSON.parse(data)
+            linechart = chart_linechart('#linechart', 'Line chart', data, '€', '', '')
 
-            top_holdings_chart = chart_doughnut('top_holdings', 'Top holdings', result.top_holdings, '%', 'auto', "300")
-            sector_distribution_chart = draw_bar_chart('#top_sectors', 'Sector distribution', result.top_sectors, '%', 'auto', "300")
         }
     });
 
-
-    /* setup sector distribution */
-    $.ajax({
-        url: "/api/etf/get_top_sectors/",
-        data: {'portfolio_id': portfolio_id},
-        success: function (result) {
-            result = JSON.parse(result)
-            result.colored = true;
-            result.data = result.data_relative;
-
-
-        }
-    });
-
-    /* setup country data */
-    $.ajax({
-        url: "/api/portfolio/get_country_data/",
-        data: {'portfolio_id': portfolio_id},
-        success: function (result) {
-            result = JSON.parse(result)
-            result.colored = true;
-            result.data = result.data_relative;
-
-            let id = '#country_distribution'
-            country_distribution_chart = draw_bar_chart(id, 'Country distribution', result, '%', 'auto', '300')
-
-        }
-    });
 }
 
 
 $(document).ready(function () {
     setup();
-    /* update stock */
-    $(document).on('click', '.edit_stock_button', function () {
-        let portfolio_id = $(this).attr("portfolio_id");
-        let asset_id = $(this).attr("asset_id");
-
-        $.ajax({
-            method: "POST",
-            url: "/api/select_single_asset_from_portfolio/",
-            data: {portfolio_id: portfolio_id, asset_id: asset_id},
-            success: function (data) {
-                console.log(data)
-                data = data[0]
-
-                let modal_id = '#edit_stock_modal'
-
-                $(modal_id + "_label").text(data['title'] + ' - ' + data['symbol'])
-                $(modal_id + " .dbcol[col='id']").val(asset_id)
-
-                setFormValuesFromDatabase(modal_id, data)
-
-                $(modal_id).modal('show');
-            }
-        });
-
-    });
-
-    $(document).on('click', '#edit_stock_modal .submit_form', function () {
-        data = serializeFormForDatabase('#edit_stock_modal')
-
-        $.ajax({
-            method: "POST",
-            url: "/api/portfolio/update_stock/",
-            data: data,
-            success: function (data) {
-                console.log('success: ', data)
-                $('#edit_stock_modal').modal('hide');
-            }
-        });
-
-    });
-
-
-    /* add asset */
-    $(document).on('click', '#add_stock_button', function () {
-        $('#add_stock_modal').modal('show');
-    });
-
-
-    $(document).on('click', '#add_stock_modal .submit_form', function () {
-        let portfolio_id = $(this).attr("portfolio_id");
-
-        data = serializeFormForDatabase('#add_stock_modal')
-
-        $.ajax({
-            method: "POST",
-            url: "/api/portfolio/add_stock/",
-            data: data,
-            success: function (data) {
-                $('#add_stock_modal').modal('hide');
-            }
-        });
-
-    });
-
-
-    $(document).on('click', '#doughnut_sector', function (e, f) {
-
-        var activePoints = sector_chart.getElementAtEvent(e);
-
-        if (activePoints[0] === undefined) {
-            // $("#sector_distribution .sector").removeClass('hidden');
-            // $("#sector_distribution .sector_assets").addClass('hidden');
-        } else {
-            let index = activePoints[0]._index;
-
-            let sector = activePoints[0]._chart.data.labels[index]
-
-            $("#sector_distribution .sector").addClass('hidden')
-            $("#sector_distribution .sector_" + sector).removeClass('hidden')
-
-            $("#sector_distribution .sector_assets").addClass('hidden')
-            $("#sector_distribution .sector_assets_" + sector).removeClass('hidden')
-
-            $(this).find('.card-footer').slideDown();
-        }
-    });
-
-    $(document).on('click', '#sector_distribution .sector_title', function (e, f) {
-        e.preventDefault();
-        let sector = $(this).text()
-
-        $("#sector_distribution .sector").addClass('hidden')
-        $("#sector_distribution .sector_" + sector).removeClass('hidden')
-
-        $("#sector_distribution .sector_assets").addClass('hidden')
-        $("#sector_distribution .sector_assets_" + sector).removeClass('hidden')
-
-    });
-
 
     /*
-    Line Chart
-     */
+Line Chart
+ */
 
     $(document).on('click', '#linechart .settings button', function () {
         let elem = $(this)
@@ -159,16 +47,14 @@ $(document).ready(function () {
         $.ajax({
             url: "/api/stock/historical_data/",
             data: {
-                'symbols': $('#linechart').attr('data-symbol'),
+                'symbols': symbol,
                 'days': elem.attr('data-days'),
                 'period': elem.attr('data-period')
             },
             success: function (dataset) {
                 dataset = JSON.parse(dataset)
-
-                linechart.data.datasets[0].data = dataset[0].median;
-                linechart.data.labels = dataset[0].timestamps;
-                linechart.update();
+                console.log(dataset)
+                update_chart(linechart, dataset[0].median, dataset[0].timestamps)
             }
         });
 
@@ -176,37 +62,6 @@ $(document).ready(function () {
         //set clicked btn active
         elem.parent().find('.active').removeClass('active');
         elem.addClass('active');
-    });
-
-    $(document).on('click', '.asset_elem', function () {
-        let elem = $(this)
-        let id = '#linechart'
-        let settings = $(id + ' .settings button.active')
-
-        let title = elem.attr('data-title')
-        let symbol = elem.attr('data-symbol')
-        let price = elem.attr('data-price')
-
-        $.ajax({
-            url: "/api/stock/historical_data/",
-            data: {'symbols': symbol, 'days': settings.attr('data-days'), 'period': settings.attr('data-period')},
-            success: function (dataset) {
-                dataset = JSON.parse(dataset)
-
-                linechart.data.datasets[0].data = dataset[0].median;
-                linechart.data.labels = dataset[0].timestamps;
-                linechart.update();
-            }
-        });
-
-
-        //set clicked btn active
-        elem.parent().find('.active').removeClass('active');
-        elem.addClass('active');
-
-        //set card title
-        console.log(elem.find('.asset_title').attr('text'))
-        $(id + ' .card-header').text(title + ' - ' + symbol + ': ' + price);
     });
 
 

@@ -99,7 +99,7 @@
                         <td>
 
                             <span class="profit_label" counter="0"
-                                  data-val="{{ portfolio.profit_total_absolute }}~{{ portfolio.profit_total_relative }}~{{ portfolio.profit_today_absolute }}~{{ portfolio.profit_today_relative }}">
+                                  data-val="{{ portfolio.profit_total_absolute }}~{{ portfolio.profit_today_relative }}~{{ portfolio.profit_today_absolute }}~{{ portfolio.profit_total_relative }}">
                             {% if portfolio.profit_total_absolute >= 0 %}
                             <div class="ui label green">
                                 <i class="fas fa-caret-up"></i> <span>{{ portfolio.profit_total_absolute }}</span>
@@ -126,19 +126,21 @@
     <!-- doughnut -->
     <div class="col-md-3 mb-4">
         <div class="card" id="asset_distribution">
-            <div class="card-header"></div>
+            <div class="card-header">
+                <div class="settings ui mini basic icon buttons">
+                    <button class="ui button active change_chart_type"><i class="fas fa-chart-bar"></i></button>
+                    <button class="ui button absolute"><i class="fas fa-euro-sign"></i></button>
+                    <button class="ui button relative"><i class="fas fa-percent"></i></button>
+                </div>
+                <span></span>
+            </div>
 
             <div class="card-body" style="padding-bottom: 0"></div>
         </div>
     </div>
 
     <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header">News</div>
-            <div class="card-body">
-                {% include "newsfeed.html" %}
-            </div>
-        </div>
+        {% include "newsfeed.html" %}
     </div>
 </div>
 
@@ -147,5 +149,8 @@
 
 
 {% block footer -%}
+<script>
+    all_symbols = '{{ all_symbols }}';
+</script>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {%- endblock footer %}

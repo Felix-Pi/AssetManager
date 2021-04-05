@@ -1,47 +1,75 @@
 <div class="row">
+
     <!-- top holdings -->
     <div class="col-md-3 mb-4">
         <div class="card">
-            <div class="card-header">General info</div>
-            <div class="card-body">
-
-
-                <table class="table">
-                    {% for holding in top_holdings.holdings %}
-                    <tr>
-                        <th scope="row">{{ holding.symbol }}</th>
-                        <td>{{ holding.holdingName }}
-                        <td>{{ holding.holdingPercent.fmt }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
+            <div class="card-header">bla</div>
+            <div class="card-body"></div>
         </div>
     </div>
 
     <!-- sector weightings -->
     <div class="col-md-3 mb-4">
         <div class="card">
-            <div class="card-header">sectorWeightings</div>
+            <div class="card-header">blub</div>
+            <div class="card-body"></div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card" id="linechart">
+            <div class="card-header">
+                <!-- [2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo] -->
+                <div class="settings ui mini basic icon buttons">
+                    <button class="ui button active" id="today" data-days="2" data-period="5m">Today</button>
+                    <button class="ui button" data-id="week" data-days="7" data-period="60m">Week</button>
+                    <button class="ui button" data-id="month" data-days="30" data-period="1d">Month</button>
+                    <button class="ui button" data-id="year" data-days="365" data-period="5d">Year</button>
+                    <button class="ui button" data-id="max" data-days="1800" data-period="1mo">Max</button>
+                </div>
+
+                <span></span>
+            </div>
             <div class="card-body">
-
-
-                <table class="table">
-                    {% for sector in top_holdings.sectorWeightings %}
-                    {% for sectorname in sector %}
-                    {% if sector[sectorname].raw > 0 %}
-                    <tr>
-                        <th scope="row"></th>
-                        <td>{{ sectorname }}
-                        <td>{{ sector[sectorname].fmt }}
-                    </tr>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
-                </table>
             </div>
         </div>
     </div>
+
+    <!-- top holdings -->
+    <div class="col-md-3 mb-4">
+        <div class="card" id="top_holdings">
+            <div class="card-header">
+                <div class="settings ui mini basic icon buttons">
+                    <button class="ui button active change_chart_type"><i class="fas fa-chart-bar"></i></button>
+                    <button class="ui button absolute"><i class="fas fa-euro-sign"></i></button>
+                    <button class="ui button relative"><i class="fas fa-percent"></i></button>
+                </div>
+                <span></span>
+            </div>
+            <div class="card-body"></div>
+        </div>
+    </div>
+
+    <!-- sector weightings -->
+    <div class="col-md-3 mb-4">
+        <div class="card" id="top_sectors">
+            <div class="card-header">
+                <div class="settings ui mini basic icon buttons">
+                    <button class="ui button active change_chart_type"><i class="fas fa-chart-bar"></i></button>
+                    <button class="ui button absolute"><i class="fas fa-euro-sign"></i></button>
+                    <button class="ui button relative"><i class="fas fa-percent"></i></button>
+                </div>
+                <span></span>
+            </div>
+            <div class="card-body"></div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6 mb-4">
+        {% include "newsfeed.html" %}
+    </div>
+
     <div class="col-md-9 mb-4">
         <div class="card">
             <div class="card-header">Description</div>

@@ -1,4 +1,5 @@
 function setup() {
+    load_newsfeed(portfolio_symbols);
 
     /* setup line chart */
     target = $('.asset_elem:first-child')
@@ -23,7 +24,7 @@ function setup() {
             $(id).attr('data-symbol', symbol)
 
             linechart = chart_linechart(id, 'Line chart', result, '€')
-            $(id + ' .card-header').text(title + ' - ' + symbol + ': ' + price);
+            $(id + ' .card-header span').text(title + ' - ' + symbol + ': ' + price);
         }
     });
 
@@ -62,7 +63,7 @@ function setup() {
 
             var id = '#sector_distribution'
 
-            var sector_distribution_chart = draw_bar_chart('#sector_distribution', 'Sector distribution', result, '%', 'auto', "300")
+            var sector_distribution_chart = bar_chart('#sector_distribution', 'Sector distribution', result, '%', 'auto', "300")
         }
     });
 
@@ -76,7 +77,7 @@ function setup() {
             result.data = result.data_relative;
 
             let id = '#country_distribution'
-            country_distribution_chart = draw_bar_chart(id, 'Country distribution', result, '%', 'auto', '300')
+            country_distribution_chart = bar_chart(id, 'Country distribution', result, '%', 'auto', '300')
 
         }
     });
@@ -290,6 +291,17 @@ $(document).ready(function () {
         //set card title
         console.log(elem.find('.asset_title').attr('text'))
         $(id + ' .card-header').text(title + ' - ' + symbol + ': ' + price);
+    });
+
+    $(document).on('click', '.asset_elem_subheader_absolute', function () {
+        $('.asset_elem_subheader_absolute').hide()
+        $('.asset_elem_subheader_relative').show()
+
+    });
+    $(document).on('click', '.asset_elem_subheader_relative', function () {
+        $('.asset_elem_subheader_relative').hide()
+        $('.asset_elem_subheader_absolute').show()
+
     });
 
 

@@ -77,7 +77,7 @@ function chart_doughnut(id, title, data, label_suffix, width, height) {
     };
 
 
-    return insert_chart(id, title, config, width, height);
+    return insert_chart(id, title, config, label_suffix, width, height);
 }
 
 function chart_half_doughnut(id, title, data, label_suffix, width, height) {
@@ -191,10 +191,10 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
         }
 
     };
-    return insert_chart(id, title, config, width, height);
+    return insert_chart(id, title, config, label_suffix, width, height);
 }
 
-function draw_bar_chart(id, title, input, label_suffix, width, height) {
+function bar_chart(id, title, input, label_suffix, width, height) {
     var colors = get_color_sheme(input);
 
     var barChartData = {
@@ -239,10 +239,10 @@ function draw_bar_chart(id, title, input, label_suffix, width, height) {
                 yAxes: [{
                     stacked: true
                 }]
-            }
+            },
         }
     }
-    return insert_chart(id, title, config, width, height);
+    return insert_chart(id, title, config, label_suffix, width, height);
 
 }
 
@@ -298,7 +298,7 @@ function draw_stacked_recommendation_bar_chart(id, title, input, width, height) 
             }
         }
     }
-    return insert_chart(id, title, config, width, height)
+    return insert_chart(id, title, config, label_suffix, width, height)
 
 }
 
@@ -341,7 +341,7 @@ function draw_candle_bar_chart(id, title, input) {
 
     }
 
-    return insert_chart(id, title, config)
+    return insert_chart(id, title, config, label_suffix);
 }
 
 Chart.controllers.LineWithLine = Chart.controllers.line.extend({
@@ -380,8 +380,64 @@ function get_color_sheme(input) {
     return colors;
 }
 
-function insert_chart(id, title, config, width = 'auto', height = 300) {
-    $(id + ' .card-header').text(title);
+function change_chart_type(chart) {
+    let types = ['bar', 'doughnut', 'pie'];
+    let canvas_id = chart.canvas.id;
+    let chart_id = canvas_id.replace('_canvas', '');
+    let parent_id = chart.canvas.offsetParent;
+    let label_suffix = $(parent_id).attr('label-suffix');
+    let body_elem = $(parent_id).find('.card-body');
+    let current_type = chart.config.type;
+
+    let title = $(chart_id + ' .card-header span').text();
+
+    console.log('title: ', $(chart_id + ' span'), title)
+    let input = {'data': chart.data.datasets[0].data, 'labels': chart.data.labels, 'colored': true}
+
+    console.log(canvas_id, chart_id, $(canvas_id))
+    body_elem.html("");
+
+    chart.destroy();
+    if (current_type === types[0]) {
+        chart_doughnut(chart_id, title, input, label_suffix);
+    }
+
+    if (current_type === types[1]) {
+        bar_chart(chart_id, title, input, label_suffix);
+    }
+
+    if (current_type === types[3]) {
+        //pie_chart(chart_id, title, input, '') //ToDO
+    }
+
+
+}
+
+function get_instance_from_id(id) {
+    Chart.helpers.each(Chart.instances, function (instance) {
+        if (instance.canvas.id === id) {
+            result = instance;
+        }
+    });
+
+    return result;
+}
+
+function insert_chart(id, title, config, label_suffix, width = 'auto', height = 300) {
+    let header_elem = $(id + ' .card-header')
+    let settings_change_chart_elem = $(id + ' .settings .change_chart_type')
+
+    $(id).attr('label-suffix', label_suffix);
+    header_elem.find('span').text(title);
+
+    if (settings_change_chart_elem.length > 0) {
+        settings_change_chart_elem.attr('chart-type', config.type)
+
+        if (config.type === 'doughnut') {
+            settings_change_chart_elem.find('i').removeClass('fa-chart-bar').addClass('fa-chart-pie');
+        }
+    }
+
     $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
     return new Chart(ctx, config);

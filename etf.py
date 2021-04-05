@@ -14,13 +14,16 @@ def get_top_holdings(symbol):
             symbol)
 
         data = requests.get(url).json()['quoteSummary']['result']
+
+        print(data)
         return data
 
-    def parse_data(data):
+    def parse_data_(data):
         result = None
 
         result = {'holdings': [], 'sectorWeightings': []}
 
+        print('etf.py: data=', data)
         if data != None:
             data = data[0]['topHoldings']
 
@@ -29,27 +32,51 @@ def get_top_holdings(symbol):
             if 'sectorWeightings' in data:
                 result['sectorWeightings'] = data['sectorWeightings']
 
-            return data
+            return result
         return result
 
-    def check_alternative_symbols(symbols):
-        for symbol in symbols:
-            data = send_request(symbol['symbol'])
-            result = parse_data(data)
-            if result is not None:
-                # print('Alternative result found: \'{}\''.format(symbol['symbol']))
-                # print('Data: \'{}\''.format(data))
-                return result
+    def parse_data(data):
+        result = None
+
+        result = {'holdings': [], 'sectorWeightings': []}
+
+        print('etf.py: data=', data)
+        if data != None:
+            data = data[0]['topHoldings']
+
+            if 'holdings' in data:
+                result['holdings'] = {
+                    'raw': data['holdings'],
+                    'data': [round(holding['holdingPercent']['raw'] * 100, 2) for holding in data['holdings']],
+                    'labels': [holding['holdingName'] for holding in data['holdings']],
+                    'symbols': [holding['symbol'] for holding in data['holdings']]
+                }
+
+            if 'sectorWeightings' in data:
+                for sector in data['sectorWeightings']:
+                    sector_title = list(sector.keys())[0]
+                    print(sector_title, sector)
+
+                    result['sectorWeightings'].append({
+                        'sector': sector_title,
+                        'sectorWeight': sector[sector_title]
+                    })
+
+                result['sectorWeightings'] = sorted(result['sectorWeightings'],
+                                                    key=lambda k: k['sectorWeight']['raw'], reverse=True)
+
+                result['sectorWeightings'] = {
+                    'raw': result['sectorWeightings'],
+                    'data': [round(sector['sectorWeight']['raw'] * 100, 2) for sector in result['sectorWeightings']],
+                    'labels': [sector['sector'].replace('_', ' ').title() for sector in result['sectorWeightings']]
+                }
+
+                # result['sectorWeightings'] = data['sectorWeightings']
+
+            return result
+        return result
 
     data = send_request(symbol)
     result = parse_data(data)
 
-    # if result is None:
-    #     alternative_symbols = search_alternative_symbols(symbol)
-    #     result = check_alternative_symbols(alternative_symbols)
-
-    print('etf.py: json.dumps(result)=', json.dumps(result))
-
-
-    print(result)
     return result

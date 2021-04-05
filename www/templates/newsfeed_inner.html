@@ -1,0 +1,27 @@
+<div class="card-body">
+    <div class="ui small feed">
+        {% if news == None %}
+        No news
+        {% else %}
+        {% for event in news %}
+        <div class="event">
+            <div class="ui accordion content">
+                <div class="title summary">
+                    <i class="dropdown icon"></i>
+                    {{event.title}}
+                    <div class="date">
+                        {{event.pubDate}}
+                    </div>
+                </div>
+                <div class="content" data-state="closed">
+                    <p class="transition"> {{event.description_prev}}</p>
+                    <p class="transition"><a href="{{ event.link }}" target="_blank">go to article...</a></p>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+    </div>
+</div>

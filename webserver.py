@@ -12,7 +12,7 @@ from utils import *
 app = Flask(__name__, template_folder='www/templates/', static_folder='www/assets/')
 
 USER_ID = 1
-UPDATE_ALWAYS = True
+UPDATE_ALWAYS = False
 
 database = r"data/database.db"
 
@@ -51,7 +51,7 @@ def index():
         'pagetitle': 'Home',
         'portfolios': portfolios,
         'all_portfolios': all_portfolios,
-        'news': get_news_for_ticker([asset['symbol'] for asset in all_assets], keys['news'])
+        'all_symbols': ','.join([asset['symbol'] for asset in all_assets]),
     }
 
     return render_template('index.html', **templateData)
@@ -72,7 +72,6 @@ def portfolio():
         assets = select_all_assets_from_portfolio(conn, portfolio_id)
         all_sectors = calc_sector_percentage(assets, portfolio_value, select_all_sectors(conn))
 
-
     # portfolio percentage
     for data in assets:
         data['portfolio_percentage'] = calc_portfolio_percentage(portfolio_value, data['asset_value'])
@@ -87,7 +86,7 @@ def portfolio():
         # all portfolios owned by that user
         'assets': assets,  # assets in this portfolio
         'all_sectors': all_sectors,  # assets in this portfolio
-        'news': get_news_for_ticker([asset['symbol'] for asset in assets if 'symbol' in asset])
+        'portfolio_symbols': ','.join([asset['symbol'] for asset in assets if 'symbol' in asset]),
     }
     return render_template('portfolio/portfolio.html', **templateData)
 
@@ -106,11 +105,9 @@ def stock():
         symbol = asset['symbol']
         keys = select_api_keys(conn)
 
-
     templateData = {
         'pagetitle': 'Portfolio',
         'asset': asset,
-        'news': get_news_for_ticker(symbol, keys['news']),
     }
 
     return render_template('assets/stock/stock.html', **templateData)
@@ -121,7 +118,6 @@ def etf():
     portfolio_id = request.args.get('portfolio', type=int)
     asset_id = request.args.get('asset', type=int)
 
-    print('webserver.py: portfolio_id, asset_id=', portfolio_id, asset_id)
     conn = create_connection(database)
     with conn:
         if UPDATE_ALWAYS:
@@ -130,13 +126,11 @@ def etf():
         asset = select_single_asset_from_portfolio(conn, portfolio_id, asset_id)[0]
         symbol = asset['symbol']
 
-
     holdings = get_top_holdings(symbol)
-    print('webserver.py: type(holdings), holdings=', type(holdings), holdings)
     templateData = {
         'pagetitle': 'Portfolio',
+        'portfolio_id': portfolio_id,
         'asset': asset,
-        'news': get_news_for_ticker(symbol),
         'top_holdings': holdings,
     }
 
@@ -165,6 +159,7 @@ def api_index_endpoint(endpoint):
             conn = create_connection(database)
             with conn:
                 doughnut_asset_allocation = select_assets_from_portfolio_grouped_by_sector(conn, USER_ID)
+                doughnut_asset_allocation = sorted(doughnut_asset_allocation, key=lambda k: k['val'], reverse=True)
 
                 portfolio_value = sum(asset['val'] for asset in doughnut_asset_allocation)
 
@@ -186,7 +181,7 @@ def api_portfolio_endpoint(endpoint):
             conn = create_connection(database)
             with conn:
                 data = db_get_country_data_for_portfolio(conn, request.args.get('portfolio_id'))
-                print(data)
+
                 return json.dumps({'data_relative': [data['amount'] for data in data],  # ToDo
                                    'data_absolute': [data['amount'] for data in data],
                                    'labels': [data['country'] for data in data]})
@@ -244,11 +239,9 @@ def api_stock_endpoint(endpoint):
         if 'get_recommendation_trend' == endpoint:
             return get_recommendation_trend(request.args.get('symbol'))
         if 'historical_data' == endpoint:
-            print('historical_data', request.args)
             data = get_historical_data(request.args.get('symbols'), request.args.get('days'),
                                        request.args.get('period'))
 
-            print('webserver.py: data', data)
             return data
         if 'endpoint' == endpoint:
             print(endpoint)
@@ -264,7 +257,7 @@ def api_stock_endpoint(endpoint):
 def api_etf_endpoint(endpoint):
     if request.method == 'GET':
         if 'get_top_holdings' == endpoint:
-            return get_top_holdings(request.args.get('input'))
+            return get_top_holdings(request.args.get('symbol'))
         if 'endpoint' == endpoint:
             print(endpoint)
 
@@ -278,10 +271,18 @@ def api_etf_endpoint(endpoint):
 @app.route('/api/render_template/', methods=['GET'])
 def api_render_template():
     if request.method == 'GET':
-        print('webserver.py: request.args=', request.args)
+        action = request.args.get('action')
+
+        if 'default' == request.args.get('endpoint'):
+            symbol = request.args.get('symbol')
+            if 'get_news' == action:
+                templateData = {
+                    'news': get_news_for_ticker(symbol),
+                }
+                return render_template('newsfeed_inner.html', **templateData)
+
         if 'stock' == request.args.get('endpoint'):
             symbol = request.args.get('symbol')
-            action = request.args.get('action')
             if 'menu_load_default' == action:
                 templateData = {
                     'general_info': get_asset_profile(symbol),

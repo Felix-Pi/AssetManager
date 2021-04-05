@@ -32,8 +32,9 @@
 {% block footer -%}
 
 
-<script src="{{ url_for('static', filename='js/etf.js') }}"></script>
 <script>
     let symbol = '{{ asset.symbol }}';
+    let portfolio_id = '{{ portfolio_id }}';
 </script>
+<script src="{{ url_for('static', filename='js/etf.js') }}"></script>
 {%- endblock footer %}

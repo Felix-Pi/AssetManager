@@ -28,7 +28,7 @@ def get_stock_data(assets):
     data = req['quoteResponse']['result']
     data = convert_usd_to_eur(data, exchange_rate)
 
-    print(data)
+    #print(data)
 
     return data
 

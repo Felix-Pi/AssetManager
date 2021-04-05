@@ -2,8 +2,7 @@
     <!-- line -->
     <div class="col-md-6 mb-4">
         <div class="card" id="stock_price_linechart">
-            <div class="card-header">{{asset.title}}</div>
-            <div class="card-body">
+            <div class="card-header">
                 <!-- [2m, 5m, 15m, 30m, 60m 1d, 5d, 1wk, 1mo, 3mo] -->
                 <div class="settings ui mini basic icon buttons">
                     <button class="ui button active" data-id="today" data-days="2" data-period="5m">Today</button>
@@ -12,6 +11,10 @@
                     <button class="ui button" data-id="year" data-days="365" data-period="5d">Year</button>
                     <button class="ui button" data-id="max" data-days="1800" data-period="1mo">Max</button>
                 </div>
+
+                <span> {{asset.title}}</span>
+            </div>
+            <div class="card-body">
             </div>
         </div>
     </div>
@@ -30,8 +33,7 @@
     <!-- news -->
     <div class="col-md-6 mb-4">
         <div class="card" id="stock_boxplot">
-            <div class="card-header">{{asset.title}}</div>
-            <div class="card-body">
+            <div class="card-header">
                 <!-- [2m, 5m, 15m, 30m, 60m 1d, 5d, 1wk, 1mo, 3mo] -->
                 <div class="settings ui mini basic icon buttons">
                     <button class="ui button active" data-id="today" data-days="2" data-period="5m">Today</button>
@@ -40,18 +42,17 @@
                     <button class="ui button" data-id="year" data-days="365" data-period="5d">Year</button>
                     <button class="ui button" data-id="max" data-days="1800" data-period="1mo">Max</button>
                 </div>
+
+                <span>{{asset.title}}</span>
+            </div>
+            <div class="card-body">
             </div>
         </div>
     </div>
 
     <!-- news -->
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">News</div>
-            <div class="card-body">
-                {% include "newsfeed.html" %}
-            </div>
-        </div>
+        {% include "newsfeed.html" %}
     </div>
 </div>
 

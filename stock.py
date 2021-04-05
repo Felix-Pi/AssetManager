@@ -18,7 +18,6 @@ def request_historical_data(symbol, days, interval):
     period2 = str(period2).split('.')[0]
     period1 = str(period1).split('.')[0]
 
-    print('stock.py: period1, period2=', period1, period2)
     url = 'https://query1.finance.yahoo.com/v8/finance/chart/?symbol={}&period1={}&period2={}&interval={}&chart'.format(
         symbol, period1, period2, interval)
 
@@ -28,7 +27,6 @@ def request_historical_data(symbol, days, interval):
 
 
 def get_historical_data(symbols, days, interval):
-    print('stock.py: symbols, days, interval=', symbols, days, interval)
     # [2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo]
     datasets = []
     symbols = symbols.split(',')
@@ -173,12 +171,11 @@ def get_recommendation_trend(symbol):
     return json.dumps(result)
 
 
-def get_calendar_events(symbol):
+def w(symbol):
     def send_request(symbol):
         url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=calendarEvents'.format(
             symbol)
 
-        print('send_request for:', 'symbol', requests.get(url).json())
         return requests.get(url).json()['quoteSummary']['result']
 
     def parse_result(data):

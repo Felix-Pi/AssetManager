@@ -1,6 +1,5 @@
-$(document).ready(function () {
-
-
+function setup() {
+    load_newsfeed(all_symbols);
     /* setup stock distribution */
     $.ajax({
         url: "/api/index/get_asset_distribution/",
@@ -16,5 +15,10 @@ $(document).ready(function () {
 
         }
     });
+}
+
+$(document).ready(function () {
+    setup();
+
 
 });

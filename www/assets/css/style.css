@@ -88,7 +88,7 @@ a, a:hover, a:active {
     display: none;
 }
 
-.card .settings {
+.card-header .settings {
     position: absolute;
     display: block;
     right: 0;
@@ -139,4 +139,12 @@ a, a:hover, a:active {
 
 #portfolio_stocks_card::-webkit-scrollbar {
     display: none;
+}
+
+.portfolio_elem .ui.header, .asset_elem .ui.header {
+    text-transform: none;
+}
+
+.asset_elem .ui.header a:hover +.asset_elem span.relative_subheader {
+    display: block;
 }

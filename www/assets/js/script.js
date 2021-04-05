@@ -1,5 +1,4 @@
 function setFormValuesFromDatabase(form_id, data) {
-    console.log(data)
     //format: .dbcol needs attr: col="col_dame_in_data"
     $(form_id + ' .dbcol').each(function () {
         elem = $(this)
@@ -46,9 +45,32 @@ function serializeFormForDatabase(form_id) {
 
 }
 
+
+function load_newsfeed(symbol) {
+    let id = '#newsfeed';
+
+    if ($(id) !== 'undefined') {
+        $.ajax({
+            method: "GET",
+            url: "/api/render_template/",
+            data: {'endpoint': 'default', 'action': 'get_news', 'symbol': symbol},
+            success: function (result) {
+                $(id).html(result);
+            }
+        });
+    }
+}
+
+
 $(document).ready(function () {
 
-    $('.ui.accordion').accordion();
+    $(document).on('click', '.accordion .title', function () {
+        let elem = $(this);
+        let target = elem.parent().find('.content');
+
+        target.slideToggle();
+    });
+
 
     $(document).on('click', '#update_data', function (e, f) {
         $.ajax({
@@ -61,10 +83,27 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.card .settings button', function (e, f) {
-        elem = $(this)
+        let elem = $(this);
+        let chart_type = elem.attr('chart-type');
 
         elem.parent().find('.active').removeClass('active');
         elem.addClass('active');
+
+        if (elem.hasClass('change_chart_type')) {
+            let target = elem.parent().parent().parent().find('.card-body');
+            let chart_id = target.find('canvas').attr('id').toString();
+
+
+            if (chart_type === 'bar') {
+                elem.find('i').removeClass('fa-chart-bar').addClass('fa-chart-pie');
+            }
+            if (chart_type === 'doughnut' || chart_type === 'pie') {
+                elem.find('i').removeClass('fa-chart-pie').addClass('fa-chart-bar');
+            }
+
+            let chart = get_instance_from_id(chart_id)
+            change_chart_type(chart);
+        }
 
     });
     $(document).on('click', '.card .settings button', function (e, f) {
@@ -77,7 +116,6 @@ $(document).ready(function () {
 
     $(document).on('click', '.card .more', function (e, f) {
         elem = $(this)
-        console.log('elemmm', elem.parent().parent().find('.card-footer'))
         elem.parent().parent().parent().find('.card-footer').slideToggle()
 
     });
@@ -96,10 +134,8 @@ $(document).ready(function () {
             success: function (data) {
                 data = JSON.parse(data);
                 data = data['ResultSet']['Result'];
-                console.log(data)
                 for (let i = 0; i < data.length; i++) {
                     var item = data[i]
-                    console.log(item)
                     html = '' +
                         '<a class="result" href="https://de.finance.yahoo.com/quote/' + item['symbol'] + '" target="_blank">' +
                         '   <div class="content">' +
@@ -136,28 +172,24 @@ $(document).ready(function () {
 
     const zeroPad = (num, places) => String(num).padStart(places, '0')
 
-    $(document).on('click', '.profit_label', function () {
+    $(document).on('click', '.profit_label', function () { //ToDo fix
         $('.profit_label').each(function () {
             let elem = $(this)
 
             let counter = parseInt(elem.attr('counter'))
             let content = elem.attr('data-val').split('~')
+            let suffix_list = ['%', '€', '%', '€'];
 
-            if (counter < 1) {
-                suffix = ' €'
-            } else {
-                suffix = ' %'
-            }
+            var suffix = suffix_list[counter];
 
             if (counter === content.length - 1) {
                 counter = 0
-                suffix = ' €'
             } else {
                 counter += 1
             }
 
 
-            let content_val = parseFloat(content[counter])
+            var content_val = parseFloat(content[counter]);
             content_val = zeroPad(content_val, 2)
 
 
@@ -178,9 +210,9 @@ $(document).ready(function () {
 
 
             elem.attr('counter', counter)
-            target_elem.html('<i class="' + icon + '"></i> ' + content_val + suffix)
+            target_elem.html('<i class="' + icon + '"></i> ' + content_val + ' ' + suffix);
 
-            profit_label_titles = ['profit total', 'profit total', ' profit today', 'profit today']
+            profit_label_titles = ['profit total', ' profit today', 'profit today', 'profit total']
             $('#profit_label_title').text(profit_label_titles[counter])
 
         });
