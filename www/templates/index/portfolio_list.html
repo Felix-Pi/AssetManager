@@ -1,0 +1,54 @@
+<div class="card">
+    <div class="card-body" style="padding: 0;">
+        <table class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Portfolio</th>
+                <th scope="col" id="profit_label_title">profit total</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for portfolio in portfolios %}
+            <tr class="portfolio_elem">
+                <th scope="row">
+
+
+                    <h1 class="ui sub header">
+                        <a href="{{ url_for('portfolio') }}?id={{ portfolio.id }}">{{ portfolio.title
+                            }}</a>
+                    </h1>
+                    <span>
+                       {% if portfolio.portfolio_type != 5 %}
+                        <div class="ui label">
+                            {{ portfolio.portfolio_value }}
+                        </div>
+                        {% endif %}
+                    </span>
+                </th>
+
+                <td>
+                    {% if portfolio.portfolio_type == 1 or
+                    portfolio.portfolio_type == 2 or
+                    portfolio.portfolio_type == 3%}
+                    <span class="profit_label" counter="0"
+                          data-val="{{ portfolio.profit_total_absolute }}~{{ portfolio.profit_today_relative }}~{{ portfolio.profit_today_absolute }}~{{ portfolio.profit_total_relative }}">
+                            {% if portfolio.profit_total_absolute >= 0 %}
+                            <div class="ui label green">
+                                <i class="fas fa-caret-up"></i> <span>{{ portfolio.profit_total_absolute }}</span>
+                            </div>
+                            {% else %}
+                            <div class="ui label red">
+                                <i class="fas fa-caret-down"></i> <span>{{ portfolio.profit_total_absolute }}</span>
+                            </div>
+                            {% endif %}
+                             </span>
+                    {% endif %}
+                </td>
+
+
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

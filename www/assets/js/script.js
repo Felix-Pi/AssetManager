@@ -45,9 +45,17 @@ function serializeFormForDatabase(form_id) {
 
 }
 
+function prepend_loader(id) {
+    $(id).prepend('<div class="ui active loader"></div>')
+}
+
+function remove_loader(id) {
+    $(id).find('.loader').remove();
+}
 
 function load_newsfeed(symbol) {
     let id = '#newsfeed';
+    prepend_loader(id);
 
     if ($(id) !== 'undefined') {
         $.ajax({
@@ -55,6 +63,9 @@ function load_newsfeed(symbol) {
             url: "/api/render_template/",
             data: {'endpoint': 'default', 'action': 'get_news', 'symbol': symbol},
             success: function (result) {
+                $(id + ' .card-body').prepend('<div class="ui active loader"></div>')
+
+                remove_loader(id);
                 $(id).html(result);
             }
         });

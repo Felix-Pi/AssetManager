@@ -55,11 +55,13 @@ def calc_portfolio_percentage(portfolio_value, value):
 
 def calc_sector_percentage(portfolio_data, portfolio_value, all_sectors):
     for sector in all_sectors:
-        sector['value'] = round(sum(asset['asset_value'] for asset in portfolio_data if asset['sector'] == sector['id']), 2)
+        sector['value'] = round(
+            sum(asset['asset_value'] for asset in portfolio_data if asset['sector'] == sector['id']), 2)
         sector['percentage'] = round(sector['value'] / portfolio_value * 100, 2)
 
     for data in portfolio_data:
-        sector_value = [sector['value'] for sector in all_sectors if data['sector'] == sector['id'] and 'value' in sector]
+        sector_value = [sector['value'] for sector in all_sectors if
+                        data['sector'] == sector['id'] and 'value' in sector]
         data['sector_percentage'] = round(data['asset_value'] / sector_value[0] * 100, 2)
 
     result = sorted(all_sectors, key=lambda k: k['value'], reverse=True)
@@ -130,7 +132,7 @@ def prepare_portfolios(conn, portfolios):
 
 
 def update_portfolios(conn):
-    portfolios = select_all_portfolios(conn)
+    portfolios = select_all_portfolios_for_preparation(conn)
     portfolios = prepare_portfolios(conn, portfolios)
 
     update_all_portfolios(conn, portfolios)

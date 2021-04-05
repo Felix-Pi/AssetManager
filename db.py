@@ -61,7 +61,7 @@ def select_all_symbols(conn):
     """
     cur = conn.cursor()
 
-    cur.execute('SELECT * FROM assets WHERE asset_type != 4')
+    cur.execute('SELECT * FROM assets WHERE asset_type != 4 and asset_type != 5')
 
     return cur.fetchall()
 
@@ -97,6 +97,18 @@ def select_all_portfolios(conn):
     return cur.fetchall()
 
 
+def select_all_portfolios_for_preparation(conn):
+    """
+    Query tasks by priority
+    :param conn: the Connection object
+    :return:
+    """
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM portfolios WHERE portfolio_type != 4 and portfolio_type != 5')
+
+    return cur.fetchall()
+
+
 def select_portfolios_data_for_prepare(conn):
     """
     :param conn: the Connection object
@@ -107,7 +119,7 @@ def select_portfolios_data_for_prepare(conn):
 
     sql = 'SELECT pd.id, pd.quantity, pd.buyIn, pd.sector, a.* ' \
           'FROM portfolio_data pd ' \
-          'JOIN assets a on a.id = pd.asset WHERE a.asset_type != 4'  # dont select assets with type cash
+          'JOIN assets a on a.id = pd.asset WHERE a.asset_type != 4 and a.asset_type != 5'  # dont select assets with type cash
 
     cur.execute(sql)
 
@@ -223,7 +235,7 @@ def select_all_assets(conn):
     :return:
     """
     cur = conn.cursor()
-    sql = "SELECT * FROM assets WHERE asset_type !=4"
+    sql = "SELECT * FROM assets WHERE asset_type !=4 and asset_type != 5"
     cur.execute(sql)
 
     return cur.fetchall()
@@ -271,7 +283,8 @@ def select_assets_from_portfolio_grouped_by_sector(conn, portfolio_id):
           'FROM portfolios ' \
           'JOIN asset_types at on at.id = portfolios.portfolio_type ' \
           'GROUP BY portfolios.portfolio_type ' \
-          'HAVING portfolios.user = {}'.format(portfolio_id)
+          'HAVING portfolios.user = {} ' \
+          'and portfolios.portfolio_type != 5'.format(portfolio_id)
 
     cur.execute(sql)
 

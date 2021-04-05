@@ -44,6 +44,7 @@ def get_top_holdings(symbol):
         if data != None:
             data = data[0]['topHoldings']
 
+            print('etf.py: data=', data)
             if 'holdings' in data:
                 result['holdings'] = {
                     'raw': data['holdings'],
@@ -67,8 +68,10 @@ def get_top_holdings(symbol):
 
                 result['sectorWeightings'] = {
                     'raw': result['sectorWeightings'],
-                    'data': [round(sector['sectorWeight']['raw'] * 100, 2) for sector in result['sectorWeightings']],
-                    'labels': [sector['sector'].replace('_', ' ').title() for sector in result['sectorWeightings']]
+                    'data': [round(sector['sectorWeight']['raw'] * 100, 2) for sector in result['sectorWeightings'] if
+                             sector['sectorWeight']['raw'] > 0.0],
+                    'labels': [sector['sector'].replace('_', ' ').title() for sector in result['sectorWeightings'] if
+                               sector['sectorWeight']['raw'] > 0.0]
                 }
 
                 # result['sectorWeightings'] = data['sectorWeightings']

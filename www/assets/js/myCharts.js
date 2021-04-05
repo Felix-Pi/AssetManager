@@ -246,7 +246,7 @@ function bar_chart(id, title, input, label_suffix, width, height) {
 
 }
 
-function draw_stacked_recommendation_bar_chart(id, title, input, width, height) {
+function draw_stacked_recommendation_bar_chart(id, title, input, label_suffix = '', width, height) {
     var colors_ = [colors.red, colors.orange, colors.grey, colors.blue, colors.blue_light];
     input_data = input.data
 
@@ -302,7 +302,7 @@ function draw_stacked_recommendation_bar_chart(id, title, input, width, height) 
 
 }
 
-function draw_candle_bar_chart(id, title, input) {
+function draw_candle_bar_chart(id, title, input, label_suffix = '') {
     if (input.length > 0) {
 
         let data = []
@@ -423,7 +423,7 @@ function get_instance_from_id(id) {
     return result;
 }
 
-function insert_chart(id, title, config, label_suffix, width = 'auto', height = 300) {
+function insert_chart(id, title, config, label_suffix = '', width = 'auto', height = 300) {
     let header_elem = $(id + ' .card-header')
     let settings_change_chart_elem = $(id + ' .settings .change_chart_type')
 
@@ -438,6 +438,7 @@ function insert_chart(id, title, config, label_suffix, width = 'auto', height = 
         }
     }
 
+    remove_loader($(id + ' .card-body'))
     $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
     return new Chart(ctx, config);

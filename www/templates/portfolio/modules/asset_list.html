@@ -1,0 +1,75 @@
+<div class="card mb-4">
+    <div id="portfolio_stocks_card" class="card-body overflow-auto" style="padding: 0;">
+        <table id="portfolio_stocks" class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Investment</th>
+                <th scope="col" id="profit_label_title">profit total</th>
+                <th scope="col">
+                    <span id="add_stock_button"><i class="fas fa-plus"></i></span>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for asset in assets %}
+            <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title="{{ asset.title }}"
+                data-price="{{ asset.regularMarketPrice }}">
+                <th scope="row">
+                    <h5 class="ui sub header">
+                        {% if asset.asset_type == 1 %} <!-- or etf -->
+                        <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&asset={{ asset.id }}">
+                            {{ asset.title }} </a>
+                        {% else %}
+                        <a href="{{ url_for('etf') }}?portfolio={{ portfolio_id }}&asset={{ asset.id }}">
+                            {{ asset.title }}</a>
+                        {% endif %}
+                    </h5>
+                    <span class="asset_elem_subheader_absolute">
+                                {% set quantity = asset.quantity %}
+
+                                {% set int_part, decimal_part = "{}".format(quantity).split('.') %}
+                                 {% if decimal_part == '0' %}
+                                    {% set quantity = int_part %}
+                                 {% endif %}
+                                <div class="ui mini label">
+                                    x {{ quantity }}
+                                </div>
+                                <div class="ui mini label" style="background: none !important;">
+                                     {{ asset.asset_value }}
+                                </div>
+                            </span>
+                            <span class="asset_elem_subheader_relative hidden">
+                                <div class="ui mini label">
+                                   {{ asset.regularMarketPrice }}
+                                </div>
+                            </span>
+
+                </th>
+                <td>
+                            <span class="profit_label" counter="0"
+                                  data-val="{{ asset.profit_total_absolute }}~{{ asset.profit_today_relative }}~{{ asset.profit_today_absolute }}~{{ asset.profit_total_relative }}">
+                                {% if asset.profit_total_absolute >= 0 %}
+                                <div class="ui small label green">
+                                    <i class="fas fa-caret-up"></i> <span>{{ asset.profit_total_absolute }}</span>
+                                </div>
+                                {% else %}
+                                <div class="ui small label red">
+                                    <i class="fas fa-caret-down"></i> <span>{{ asset.profit_total_absolute }}</span>
+
+                                </div>
+                                {% endif %}
+                            </span>
+                </td>
+                <td>
+                            <span class="edit_stock_button" portfolio_id="{{ portfolio_id }}"
+                                  asset_id="{{ asset.id }}"><i
+                                    class="fas fa-ellipsis-v"></i>
+                            </span>
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>

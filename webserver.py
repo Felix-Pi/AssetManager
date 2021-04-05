@@ -54,7 +54,7 @@ def index():
         'all_symbols': ','.join([asset['symbol'] for asset in all_assets]),
     }
 
-    return render_template('index.html', **templateData)
+    return render_template('index/index.html', **templateData)
 
 
 @app.route('/portfolio/')
@@ -88,7 +88,7 @@ def portfolio():
         'all_sectors': all_sectors,  # assets in this portfolio
         'portfolio_symbols': ','.join([asset['symbol'] for asset in assets if 'symbol' in asset]),
     }
-    return render_template('portfolio/portfolio.html', **templateData)
+    return render_template('portfolio/portfolio_base.html', **templateData)
 
 
 @app.route('/stock/')
@@ -237,7 +237,13 @@ def api_stock_endpoint(endpoint):
         if 'yahoo_search' == endpoint:
             return yahoo_search_request(request.args.get('input'), 'US', 'en-US')
         if 'get_recommendation_trend' == endpoint:
-            return get_recommendation_trend(request.args.get('symbol'))
+            symbol = request.args.get('symbol')
+
+            data = {'recommendation_trend': get_recommendation_trend(symbol),
+                    'financial_data': get_financial_data(symbol)}
+
+            return json.dumps(data)
+
         if 'historical_data' == endpoint:
             data = get_historical_data(request.args.get('symbols'), request.args.get('days'),
                                        request.args.get('period'))
@@ -279,7 +285,7 @@ def api_render_template():
                 templateData = {
                     'news': get_news_for_ticker(symbol),
                 }
-                return render_template('newsfeed_inner.html', **templateData)
+                return render_template('modules/newsfeed/newsfeed_inner.html', **templateData)
 
         if 'stock' == request.args.get('endpoint'):
             symbol = request.args.get('symbol')

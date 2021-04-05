@@ -35,7 +35,10 @@ def yahoo_search_request(input, region, lang):
 def search_alternative_symbols(symbol, match_ratio=80):
     # get stock title
     data = yahoo_search_request(symbol, 'DE', 'de-DE')
-    title = data['ResultSet']['Result'][0]['name']
+    if data is None or len(data) == 0:
+        return []
+
+    title = data['ResultSet']['Result'][0]['name'] #ToDo
 
     # search for symbols with stock name on us market to get ticker with information
     alternative_symbols = yahoo_search_request(title, 'US', 'en-US')

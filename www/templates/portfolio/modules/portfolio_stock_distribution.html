@@ -1,4 +1,4 @@
-<div class="card mb-4" id="stock_distribution">
+<div class="card mb-4" id="stock_distribution"> <!-- ToDo: rename to asset_distributions-->
     <div class="card-header">
         <div class="settings ui mini basic icon buttons">
             <button class="ui button active change_chart_type"><i class="fas fa-chart-bar"></i></button>
@@ -8,7 +8,9 @@
         <span></span>
     </div>
 
-    <div class="card-body"></div>
+    <div class="card-body">
+        <div class="ui active loader"></div>
+    </div>
     <div class="card-footer">
         <table id="sector_stocks" class="table">
             {% for asset in assets %}

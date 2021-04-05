@@ -168,10 +168,44 @@ def get_recommendation_trend(symbol):
         alternative_symbols = search_alternative_symbols(symbol)
         result = check_alternative_symbols(alternative_symbols)
 
-    return json.dumps(result)
+    return result
 
 
-def w(symbol):
+def get_financial_data(symbol):
+    def send_request(symbol):
+        url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=financialData'.format(
+            symbol)
+
+        data = requests.get(url).json()['quoteSummary']['result']
+        return data
+
+    def parse_data(data):
+
+        if data is not None:
+            data = data[0]['financialData']
+            if data['targetHighPrice'] is not None and len(data['targetHighPrice']) > 0:
+                return data
+
+        return None
+
+    def check_alternative_symbols(symbols):
+        for symbol in symbols:
+            data = send_request(symbol['symbol'])
+            result = parse_data(data)
+            if result is not None:
+                return result
+
+    data = send_request(symbol)
+    result = parse_data(data)
+
+    if result is None:
+        alternative_symbols = search_alternative_symbols(symbol)
+        result = check_alternative_symbols(alternative_symbols)
+
+    return result
+
+
+def get_calendar_events(symbol):
     def send_request(symbol):
         url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=calendarEvents'.format(
             symbol)
