@@ -58,6 +58,7 @@ function set_active(elem_class, elem) {
     elem.addClass('active');
 }
 
+
 function load_newsfeed(symbol) {
     let id = '#newsfeed';
     prepend_loader(id);

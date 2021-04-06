@@ -24,7 +24,7 @@ function setup() {
             $(id).attr('data-symbol', symbol)
 
             linechart = chart_linechart(id, 'Line chart', result, '€')
-            $(id + ' .card-header span').text(title + ' - ' + symbol + ': ' + price);
+            $(id + ' .card-header span').text(title + ': ' + price);
         }
     });
 
@@ -283,7 +283,7 @@ $(document).ready(function () {
         set_active('.asset_elem', elem);
 
         //set card title
-        $(id + ' .card-header span').text(title + ' - ' + symbol + ': ' + price);
+        $(id + ' .card-header span').text(title + ': ' + price);
     });
 
     $(document).on('click', '.asset_elem_subheader_absolute', function () {

@@ -15,8 +15,10 @@
                     </div>
                 </div>
                 <div class="content" data-state="closed">
-                    <p class="transition"> {{event.description_prev}}</p>
-                    <p class="transition"><a href="{{ event.link }}" target="_blank">go to article...</a></p>
+                    <p class="transition">
+                        {{event.description_prev}} <br/>
+                        <a class="subtitle" href="{{ event.link }}" target="_blank">read more...</a>
+                    </p>
 
                 </div>
             </div>
@@ -25,4 +27,5 @@
         {% endif %}
 
     </div>
+
 </div>

@@ -4,11 +4,11 @@
         <div class="ui steps">
             <div class="step">
                 <div class="content">
+                    <div class="title">Performance today</div>
                     <div class="description">
                         {% if all_portfolios['profit_today_relative'] >= 0 %} + {% endif %}{{
                         all_portfolios['profit_today_relative'] }} %
                     </div>
-                    <div class="title">Performance today</div>
                 </div>
                 <div class="ordered_step_number">
                     {% if all_portfolios['profit_today_absolute'] >= 0 %} + {% endif %}
@@ -21,11 +21,11 @@
         <div class="ui steps">
             <div class="step">
                 <div class="content">
+                    <div class="title"> overall return</div>
                     <div class="description">
                         {% if all_portfolios['profit_total_relative'] >= 0 %} +{% endif %}{{
                         all_portfolios['profit_total_relative'] }} %
                     </div>
-                    <div class="title"> overall return</div>
                 </div>
                 <div class="ordered_step_number">
                     {% if all_portfolios['profit_total_absolute'] >= 0 %} +{% endif %}{{
@@ -39,8 +39,8 @@
         <div class="ui steps">
             <div class="step">
                 <div class="content">
+                    <div class="title">Net worth</div>
                     <div class="description">&nbsp;</div>
-                    <div class="title">portfolio value</div>
                 </div>
                 <div class="ordered_step_number"> {{ all_portfolios['value'] }} €</div>
             </div>
@@ -51,8 +51,8 @@
         <div class="ui steps">
             <div class="step">
                 <div class="content">
-                    <div class="description"> &nbsp;</div>
                     <div class="title">dividends</div>
+                    <div class="description"> &nbsp;</div>
                 </div>
                 <div class="ordered_step_number"> {{ all_portfolios['dividend'] }} €</div>
             </div>

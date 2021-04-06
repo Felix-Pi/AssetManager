@@ -80,6 +80,14 @@ a, a:hover, a:active {
     display: none;
 }
 
+.card-header {
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    line-height: 1.28571429em;
+    text-transform: none;
+    color: rgba(0, 0, 0, .87);
+}
+
 .card-header .settings {
     position: absolute;
     display: block;
@@ -150,4 +158,23 @@ a, a:hover, a:active {
 
 .asset_elem .ui.header a:hover + .asset_elem span.relative_subheader {
     display: block;
+}
+
+.accordion .content p {
+    padding: 0 0 0 5%;
+}
+
+.subtitle {
+    font-weight: 400;
+    font-size: .85714286em;
+    font-style: normal;
+    color: rgba(0, 0, 0, .4);
+}
+
+.steps .step .content .description {
+    padding: .2em 0 0 0;
+    font-weight: 400;
+    font-size: 1.1em;
+    font-style: normal;
+    color: rgba(0, 0, 0, .7);
 }

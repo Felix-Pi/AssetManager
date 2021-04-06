@@ -1,12 +1,27 @@
 <div class="row row-cols-1" id="top_steps">
-    {% include "portfolio/top_steps.html" %}
+    {% include "portfolio/cash/top_steps.html" %}
 </div>
 
 <div class="row row-cols-1">
     <!-- table -->
     <div class="col-md-3 mb-4">
-
+        {% include "portfolio/cash/asset_list.html" %}
     </div>
+
+
+    <div class="col-md-3 mb-4">
+        {% include "portfolio/cash/income_sources.html" %}
+    </div>
+
+    <div class="col-md-3 mb-4">
+        {% include "portfolio/cash/expenses.html" %}
+    </div>
+
+
+    <div class="col-md-3 mb-4">
+        {% include "modules/placeholder.html" %}
+    </div>
+
 
 
     <div class="col-md-3">

@@ -1,0 +1,43 @@
+<div class="col-md-3 mb-4">
+    <div class="ui steps">
+        <div class="step">
+            <div class="content">
+                <div class="title">Total</div>
+                <div class="description">&nbsp;</div>
+            </div>
+            <div class="ordered_step_number"> {{ portfolio[0]['portfolio_value'] }} €</div>
+        </div>
+    </div>
+</div>
+<div class="col-md-3 mb-4">
+    <div class="ui steps">
+        <div class="step">
+            <div class="content">
+                <div class="title">Income</div>
+                <div class="description">
+                    {% if portfolio[0]['profit_total_relative'] >= 0 %} +{% endif %}{{
+                    portfolio[0]['profit_total_relative'] }} %
+                </div>
+            </div>
+            <div class="ordered_step_number">
+                {% if portfolio[0]['profit_total_absolute'] >= 0 %} +{% endif %}{{
+                portfolio[0]['profit_total_absolute'] }} €
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3 mb-4">
+    <div class="ui steps">
+        <div class="step">
+            <div class="content">
+                <div class="title">Expenses</div>
+                <div class="description">&nbsp;</div>
+            </div>
+            <div class="ordered_step_number"> {{ portfolio[0]['portfolio_value'] }} €</div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3 mb-4">
+</div>
