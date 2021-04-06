@@ -53,6 +53,11 @@ function remove_loader(id) {
     $(id).find('.loader').remove();
 }
 
+function set_active(elem_class, elem) {
+    $(elem_class).removeClass('active');
+    elem.addClass('active');
+}
+
 function load_newsfeed(symbol) {
     let id = '#newsfeed';
     prepend_loader(id);
@@ -74,7 +79,6 @@ function load_newsfeed(symbol) {
 
 
 $(document).ready(function () {
-
     $(document).on('click', '.accordion .title', function () {
         let elem = $(this);
         let target = elem.parent().find('.content');
@@ -97,8 +101,8 @@ $(document).ready(function () {
         let elem = $(this);
         let chart_type = elem.attr('chart-type');
 
-        elem.parent().find('.active').removeClass('active');
-        elem.addClass('active');
+
+        set_active(elem.parent().find('.active'), elem);
 
         if (elem.hasClass('change_chart_type')) {
             let target = elem.parent().parent().parent().find('.card-body');
@@ -117,13 +121,7 @@ $(document).ready(function () {
         }
 
     });
-    $(document).on('click', '.card .settings button', function (e, f) {
-        elem = $(this)
 
-        elem.parent().find('.active').removeClass('active');
-        elem.addClass('active');
-
-    });
 
     $(document).on('click', '.card .more', function (e, f) {
         elem = $(this)

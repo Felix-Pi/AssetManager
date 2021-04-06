@@ -72,8 +72,9 @@ function chart_doughnut(id, title, data, label_suffix, width, height) {
                         return ' ' + symbol + ': ' + formatted_value + ' ' + label_suffix
                     }
                 }
-            }
-        }
+            },
+            myCustomOptions: {},
+        },
     };
 
 
@@ -83,6 +84,7 @@ function chart_doughnut(id, title, data, label_suffix, width, height) {
 function chart_half_doughnut(id, title, data, label_suffix, width, height) {
     let chart = chart_doughnut(id, title, data, label_suffix, width, height);
 
+    chart.options.isHalfDoughnut = true;
     chart.options.circumference = Math.PI;
     chart.options.rotation = -Math.PI;
     chart.options.borderWidth = 0;
@@ -187,7 +189,8 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
                         labelString: 'Value'
                     }
                 }]
-            }
+            },
+            myCustomOptions: {},
         }
 
     };
@@ -240,6 +243,7 @@ function bar_chart(id, title, input, label_suffix, width, height) {
                     stacked: true
                 }]
             },
+            myCustomOptions: {},
         }
     }
     return insert_chart(id, title, config, label_suffix, width, height);
@@ -295,7 +299,8 @@ function draw_stacked_recommendation_bar_chart(id, title, input, label_suffix = 
                 yAxes: [{
                     stacked: true
                 }]
-            }
+            },
+            myCustomOptions: {},
         }
     }
     return insert_chart(id, title, config, label_suffix, width, height)
@@ -336,6 +341,9 @@ function draw_candle_bar_chart(id, title, input, label_suffix = '') {
                     label: title,
                     data: data
                 }]
+            },
+            options: {
+                myCustomOptions: {},
             }
         }
 
@@ -368,7 +376,6 @@ Chart.controllers.LineWithLine = Chart.controllers.line.extend({
     }
 });
 
-
 //if input.colored = true: multiple colors
 //if input.colored = false: one colors
 function get_color_sheme(input) {
@@ -388,29 +395,38 @@ function change_chart_type(chart) {
     let label_suffix = $(parent_id).attr('label-suffix');
     let body_elem = $(parent_id).find('.card-body');
     let current_type = chart.config.type;
-
+    let isHalfDoughnut = chart.options.isHalfDoughnut;
+    console.log(chart)
     let title = $(chart_id + ' .card-header span').text();
+    let width = chart.config.options.myCustomOptions.width;
+    let height = chart.config.options.myCustomOptions.height;
 
-    console.log('title: ', $(chart_id + ' span'), title)
     let input = {'data': chart.data.datasets[0].data, 'labels': chart.data.labels, 'colored': true}
 
-    console.log(canvas_id, chart_id, $(canvas_id))
     body_elem.html("");
-
     chart.destroy();
+
+
     if (current_type === types[0]) {
-        chart_doughnut(chart_id, title, input, label_suffix);
+        if (isHalfDoughnut) {
+            new_chart = chart_half_doughnut(chart_id, title, input, label_suffix, width, height);
+        } else {
+            new_chart = chart_doughnut(chart_id, title, input, label_suffix, width, height);
+        }
+
     }
 
     if (current_type === types[1]) {
-        bar_chart(chart_id, title, input, label_suffix);
+        new_chart = bar_chart(chart_id, title, input, label_suffix, width, height);
     }
 
     if (current_type === types[3]) {
-        //pie_chart(chart_id, title, input, '') //ToDO
+        //return pie_chart(chart_id, title, input, '') //ToDO
     }
 
+    new_chart.options.isHalfDoughnut = isHalfDoughnut;
 
+    return new_chart;
 }
 
 function get_instance_from_id(id) {
@@ -433,23 +449,30 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
     if (settings_change_chart_elem.length > 0) {
         settings_change_chart_elem.attr('chart-type', config.type)
 
-        if (config.type === 'doughnut') {
+        if (config.type === 'doughnut') { //ToDo: move somewhere else
             settings_change_chart_elem.find('i').removeClass('fa-chart-bar').addClass('fa-chart-pie');
         }
     }
 
     remove_loader($(id + ' .card-body'))
     $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
+
+
+    config.options.myCustomOptions.width = width;
+    config.options.myCustomOptions.height = height;
+
+
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
     return new Chart(ctx, config);
 }
 
 function update_chart(chart, data, labels) { //ToDo
-    console.log(chart.data)
-
     if (chart.data.datasets.length === 0) {
         chart.data.datasets = [{data: []}];
+    } else {
+        chart.data.datasets = [chart.data.datasets[0]];
     }
+
     chart.data.datasets[0].data = data;
     chart.data.labels = labels;
     chart.update();
