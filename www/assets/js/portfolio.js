@@ -39,18 +39,12 @@ function setup() {
             result.data = result.data_relative;
 
             var id = '#stock_distribution'
-            stock_distribution_chart = chart_doughnut(id, 'Stock distrubution', result, '%', 'auto', "300")
+            stock_distribution_chart = chart_doughnut(id, 'Stock distrubution', result, '%', 'auto', 200)
             //stock_distribution_chart = draw_bar_chart(id, 'Stock distrubution', result, '€', 'auto', "300")
 
         }
     });
 
-    // function update_chart_type(id, type1, type2) {
-    //     var chart = $(id).getContext('2d');
-    //     var data = {data: chart.data.datasets[0].data, labels: chart.data.labels = labels}
-    //
-    //     chart.destroy()
-    // }
 
     /* setup sector distribution */
     $.ajax({
@@ -63,7 +57,7 @@ function setup() {
 
             var id = '#sector_distribution'
 
-            var sector_distribution_chart = bar_chart('#sector_distribution', 'Sector distribution', result, '%', 'auto', "300")
+            var sector_distribution_chart = bar_chart('#sector_distribution', 'Sector distribution', result, '%', 'auto', 200)
         }
     });
 
@@ -77,7 +71,7 @@ function setup() {
             result.data = result.data_relative;
 
             let id = '#country_distribution'
-            country_distribution_chart = bar_chart(id, 'Country distribution', result, '%', 'auto', '300')
+            country_distribution_chart = bar_chart(id, 'Country distribution', result, '%', 'auto', 330)
 
         }
     });
@@ -287,13 +281,13 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.asset_elem_subheader_absolute', function () {
-        $('.asset_elem_subheader_absolute').hide()
-        $('.asset_elem_subheader_relative').show()
+        $('.asset_elem_subheader_absolute').hide();
+        $('.asset_elem_subheader_relative').show();
 
     });
     $(document).on('click', '.asset_elem_subheader_relative', function () {
-        $('.asset_elem_subheader_relative').hide()
-        $('.asset_elem_subheader_absolute').show()
+        $('.asset_elem_subheader_relative').hide();
+        $('.asset_elem_subheader_absolute').show();
 
     });
 

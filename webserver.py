@@ -13,6 +13,7 @@ app = Flask(__name__, template_folder='www/templates/', static_folder='www/asset
 
 USER_ID = 1
 UPDATE_ALWAYS = True
+UPDATE_ALWAYS = False
 
 database = r"data/database.db"
 

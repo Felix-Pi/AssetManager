@@ -238,6 +238,7 @@ function bar_chart(id, title, input, label_suffix, width, height) {
             scales: {
                 xAxes: [{
                     stacked: true,
+                    display: false,
                 }],
                 yAxes: [{
                     stacked: true
@@ -291,7 +292,6 @@ function draw_stacked_recommendation_bar_chart(id, title, input, label_suffix = 
             legend: {
                 display: false,
             },
-            responsive: true,
             scales: {
                 xAxes: [{
                     stacked: true,
@@ -465,6 +465,12 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
     var ctx = document.getElementById(id + '_canvas').getContext('2d');
     return new Chart(ctx, config);
 }
+
+function enable_xaxis_label(chart) {
+    chart.config.options.scales.xAxes[0].display = false;
+    chart.update();
+}
+
 
 function update_chart(chart, data, labels) { //ToDo
     if (chart.data.datasets.length === 0) {

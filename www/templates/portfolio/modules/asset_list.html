@@ -24,22 +24,22 @@
                             {{ asset.title }}</a>
                         {% endif %}
                     </h5>
-                    <span class="asset_elem_subheader_absolute">
-                                {% set quantity = asset.quantity %}
+                    {% set quantity = asset.quantity %}
 
-                                {% set int_part, decimal_part = "{}".format(quantity).split('.') %}
-                                 {% if decimal_part == '0' %}
-                                    {% set quantity = int_part %}
-                                 {% endif %}
-                                <div class="ui mini label">
-                                    x {{ quantity }}
-                                </div>
+                    {% set int_part, decimal_part = "{}".format(quantity).split('.') %}
+                    {% if decimal_part == '0' %}
+                    {% set quantity = int_part %}
+                    {% endif %}
+                    <div class="ui mini label">
+                        x {{ quantity }}
+                    </div>
+                    <span class="asset_elem_subheader_absolute">
                                 <div class="ui mini label" style="background: none !important;">
                                      {{ asset.asset_value }}
                                 </div>
                             </span>
                     <span class="asset_elem_subheader_relative hidden">
-                                <div class="ui mini label">
+                                <div class="ui mini label" style="background: none !important;">
                                    {{ asset.regularMarketPrice }}
                                 </div>
                             </span>
