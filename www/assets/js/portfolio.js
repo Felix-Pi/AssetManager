@@ -250,9 +250,7 @@ $(document).ready(function () {
             success: function (dataset) {
                 dataset = JSON.parse(dataset)
 
-                linechart.data.datasets[0].data = dataset[0].median;
-                linechart.data.labels = dataset[0].timestamps;
-                linechart.update();
+                update_chart(linechart, dataset[0].median, dataset[0].timestamps)
             }
         });
 
@@ -277,19 +275,14 @@ $(document).ready(function () {
             success: function (dataset) {
                 dataset = JSON.parse(dataset)
 
-                linechart.data.datasets[0].data = dataset[0].median;
-                linechart.data.labels = dataset[0].timestamps;
-                linechart.update();
+                update_chart(linechart, dataset[0].median, dataset[0].timestamps)
             }
         });
 
 
-        //set clicked btn active
-        elem.parent().find('.active').removeClass('active');
-        elem.addClass('active');
+        set_active('.asset_elem', elem);
 
         //set card title
-        console.log(elem.find('.asset_title').attr('text'))
         $(id + ' .card-header span').text(title + ' - ' + symbol + ': ' + price);
     });
 

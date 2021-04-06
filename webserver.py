@@ -12,7 +12,7 @@ from utils import *
 app = Flask(__name__, template_folder='www/templates/', static_folder='www/assets/')
 
 USER_ID = 1
-UPDATE_ALWAYS = False
+UPDATE_ALWAYS = True
 
 database = r"data/database.db"
 

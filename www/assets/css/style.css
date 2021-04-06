@@ -13,6 +13,7 @@ a, a:hover, a:active {
 .table thead tr th {
     border-top: 0px;
 }
+
 .step, .steps, .card {
     border-radius: 0 !important;
 }
@@ -73,18 +74,6 @@ a, a:hover, a:active {
     font-size: 1.205714286em !important;
 }
 
-.progress {
-    background: none;
-}
-
-.progress span {
-    line-height: 1.1;
-    margin: 0 0 0 10px;
-}
-
-.progress-bar {
-    border-radius: 5px;
-}
 
 #sector_distribution .card-footer, #stock_distribution .card-footer {
     padding: 0;
@@ -102,13 +91,18 @@ a, a:hover, a:active {
 }
 
 .asset_elem {
-    /*transition: .2s;*/
+    transition: .2s;
 }
 
-.asset_elem:hover, .portfolio_elem:hover {
+.asset_elem:hover, .portfolio_elem:hover, .asset_elem.active, .portfolio_elem.active {
     cursor: pointer;
     background-color: rgba(0, 0, 0, .05);
 }
+
+.asset_elem.active, .portfolio_elem.active {
+    transition: 2s linear all;
+}
+
 
 .ui.label.red {
     background-color: rgb(252, 239, 235) !important;
@@ -140,6 +134,12 @@ a, a:hover, a:active {
     overflow-y: hidden;
 }
 
+#newsfeed .card-body {
+    max-height: 340px !important;
+    overflow-y: hidden;
+}
+
+
 #portfolio_stocks_card::-webkit-scrollbar {
     display: none;
 }
@@ -148,6 +148,6 @@ a, a:hover, a:active {
     text-transform: none;
 }
 
-.asset_elem .ui.header a:hover +.asset_elem span.relative_subheader {
+.asset_elem .ui.header a:hover + .asset_elem span.relative_subheader {
     display: block;
 }
