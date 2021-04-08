@@ -171,7 +171,7 @@ def get_recommendation_trend(symbol):
     return result
 
 
-def get_financial_data(symbol):
+def get_financial_data(symbol): #ToDo: currency convertion
     def send_request(symbol):
         url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=financialData'.format(
             symbol)

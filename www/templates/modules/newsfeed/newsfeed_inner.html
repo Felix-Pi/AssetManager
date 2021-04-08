@@ -1,5 +1,6 @@
 <div class="card-header">News</div>
 <div class="card-body overflow-auto">
+    <div class="ui active loader"></div>
     <div class="ui small feed">
         {% if news == None %}
         No news
@@ -9,7 +10,7 @@
             <div class="ui accordion content">
                 <div class="title summary">
                     <i class="dropdown icon"></i>
-                    {{event.title}}
+                    <span>{{event.title}}</span>
                     <div class="date">
                         {{event.pubDate}}
                     </div>

@@ -156,18 +156,20 @@ $(document).ready(function () {
 
         $.ajax({
             method: "GET",
-            url: '/api/stock/yahoo_search/',
+            url: '/api/stock/yahoo_search_de/',
             data: {'input': elem.val()},
             success: function (data) {
                 console.log('data', data);
                 //data = JSON.parse(data);
                 data = data['ResultSet']['Result'];
                 console.log(data);
+                results.html('');
+
                 for (let i = 0; i < data.length; i++) {
                     var item = data[i];
                     console.log(item)
                     html = '' +
-                        '<a class="result" href="" data-symbol="' + item['symbol'] + '">' +
+                        '<a class="result" href="" data-symbol="' + item['symbol'] + '" data-title="' + item['name'] + '">' +
                         '   <div class="content">' +
                         '       <div class="title">' + item['name'] + '</div>' +
                         '       <div class="description">' + item['symbol'] + ' - ' + item['exch'] + '</div>' +
@@ -185,9 +187,11 @@ $(document).ready(function () {
         e.preventDefault();
 
         let elem = $(this);
-        let target = $('#add_stock_modal .dbcol[col=symbol]');
+        let target_symbol = $('#add_stock_modal .dbcol[col=symbol]');
+        let target_title = $('#add_stock_modal .dbcol[col=title]');
 
-        target.val(elem.attr('data-symbol'));
+        target_symbol.val(elem.attr('data-symbol'));
+        target_title.val(elem.attr('data-title'));
         $('#add_stock_modal #search_symbol .results').html('').hide();
 
     });

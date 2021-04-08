@@ -49,8 +49,18 @@ function prepend_loader(id) {
     $(id).prepend('<div class="ui active loader"></div>')
 }
 
-function remove_loader(id) {
-    $(id).find('.loader').remove();
+function set_loader_active(id) {
+    target = $(id + ' .loader');
+    if (target === 'undefined') {
+        prepend_loader(id);
+    } else {
+        $(id).find('.loader').addClass('active');
+    }
+
+}
+
+function set_loader_inactive(id) {
+    $(id).find('.loader').removeClass('active');
 }
 
 function set_active(elem_class, elem) {
@@ -61,7 +71,7 @@ function set_active(elem_class, elem) {
 
 function load_newsfeed(symbol) {
     let id = '#newsfeed';
-    prepend_loader(id);
+    set_loader_active(id);
 
     if ($(id) !== 'undefined') {
         $.ajax({
@@ -69,10 +79,9 @@ function load_newsfeed(symbol) {
             url: "/api/render_template/",
             data: {'endpoint': 'default', 'action': 'get_news', 'symbol': symbol},
             success: function (result) {
-                $(id + ' .card-body').prepend('<div class="ui active loader"></div>')
 
-                remove_loader(id);
                 $(id).html(result);
+                set_loader_inactive(id);
             }
         });
     }
@@ -80,7 +89,7 @@ function load_newsfeed(symbol) {
 
 
 $(document).ready(function () {
-    $(document).on('click', '.accordion .title', function () {
+    $(document).on('click', '.accordion .title', function () { //ToDo: icon <
         let elem = $(this);
         let target = elem.parent().find('.content');
 

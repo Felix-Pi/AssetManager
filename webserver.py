@@ -18,10 +18,7 @@ UPDATE_ALWAYS = False
 database = r"data/database.db"
 
 
-def update_data(conn=None):
-    if conn is None:
-        conn = create_connection(database)
-
+def update_data(conn):
     with conn:
         update_assets(conn)
         update_portfolio_data(conn)
@@ -219,13 +216,17 @@ def api_portfolio_endpoint(endpoint):
             conn = create_connection(database)
             with conn:
                 api_portfolio_update_stock(conn, request.form)
+
+                update_data()
+                export(conn, USER_ID)
         if 'add_stock' == endpoint:
             conn = create_connection(database)
             with conn:
                 if check_if_asset_symbol_exists(request.form['symbol']):
                     api_portfolio_insert_stock(conn, request.form)
 
-            update_data()
+                    update_data(conn)
+                    export(conn, USER_ID)
             return 'True'
         if 'endpoint' == endpoint:
             print(endpoint)
@@ -237,6 +238,8 @@ def api_stock_endpoint(endpoint):
     if request.method == 'GET':
         if 'yahoo_search' == endpoint:
             return yahoo_search_request(request.args.get('input'), 'US', 'en-US')
+        if 'yahoo_search_de' == endpoint:
+            return yahoo_search_request(request.args.get('input'), 'DE', 'de-DE')
         if 'get_recommendation_trend' == endpoint:
             symbol = request.args.get('symbol')
 
@@ -312,6 +315,9 @@ def api_render_template():
                 return render_template('assets/stock/calendar_events.html', **templateData)
 
     return "lala"
+
+
+
 
 
 if __name__ == '__main__':

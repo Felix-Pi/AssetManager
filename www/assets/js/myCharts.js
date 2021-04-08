@@ -205,7 +205,7 @@ function bar_chart(id, title, input, label_suffix, width, height) {
         datasets: [{
             label: 'Stocks',
             data: input.data,
-            backgroundColor: colors
+            backgroundColor: colors,
         }],
     };
     var config = {
@@ -241,12 +241,13 @@ function bar_chart(id, title, input, label_suffix, width, height) {
                     display: false,
                 }],
                 yAxes: [{
-                    stacked: true
+                    stacked: true,
                 }]
             },
             myCustomOptions: {},
         }
     }
+    console.log('options', config);
     return insert_chart(id, title, config, label_suffix, width, height);
 
 }
@@ -279,7 +280,7 @@ function draw_stacked_recommendation_bar_chart(id, title, input, label_suffix = 
         datasets: datasets
     };
     var config = {
-        type: 'bar',
+        type: 'horizontalBar',
         data: barChartData,
         options: {
             title: {
@@ -410,6 +411,7 @@ function change_chart_type(chart) {
     if (current_type === types[0]) {
         if (isHalfDoughnut) {
             new_chart = chart_half_doughnut(chart_id, title, input, label_suffix, width, height);
+
         } else {
             new_chart = chart_doughnut(chart_id, title, input, label_suffix, width, height);
         }
@@ -454,7 +456,7 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
         }
     }
 
-    remove_loader($(id + ' .card-body'))
+    set_loader_inactive($(id + ' .card-body'))
     $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
 
 

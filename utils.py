@@ -3,6 +3,8 @@ import json
 import requests
 import difflib
 
+from db import select_portfolios_from_user, select_all_assets_from_portfolio
+
 
 def html_decode(s):
     """
@@ -38,7 +40,7 @@ def search_alternative_symbols(symbol, match_ratio=80):
     if data is None or len(data) == 0:
         return []
 
-    title = data['ResultSet']['Result'][0]['name'] #ToDo
+    title = data['ResultSet']['Result'][0]['name']  # ToDo
 
     # search for symbols with stock name on us market to get ticker with information
     alternative_symbols = yahoo_search_request(title, 'US', 'en-US')
@@ -70,3 +72,39 @@ def get_usd_eur():
 
     data = send_request()
     return parse_result(data)
+
+
+def export(conn, USER_ID):
+    with conn:
+        portfolios = select_portfolios_from_user(conn, USER_ID)
+
+        result = {}
+
+        for pf in portfolios:
+            print(pf)
+            result[pf['title'].lower()] = {
+                'title': pf['title'],
+                'db': []
+            }
+            db = result[pf['title'].lower()]['db']
+
+            assets = select_all_assets_from_portfolio(conn, pf['id'])
+
+            print(pf['portfolio_type'], pf)
+            if pf['portfolio_type'] == 4:
+                for asset in assets:
+                    db.append({
+                        'title': asset['title'],
+                        'value': asset['asset_value'],
+                    })
+            else:
+                for asset in assets:
+                    db.append({
+                        'symbol': asset['symbol'],
+                        'title': asset['title'],
+                        'buyin': asset['buyIn'],
+                        'amount': asset['quantity'],
+                    })
+
+    with open('/Users/felixpieschka/dev/python/PortfolioTicker/data/data.json', 'w') as outfile:
+        json.dump([result], outfile)
