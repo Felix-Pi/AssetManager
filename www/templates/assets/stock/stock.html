@@ -1,0 +1,51 @@
+{% extends "base/base.html" -%}
+{% block content -%}
+
+
+<h1>{{asset.title}}: {{asset.regularMarketPrice}} €</h1>
+
+<div id="stock_navigation" class="ui secondary pointing menu">
+    <a class="active item" data-attr="default">
+        Home
+    </a>
+    <a class="item" data-attr="info">
+        Info
+    </a>
+    <a class="item" data-attr="calendar_events">
+        Calendar Events
+    </a>
+    <a class="item" data-attr="sec_filings">
+        SEC Filings
+    </a>
+
+    <div class="right menu">
+        <a class="ui item">
+            {{asset.title}}
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    <div class="elem" data-attr="default">
+        {% include "assets/stock/default.html" %}
+    </div>
+    <div class="elem hidden" data-attr="info"></div>
+    <div class="elem hidden" data-attr="calendar_events">
+        {% include "assets/stock/calendar_events.html" %}
+    </div>
+</div>
+
+{%- endblock content %}
+
+{% block footer -%}
+
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.24.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@0.2.1"></script>
+<script src="{{ url_for('static', filename='js/frameworks/financial-chart.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/stock.js') }}"></script>
+<script>
+    let symbol = '{{ asset.symbol }}';
+    let title = '{{ asset.title }}';
+    let regularMarketPrice = '{{ asset.regularMarketPrice }}';
+</script>
+{%- endblock footer %}
