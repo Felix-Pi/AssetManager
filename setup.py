@@ -1,12 +1,12 @@
-from setuptools import find_packages, setup
+from setuptools import setup
 
 setup(
-    name='flaskr',
+    name='AssetManager',
     version='1.0.0',
-    packages=find_packages(),
-    include_package_data=True,
-    zip_safe=False,
-    install_requires=[
-        'flask',
-    ],
+    packages=[''],
+    url='',
+    license='',
+    author='felixpieschka',
+    author_email='felix@felixpi.de',
+    description='AssetManger'
 )
