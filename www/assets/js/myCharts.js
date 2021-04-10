@@ -177,7 +177,7 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
                 xAxes: [{
                     display: true,
                     scaleLabel: {
-                        display: true,
+                        display: false,
                         labelString: 'Date'
                     }
                 }],
@@ -185,7 +185,7 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
                     beginAtZero: true,
                     display: true,
                     scaleLabel: {
-                        display: true,
+                        display: false,
                         labelString: 'Value'
                     }
                 }]

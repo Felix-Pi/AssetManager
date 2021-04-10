@@ -39,7 +39,7 @@ a, a:hover, a:active {
 .steps .step .content .description {
     padding: .2em 0 0 0;
     font-weight: 400;
-    font-size: 1.1em;
+    font-size: 1.1rem;
     font-style: normal;
 }
 
@@ -67,6 +67,16 @@ a, a:hover, a:active {
     justify-content: right;
 }
 
+@media screen and (max-width: 1400px) {
+    .ui.steps .step {
+        padding: 1em !important;
+        margin-left: 0 !important;
+    }
+
+    .ui.steps .step .ordered_step_number {
+        font-size: 1.3em !important;
+    }
+}
 
 .profit_label .label, #sector_stocks .label, #sector_distribution .label {
     float: right;
@@ -174,8 +184,8 @@ a, a:hover, a:active {
 }
 
 .ui.accordion .title span:hover {
-        /*color: rgba(0, 0, 0, .6) !important;*/
-        text-decoration: underline;
+    /*color: rgba(0, 0, 0, .6) !important;*/
+    text-decoration: underline;
 }
 
 .subtitle {
