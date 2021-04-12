@@ -81,7 +81,6 @@ def export(conn, USER_ID):
         result = {}
 
         for pf in portfolios:
-            print(pf)
             result[pf['title'].lower()] = {
                 'title': pf['title'],
                 'db': []
@@ -90,7 +89,6 @@ def export(conn, USER_ID):
 
             assets = select_all_assets_from_portfolio(conn, pf['id'])
 
-            print(pf['portfolio_type'], pf)
             if pf['portfolio_type'] == 4:
                 for asset in assets:
                     db.append({

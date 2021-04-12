@@ -28,8 +28,6 @@ def get_stock_data(assets):
     data = req['quoteResponse']['result']
     data = convert_usd_to_eur(data, exchange_rate)
 
-    #print(data)
-
     return data
 
 
@@ -72,8 +70,6 @@ def prepare_assets(assets, conn):
         assets[i]['trailingAnnualDividendRate'] = dividended_rate
         assets[i]['trailingAnnualDividendYield'] = dividended_yield
         assets[i]['dividend'] = my_dividend
-
-        # print('prepare_assets: ', assets[i]['symbol'], data[i]['symbol'])
 
     return assets
 

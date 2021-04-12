@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 import requests
 
-from utils import yahoo_search_request, search_alternative_symbols
+from utils import yahoo_search_request, search_alternative_symbols, get_usd_eur
 
 
 def request_historical_data(symbol, days, interval):
@@ -171,7 +171,7 @@ def get_recommendation_trend(symbol):
     return result
 
 
-def get_financial_data(symbol): #ToDo: currency convertion
+def get_financial_data(symbol):  # ToDo: currency convertion
     def send_request(symbol):
         url = 'http://query1.finance.yahoo.com//v10/finance/quoteSummary/?symbol={}&modules=financialData'.format(
             symbol)
@@ -180,10 +180,31 @@ def get_financial_data(symbol): #ToDo: currency convertion
         return data
 
     def parse_data(data):
-
         if data is not None:
             data = data[0]['financialData']
             if data['targetHighPrice'] is not None and len(data['targetHighPrice']) > 0:
+
+                keys_to_converte = ['currentPrice',
+                                    'targetHighPrice',
+                                    'targetLowPrice',
+                                    'targetMeanPrice',
+                                    'targetMedianPrice',
+                                    'totalCash',
+                                    'totalCashPerShare',
+                                    'totalDebt',
+                                    'totalRevenue',
+                                    'debtToEquity',
+                                    'revenuePerShare',
+                                    'grossProfits',
+                                    'freeCashflow',
+                                    'operatingCashflow']
+                if data['financialCurrency'] == 'USD':
+                    exchange_rate = get_usd_eur()
+
+                    for entry in data:
+                        if entry in keys_to_converte:
+                            data[entry]['raw'] = float(round(data[entry]['raw'] * exchange_rate, 2))
+
                 return data
 
         return None

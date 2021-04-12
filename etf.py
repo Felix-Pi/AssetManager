@@ -15,7 +15,6 @@ def get_top_holdings(symbol):
 
         data = requests.get(url).json()['quoteSummary']['result']
 
-        print(data)
         return data
 
     def parse_data_(data):
@@ -23,7 +22,6 @@ def get_top_holdings(symbol):
 
         result = {'holdings': [], 'sectorWeightings': []}
 
-        print('etf.py: data=', data)
         if data != None:
             data = data[0]['topHoldings']
 
@@ -40,11 +38,9 @@ def get_top_holdings(symbol):
 
         result = {'holdings': [], 'sectorWeightings': []}
 
-        print('etf.py: data=', data)
         if data != None:
             data = data[0]['topHoldings']
 
-            print('etf.py: data=', data)
             if 'holdings' in data:
                 result['holdings'] = {
                     'raw': data['holdings'],
@@ -56,7 +52,6 @@ def get_top_holdings(symbol):
             if 'sectorWeightings' in data:
                 for sector in data['sectorWeightings']:
                     sector_title = list(sector.keys())[0]
-                    print(sector_title, sector)
 
                     result['sectorWeightings'].append({
                         'sector': sector_title,

@@ -142,29 +142,27 @@ def update_all_portfolio_data(conn, portfolio_data):
     :return: project id
      """
     for data in portfolio_data:
-        dataset = (data['asset_value'],
-                   data['profit_total_absolute'],
-                   data['profit_total_relative'],
-                   data['profit_today_absolute'],
-                   data['profit_today_relative'],
-                   data['trailingAnnualDividendRate'],
-                   data['trailingAnnualDividendYield'],
-                   data['dividend'],
-                   data['id'])
-
-        sql = ''' UPDATE portfolio_data
-                  SET asset_value = ?, 
-                      profit_total_absolute = ?, 
-                      profit_total_relative = ?, 
-                      profit_today_absolute = ?, 
-                      profit_today_relative = ?, 
-                      trailingAnnualDividendRate = ?, 
-                      trailingAnnualDividendYield = ?, 
-                      dividend = ?
-                  WHERE asset = ?'''
+        sql = 'UPDATE portfolio_data ' \
+              'SET asset_value = {}, ' \
+              'profit_total_absolute = {}, ' \
+              'profit_total_relative = {}, ' \
+              'profit_today_absolute = {}, ' \
+              'profit_today_relative = {}, ' \
+              'trailingAnnualDividendRate = {}, ' \
+              'trailingAnnualDividendYield = {}, ' \
+              'dividend = {} ' \
+              'WHERE asset = {}'.format(data['asset_value'],
+                                        data['profit_total_absolute'],
+                                        data['profit_total_relative'],
+                                        data['profit_today_absolute'],
+                                        data['profit_today_relative'],
+                                        data['trailingAnnualDividendRate'],
+                                        data['trailingAnnualDividendYield'],
+                                        data['dividend'],
+                                        data['id'])
 
         cur = conn.cursor()
-        cur.execute(sql, dataset)
+        cur.execute(sql)
 
         conn.commit()
         cur.close()
@@ -266,7 +264,6 @@ def select_single_asset_from_portfolio(conn, portfolio_id, asset_id):
     sql = 'SELECT * FROM portfolio_data, assets WHERE portfolio_data.asset = assets.id AND portfolio_data.portfolio={} AND assets.id={} ORDER BY asset_value DESC'.format(
         portfolio_id, asset_id)
 
-    # print(sql)
     cur.execute(sql)
 
     return cur.fetchall()
@@ -420,7 +417,6 @@ def api_portfolio_update_stock(conn, data):
 #             sectors.append(result['sector'])
 #             industries.append(result['industry'])
 #
-#             print(sql)
 #
 #     print( list(dict.fromkeys(sectors)))
 #     print( list(dict.fromkeys(industries)))

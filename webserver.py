@@ -137,7 +137,9 @@ def etf():
 
 @app.route('/api/refresh/')
 def refresh_data():
-    update_data()
+    conn = create_connection(database)
+    with conn:
+        update_data(conn)
     return "True"
 
 
