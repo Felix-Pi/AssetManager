@@ -219,7 +219,7 @@ def api_portfolio_endpoint(endpoint):
             with conn:
                 api_portfolio_update_stock(conn, request.form)
 
-                update_data()
+                update_data(conn)
                 export(conn, USER_ID)
         if 'add_stock' == endpoint:
             conn = create_connection(database)

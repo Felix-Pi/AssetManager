@@ -45,10 +45,19 @@ function serializeFormForDatabase(form_id) {
 
 }
 
+
+/**
+ * prepends loader div to html element
+ * @param id html id
+ */
 function prepend_loader(id) {
     $(id).prepend('<div class="ui active loader"></div>')
 }
 
+/**
+ * sets loader div active
+ * @param id html id
+ */
 function set_loader_active(id) {
     target = $(id + ' .loader');
     if (target === 'undefined') {
@@ -59,16 +68,30 @@ function set_loader_active(id) {
 
 }
 
+/**
+ * sets loader div inactive
+ * @param id html id
+ */
 function set_loader_inactive(id) {
     $(id).find('.loader').removeClass('active');
 }
 
+
+/**
+ * sets html element active, removes other active elements for this target
+ * @param elem_class html class or object
+ * @param elem html class or object
+ */
 function set_active(elem_class, elem) {
     $(elem_class).removeClass('active');
     elem.addClass('active');
 }
 
 
+/**
+ * loads newsfeed for symbol(s)
+ * @param symbol or comma separated list of symbols
+ */
 function load_newsfeed(symbol) {
     let id = '#newsfeed';
     set_loader_active(id);
@@ -87,9 +110,39 @@ function load_newsfeed(symbol) {
     }
 }
 
+/**
+ * load html content from webserver and insert to html
+ * @param id html id
+ * @param endpoint url
+ * @param data Object. ex: data: {'endpoint': 'default', 'action': 'get_news', 'symbol': symbol},
+ */
+function load_content(id, endpoint, data) {
+    set_loader_active(id);
+
+    $.ajax({
+        method: "GET",
+        url: endpoint,
+        //data: {'endpoint': 'default', 'action': 'get_news', 'symbol': symbol},
+        data: data,
+        success: function (result) {
+            $(id).html(result);
+        },
+        error: function (result) {
+            $(id).html(result);
+            $(id).prepend('<p>Could not load content!</p>');
+        }
+    });
+
+    set_loader_inactive(id);
+}
+
 
 $(document).ready(function () {
-    $(document).on('click', '.accordion .title', function () { //ToDo: icon <
+
+    /**
+     * accordeon logic
+     */
+    $(document).on('click', '.accordion .title', function () { //ToDo: icon
         let elem = $(this);
         let target = elem.parent().find('.content');
 
@@ -97,6 +150,9 @@ $(document).ready(function () {
     });
 
 
+    /**
+     * call update_data() to refresh data
+     */
     $(document).on('click', '#update_data', function (e, f) {
         $.ajax({
             method: "GET",
@@ -107,6 +163,10 @@ $(document).ready(function () {
         });
     });
 
+
+    /**
+     * settings buttons for .card
+     */
     $(document).on('click', '.card .settings button', function (e, f) {
         let elem = $(this);
         let chart_type = elem.attr('chart-type');

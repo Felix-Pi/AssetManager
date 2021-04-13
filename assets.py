@@ -5,8 +5,8 @@ from utils import get_usd_eur
 
 
 def get_stock_data(assets):
-    exchange_rate = get_usd_eur()
 
+    exchange_rate = get_usd_eur()
     def convert_usd_to_eur(data, exchange_rate):
         convert_fields = ['regularMarketPrice', 'regularMarketOpen', 'trailingAnnualDividendYield']
 
