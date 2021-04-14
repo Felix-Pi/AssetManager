@@ -18,6 +18,7 @@
                     <h5 class="ui sub header">
                         {% if asset.asset_type == 1 %} <!-- or etf -->
                         <a href="{{ url_for('stock') }}?portfolio={{ portfolio_id }}&asset={{ asset.id }}">
+                            <!-- todo endpoint by id-->
                             {{ asset.title }} </a>
                         {% else %}
                         <a href="{{ url_for('etf') }}?portfolio={{ portfolio_id }}&asset={{ asset.id }}">
@@ -35,12 +36,12 @@
                     </div>
                     <span class="asset_elem_subheader_absolute hidden">
                                 <div class="ui mini label" style="background: none !important;">
-                                     {{ asset.asset_value }}
+                                     {{ asset.asset_value }} €
                                 </div>
                             </span>
                     <span class="asset_elem_subheader_relative">
                                 <div class="ui mini label" style="background: none !important;">
-                                   {{ asset.regularMarketPrice }}
+                                    {{ asset.regularMarketPrice }} = 1
                                 </div>
                             </span>
 
