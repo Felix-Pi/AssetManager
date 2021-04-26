@@ -28,11 +28,12 @@ from app.models.User import *
 from app.models.Portfolio import *
 from app.models.Asset import *
 from app.models.Portfolio_position import *
+from app.domain_logic.domain_logic import *
 
-from app.index import bp as index_bp
-from app.portfolio import bp as portfolio_bp
-from app.asset import bp as asset_bp
-from app.api import bp as api_bp
+from app.routes.index import bp as index_bp
+from app.routes.portfolio import bp as portfolio_bp
+from app.routes.asset import bp as asset_bp
+from app.routes.api import bp as api_bp
 
 app.register_blueprint(index_bp, url_prefix='/index')
 app.register_blueprint(portfolio_bp, url_prefix='/portfolio')

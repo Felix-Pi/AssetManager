@@ -1,7 +1,7 @@
 from flask import jsonify
 
 from app import Asset, Portfolio
-from app.api import bp
+from app.routes.api import bp
 
 
 @bp.route('/update_all', methods=['GET'])

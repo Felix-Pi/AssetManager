@@ -1,7 +1,7 @@
 from flask import jsonify
 
 from app import Portfolio, db
-from app.api import *
+from app.routes.api import *
 
 def get_portfolio(id):
     return db.session.query(Portfolio).filter_by(id=id).first()

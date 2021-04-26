@@ -1,6 +1,6 @@
 from flask import render_template
 
-from app.api import *
+from app.routes.api import *
 from app.domain_logic.newsfeed import get_news_for_ticker
 
 

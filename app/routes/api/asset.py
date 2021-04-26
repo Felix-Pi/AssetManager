@@ -1,7 +1,7 @@
 from flask import request, make_response, jsonify
 
 from app import Asset, db
-from app.api import *
+from app.routes.api import *
 from app.domain_logic.YahooHistoricalData import get_historical_data
 
 

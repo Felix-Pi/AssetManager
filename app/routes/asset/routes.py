@@ -1,7 +1,7 @@
 from flask import render_template
 
 from app import db, Asset
-from app.asset import bp
+from app.routes.asset import bp
 
 
 @bp.route('/<string:symbol>/')
