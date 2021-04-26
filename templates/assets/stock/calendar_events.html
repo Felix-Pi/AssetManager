@@ -1,13 +1,21 @@
 <div class="row">
-    <!-- general info -->
     <div class="col-md-3 mb-4">
         <div class="card">
-            <div class="card-header">General info</div>
+            <div class="card-header">Events</div>
             <div class="card-body">
-                {{calendar_events}}
+                <table class="table">
+                    {% for event in events %}
+                    {{ info }}
+                    <tr>
+                        <th scope="row">{{ event }}</th>
+                        <td>{{ events[event] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
             </div>
         </div>
     </div>
+
     <div class="col-md-9 mb-4">
 
     </div>

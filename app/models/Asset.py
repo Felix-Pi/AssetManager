@@ -37,6 +37,13 @@ class Asset(db.Model):
 
         return data
 
+    def get_property(self, property):
+        if hasattr(self, property):
+            attr = getattr(self, property)
+            if attr is not None:
+                return attr
+        return '-'
+
     def parse_recommendation_trend(self):
         def parse_label(label):
             # format: 0m, -1m, -2m, -3m
@@ -74,6 +81,9 @@ class Asset(db.Model):
 
         return result
 
+    def parse_earnings(self):
+        return self.earnings
+
     def to_dict(self):
         data = {
             'symbol': self.symbol,
@@ -81,7 +91,7 @@ class Asset(db.Model):
             'price': self.price,
             'price_open': self.price_open,
             'asset_data_id': self.asset_data_id,
-            'data': self.data,
+            # 'data': self.data,
             # 'data': self.data if hasattr(self, 'data') else self.get_data(),
         }
 
@@ -129,6 +139,10 @@ class Stock_data(db.Model):
     fiftyTwoWeekHigh = db.Column(db.Float())
     fiftyDayAverage = db.Column(db.Float())
     twoHundredDayAverage = db.Column(db.Float())
+    exchange = db.Column(db.String(64))
+    exchange_name = db.Column(db.String(64))
+    quote_type = db.Column(db.String(64))
+    underlying_symbol = db.Column(db.String(64))
 
     # dividend
     dividend_rate = db.Column(db.Float())
@@ -163,69 +177,27 @@ class Stock_data(db.Model):
 
     # other
     earnings = db.Column(db.String())
+    ex_dividend_date = db.Column(db.String())
+    dividend_date = db.Column(db.String())
+
     history = db.Column(db.String())
     filings = db.Column(db.String())
     ownershipList = db.Column(db.String())
 
     def to_dict(self):
-        data = {
-            'id': self.id,
-            'symbol': self.symbol,
-            'name': self.name,
-            'website': self.website,
-            'country': self.country,
-            'industry': self.industry,
-            'sector': self.sector,
-            'longBusinessSummary': self.longBusinessSummary,
-            'fullTimeEmployees': self.fullTimeEmployees,
-            'regularMarketPrice': self.price,
-            'regularMarketOpen': self.price_open,
-            'regularMarketVolume': self.regularMarketVolume,
-            'regularMarketDayLow': self.regularMarketDayLow,
-            'regularMarketDayHigh': self.regularMarketDayHigh,
-            'dayLow': self.dayLow,
-            'dayHigh': self.dayHigh,
-            'trailingPE': self.trailingPE,
-            'forwardPE': self.forwardPE,
-            'volume': self.volume,
-            'averageVolume': self.averageVolume,
-            'averageVolume10days': self.averageVolume10days,
-            'bid': self.bid,
-            'ask': self.ask,
-            'bidSize': self.bidSize,
-            'askSize': self.askSize,
-            'marketCap': self.marketCap,
-            'fiftyTwoWeekLow': self.fiftyTwoWeekLow,
-            'fiftyTwoWeekHigh': self.fiftyTwoWeekHigh,
-            'fiftyDayAverage': self.fiftyDayAverage,
-            'twoHundredDayAverage': self.twoHundredDayAverage,
-            'dividend_rate': self.dividend_rate,
-            'dividendYield': self.dividendYield,
-            'exDividendDate': self.exDividendDate,
-            'trailingAnnualDividendRate': self.trailingAnnualDividendRate,
-            'trailingAnnualDividendYield': self.trailingAnnualDividendYield,
-            'fiveYearAvgDividendYield': self.fiveYearAvgDividendYield,
-            'totalCash': self.totalCash,
-            'totalCashPerShare': self.totalCashPerShare,
-            'totalDebt': self.totalDebt,
-            'totalRevenue': self.totalRevenue,
-            'debtToEquity': self.debtToEquity,
-            'revenuePerShare': self.revenuePerShare,
-            'freeCashflow': self.freeCashflow,
-            'operatingCashflow': self.operatingCashflow,
-            'earningsGrowth': self.earningsGrowth,
-            'revenueGrowth': self.revenueGrowth,
-            'currency': self.currency,
-            'recommendation_trend': self.recommendation_trend,
-            'targetHighPrice': self.targetHighPrice,
-            'targetLowPrice': self.targetLowPrice,
-            'targetMeanPrice': self.targetMeanPrice,
-            'targetMedianPrice': self.targetMedianPrice,
-            'recommendationMean': self.recommendationMean,
-            'recommendationKey': self.recommendationKey,
-            'numberOfAnalystOpinions': self.numberOfAnalystOpinions,
-            'history': self.history,
-        }
+        data = {}
+        blacklist = ['__abstract__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__',
+                     '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__',
+                     '__le__', '__lt__', '__mapper__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__',
+                     '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__table__',
+                     '__tablename__', '__weakref__', '_sa_class_manager', '_sa_instance_state', '_sa_registry']
+
+        attributes = dir(self)
+
+        for attr in attributes:
+            if attr not in blacklist:
+                data[attr] = getattr(self, attr)
+
         return data
 
     def __repr__(self):
@@ -246,16 +218,19 @@ class Etf_data(db.Model):
     dividend_rate = db.Column(db.Float())
 
     def to_dict(self):
-        data = {
-            'symbol': self.symbol,
-            'name': self.name,
-            'price': self.price,
-            'price_open': self.price_open,
-            'regularMarketVolume': self.regularMarketVolume,
-            'regularMarketDayLow': self.regularMarketDayLow,
-            'regularMarketDayHigh': self.regularMarketDayHigh,
-            'dividend_rate': self.dividend_rate,
-        }
+        data = {}
+        blacklist = ['__abstract__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__',
+                     '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__',
+                     '__le__', '__lt__', '__mapper__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__',
+                     '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__table__',
+                     '__tablename__', '__weakref__', '_sa_class_manager', '_sa_instance_state', '_sa_registry']
+
+        attributes = dir(self)
+
+        for attr in attributes:
+            if attr not in blacklist:
+                data[attr] = getattr(self, attr)
+
         return data
 
     def __repr__(self):
@@ -275,15 +250,19 @@ class Crypto_data(db.Model):
     regularMarketDayHigh = db.Column(db.Float())
 
     def to_dict(self):
-        data = {
-            'symbol': self.symbol,
-            'name': self.name,
-            'price': self.price,
-            'price_open': self.price_open,
-            'regularMarketVolume': self.regularMarketVolume,
-            'regularMarketDayLow': self.regularMarketDayLow,
-            'regularMarketDayHigh': self.regularMarketDayHigh,
-        }
+        data = {}
+        blacklist = ['__abstract__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__',
+                     '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__',
+                     '__le__', '__lt__', '__mapper__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__',
+                     '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__table__',
+                     '__tablename__', '__weakref__', '_sa_class_manager', '_sa_instance_state', '_sa_registry']
+
+        attributes = dir(self)
+
+        for attr in attributes:
+            if attr not in blacklist:
+                data[attr] = getattr(self, attr)
+
         return data
 
     def __repr__(self):

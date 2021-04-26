@@ -75,7 +75,7 @@ def update_all_assets_price():
         dataset = YahooApi().build_data(asset.symbol, price_template)
         dataset.pop('modules')
 
-        Asset.update_asset_data(asset.symbol, dataset)
+        update_asset_data(asset.symbol, dataset)
 
     # update_all_portfolio_positions()
 

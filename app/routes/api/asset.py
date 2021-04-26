@@ -22,6 +22,6 @@ def get_recommendations(symbol):
 
     data = asset.parse_recommendation_trend()
     if data is None:
-        return return_error(404, 'no recommendations found')
+        return return_error(416, 'no recommendations found')
 
     return jsonify(data)

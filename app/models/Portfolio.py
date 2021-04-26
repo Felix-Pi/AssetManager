@@ -19,12 +19,16 @@ class Portfolio(db.Model):
     @orm.reconstructor
     def init_on_load(self):
         self.positions = self.get_positions()
+        self.value = self.calc_value()
         self.profit = self.calc_profit()
 
     def calc_value(self):
         return round(sum(pos['value'] for pos in self.positions), 2)
 
     def calc_profit(self):
+        if self.value == 0 or self.value is None:
+            self.value = 0.00000001
+
         total_absolute = sum(pos['profit']['total_absolute'] for pos in self.positions)
         total_relative = total_absolute / self.value * 100
         today_absolute = sum(pos['profit']['today_absolute'] for pos in self.positions)
