@@ -72,7 +72,8 @@ class Portfolio_positions(db.Model):
         data = {
             'portfolio': self.portfolio,
             'symbol': self.symbol,
-            'symbol_elem': self.symbol,  # todo delete?
+            'title': self.symbol_elem.title,
+            'symbol_elem': self.symbol_elem,  # todo delete?
             'quantity': self.quantity,
             'value': self.value,
             'buyin': self.buyin,

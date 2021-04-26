@@ -11,6 +11,7 @@ from app import db
 class Asset(db.Model):
     symbol = db.Column(db.String(64), primary_key=True, unique=True)
     alternative_symbol = db.Column(db.String(64))
+    title = db.Column(db.String(64))
     type = db.Column(db.Integer, db.ForeignKey('asset_types.id'))
     type_str = db.relationship("Asset_types")
     price = db.Column(db.Integer)
@@ -87,6 +88,7 @@ class Asset(db.Model):
 
     def to_dict(self):
         data = {
+            'title': self.title,
             'symbol': self.symbol,
             'alternative_symbol': self.alternative_symbol,
             'type': self.type,

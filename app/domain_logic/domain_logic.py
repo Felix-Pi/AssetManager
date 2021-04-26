@@ -30,8 +30,6 @@ def update_asset_full(asset):
     dataset.pop('symbol')
     dataset.pop('modules')
 
-
-
     update_asset_data(asset.symbol, dataset)
 
 
@@ -89,33 +87,40 @@ def update_all_assets_price():
 
 def add_symbol(symbol, typee):
     def search_alternative_symbol(symbol):
-        alt_exchanges = ['NASDAQ', 'NYSE', 'Frankfurt']
+        alt_exchanges = ['NQY', 'NMS', 'FRA']
         api = YahooApi()
-        res = api.search_alternative_symbols(symbol)
+        res, title = api.search_alternative_symbols(symbol)
 
-        # search for NASDAQ (NMS)
-        alternative_symbol = None
         for alt_symbol in res:
-            print(symbol, alt_symbol['exchDisp'], alt_symbol['symbol'])
-            if alt_symbol['exchDisp'] in alt_exchanges:
-                alternative_symbol = alt_symbol['symbol']
-                # return alternative_symbol
+            if alt_symbol['symbol'] != symbol:
+                return alt_symbol['symbol'], title
 
-        if alternative_symbol != symbol:
-            return alternative_symbol
-
-        return None
+        return None, title
+        # search for NASDAQ (NMS)
+        # alternative_symbol = None
+        # for alt_symbol in res:
+        #     print(symbol, alt_symbol['exchange'], alt_symbol['symbol'])
+        #     if alt_symbol['exchange'] in alt_exchanges:
+        #         alternative_symbol = alt_symbol['symbol']
+        #         # return alternative_symbol
+        #
+        # if alternative_symbol != symbol:
+        #     return alternative_symbol, title
+        #
+        # return None, title
 
     fetch_existing = db.session.query(Asset).filter_by(symbol=symbol).first()
 
-    alternative_symbol = search_alternative_symbol(symbol)
-
-    print('')
     if fetch_existing is not None:
         return fetch_existing
 
-    app.logger.info('Alternative symbol for {}: {} '.format(symbol, alternative_symbol))
-    asset = Asset(symbol=symbol, type=typee, alternative_symbol=alternative_symbol)
+    alternative_symbol, title = search_alternative_symbol(symbol)
+
+    title = title.lower()
+    title = title.capitalize()
+
+    app.logger.info('Alternative symbol for {}: \'{}\'->\'{}\''.format(title, symbol, alternative_symbol))
+    asset = Asset(symbol=symbol, title=title, type=typee, alternative_symbol=alternative_symbol)
 
     db.session.add(asset)
     db.session.commit()

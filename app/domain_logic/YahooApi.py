@@ -31,7 +31,9 @@ class YahooApi:
         self.usd_eur = 1
 
     def request(self, url, params):
-        return requests.get(url, params=params).json()
+        req = requests.get(url, params=params)
+        # print(req.url)
+        return req.json()
 
     def get_stock_data(self, symbol, modules):
         params = {
@@ -52,6 +54,7 @@ class YahooApi:
         return data['summaryDetail']['currency']
 
     def yahoo_search_request(self, query, region, lang):
+
         url = 'http://d.yimg.com/aq/autoc'
         params = {
             'query': query,
@@ -59,30 +62,39 @@ class YahooApi:
             'lang': lang,
         }
 
+        url = 'https://query1.finance.yahoo.com/v1/finance/search'
+        params = {
+            'q': query,
+            'region': region,
+            'lang': lang,
+        }
+
         res = self.request(url, params)
-        return res['ResultSet']['Result']
+        return res['quotes']
 
     def search_alternative_symbols(self, symbol, match_ratio=80):
         # get stock title
         data = self.yahoo_search_request(symbol, 'DE', 'de-DE')
+        print(data)
         if data is None or len(data) == 0:
             app.logger.info('No alternative symbol found for: '.format(symbol))
-            return []
+            return [], None
 
-        title = data[0]['name']
+        title = data[0]['shortname']
 
         # search for symbols with stock name on us market to get ticker with information
         alternative_symbols = self.yahoo_search_request(title, 'US', 'en-US')
 
+        print('alternative_symbols: ', alternative_symbols)
         # select tickers with matching title
         result = []
         for symbol in alternative_symbols:
-            ratio = int(difflib.SequenceMatcher(None, title.lower(), symbol['name'].lower()).ratio() * 100)
+            ratio = int(difflib.SequenceMatcher(None, title.lower(), symbol['shortname'].lower()).ratio() * 100)
             # print(title.lower(), '|', symbol['name'].lower(), ratio)
             if ratio > match_ratio:
                 result.append(symbol)
 
-        return result
+        return result, title
 
     def parse(self, template, data, symbol):
         """

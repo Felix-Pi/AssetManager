@@ -9,6 +9,7 @@ def asset_index(symbol):
     asset = db.session.query(Asset).filter_by(symbol=symbol).first()
 
     general_info = {
+        'title': asset.get_property('title'),
         'symbol': asset.get_property('symbol'),
         'Website': asset.get_property('website'),
         'sector': asset.get_property('sector'),
