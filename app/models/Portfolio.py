@@ -19,6 +19,7 @@ class Portfolio(db.Model):
     @orm.reconstructor
     def init_on_load(self):
         self.positions = self.get_positions()
+        self.profit = self.calc_profit()
 
     def calc_value(self):
         return round(sum(pos['value'] for pos in self.positions), 2)
@@ -177,6 +178,8 @@ class Portfolio(db.Model):
             'title': self.title,
             'user_id': self.user_id,
             'positions': self.positions,
+            'profit': self.profit,
+            'value': self.value,
             'transactions': [t.to_dict() for t in self.transactions.all()],
         }
         return data

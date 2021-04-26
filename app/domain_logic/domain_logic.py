@@ -1,4 +1,4 @@
-from app import db, Asset, Stock_data, Etf_data, Crypto_data, Portfolio
+from app import db, Asset, Stock_data, Etf_data, Crypto_data, Portfolio, User
 from app.domain_logic.YahooApi import YahooApi
 from app.domain_logic.asset_templates import stock_api_template, etf_api_template, crypto_api_template, price_template
 
@@ -114,3 +114,11 @@ def add_transaction(portfolio_id, symbol, timestamp, type, price, quantity):
     portfolio = get_portfolio(portfolio_id)
 
     portfolio.add_transaction(symbol, type, timestamp, price, quantity)
+
+
+
+
+### USER
+
+def get_user(id):
+    return db.session.query(User).filter_by(id=id).first()

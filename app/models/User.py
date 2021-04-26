@@ -9,10 +9,6 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     portfolios = db.relationship("Portfolio", backref='user', lazy='dynamic')
 
-    @staticmethod
-    def get_user(id):
-        return db.session.query(User).filter_by(id=id).first()
-
     def get_name(self):
         return self.prename + ' ' + self.surname
 
@@ -21,10 +17,10 @@ class User(db.Model):
 
     def calc_profit(self):
         return {
-            'profit_today_absolute': 0,
-            'profit_today_relative': 0,
-            'profit_total_absolute': 0,
-            'profit_total_relative': 0,
+            'today_absolute': 0,
+            'today_relative': 0,
+            'total_absolute': 0,
+            'total_relative': 0,
         }
 
     def calc_profit(self):
