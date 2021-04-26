@@ -1,4 +1,5 @@
 import copy
+import difflib
 
 import sqlalchemy
 from pip._vendor import requests
@@ -9,6 +10,7 @@ from app import app
 # https://stackoverflow.com/questions/44030983/yahoo-finance-url-not-working
 # https://observablehq.com/@stroked/yahoofinance
 # https://github.com/pilwon/node-yahoo-finance/issues/43
+from app.domain_logic.utils import html_encode
 
 modules = ['assetProfile', 'summaryProfile', 'recommendationTrend', 'indexTrend', 'fundOwnership', 'summaryProfile',
            'summaryDetail', 'calendarEvents', 'financialData', 'secFilings', 'price', 'upgradeDowngradeHistory',
@@ -29,9 +31,7 @@ class YahooApi:
         self.usd_eur = 1
 
     def request(self, url, params):
-        response = requests.get(url, params=params).json()
-
-        return response
+        return requests.get(url, params=params).json()
 
     def get_stock_data(self, symbol, modules):
         params = {
@@ -50,6 +50,39 @@ class YahooApi:
         data = self.request(self.url, params)
         data = data['quoteSummary']['result'][0]
         return data['summaryDetail']['currency']
+
+    def yahoo_search_request(self, query, region, lang):
+        url = 'http://d.yimg.com/aq/autoc'
+        params = {
+            'query': query,
+            'region': region,
+            'lang': lang,
+        }
+
+        res = self.request(url, params)
+        return res['ResultSet']['Result']
+
+    def search_alternative_symbols(self, symbol, match_ratio=80):
+        # get stock title
+        data = self.yahoo_search_request(symbol, 'DE', 'de-DE')
+        if data is None or len(data) == 0:
+            app.logger.info('No alternative symbol found for: '.format(symbol))
+            return []
+
+        title = data[0]['name']
+
+        # search for symbols with stock name on us market to get ticker with information
+        alternative_symbols = self.yahoo_search_request(title, 'US', 'en-US')
+
+        # select tickers with matching title
+        result = []
+        for symbol in alternative_symbols:
+            ratio = int(difflib.SequenceMatcher(None, title.lower(), symbol['name'].lower()).ratio() * 100)
+            # print(title.lower(), '|', symbol['name'].lower(), ratio)
+            if ratio > match_ratio:
+                result.append(symbol)
+
+        return result
 
     def parse(self, template, data, symbol):
         """

@@ -1,4 +1,4 @@
-from app import db, Asset, Stock_data, Etf_data, Crypto_data, Portfolio, User
+from app import db, Asset, Stock_data, Etf_data, Crypto_data, Portfolio, User, app
 from app.domain_logic.YahooApi import YahooApi
 from app.domain_logic.asset_templates import stock_api_template, etf_api_template, crypto_api_template, price_template
 
@@ -21,9 +21,16 @@ def update_asset_full(asset):
     if asset.type == 3:
         template = crypto_api_template
 
-    dataset = YahooApi().build_data(asset.symbol, template)
+    symbol = asset.symbol
+
+    if asset.alternative_symbol is not None:
+        symbol = asset.alternative_symbol
+
+    dataset = YahooApi().build_data(symbol, template)
     dataset.pop('symbol')
     dataset.pop('modules')
+
+
 
     update_asset_data(asset.symbol, dataset)
 
@@ -80,13 +87,35 @@ def update_all_assets_price():
     # update_all_portfolio_positions()
 
 
-def add_symbol(symbol, type):
+def add_symbol(symbol, typee):
+    def search_alternative_symbol(symbol):
+        alt_exchanges = ['NASDAQ', 'NYSE', 'Frankfurt']
+        api = YahooApi()
+        res = api.search_alternative_symbols(symbol)
+
+        # search for NASDAQ (NMS)
+        alternative_symbol = None
+        for alt_symbol in res:
+            print(symbol, alt_symbol['exchDisp'], alt_symbol['symbol'])
+            if alt_symbol['exchDisp'] in alt_exchanges:
+                alternative_symbol = alt_symbol['symbol']
+                # return alternative_symbol
+
+        if alternative_symbol != symbol:
+            return alternative_symbol
+
+        return None
+
     fetch_existing = db.session.query(Asset).filter_by(symbol=symbol).first()
 
+    alternative_symbol = search_alternative_symbol(symbol)
+
+    print('')
     if fetch_existing is not None:
         return fetch_existing
 
-    asset = Asset(symbol=symbol, type=type)
+    app.logger.info('Alternative symbol for {}: {} '.format(symbol, alternative_symbol))
+    asset = Asset(symbol=symbol, type=typee, alternative_symbol=alternative_symbol)
 
     db.session.add(asset)
     db.session.commit()
@@ -114,8 +143,6 @@ def add_transaction(portfolio_id, symbol, timestamp, type, price, quantity):
     portfolio = get_portfolio(portfolio_id)
 
     portfolio.add_transaction(symbol, type, timestamp, price, quantity)
-
-
 
 
 ### USER
