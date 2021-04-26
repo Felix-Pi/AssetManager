@@ -10,4 +10,3 @@ def get_news(symbol):
         'news': get_news_for_ticker(symbol),
     }
     return render_template('modules/newsfeed/newsfeed_inner.html', **templateData)
-
