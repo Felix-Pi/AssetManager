@@ -1,0 +1,58 @@
+<!-- Modal add stock -->
+<div class="modal fade" id="add_stock_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add_stock_modal_label">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" class="dbcol" col="portfolio" value="{{ portfolio.id }}">
+                    <input type="hidden" class="dbcol" col="portfolio_type"
+                           value="{{ portfolio.type }}">
+                    <div class="mb-3">
+                        <label class="form-label">Symbol</label>
+
+                        <div class="ui search" id="search_symbol">
+                            <input class="prompt form-control dbcol" col="symbol" type="text"
+                                   placeholder="APC.F">
+                            <div class="results"></div>
+                        </div>
+
+
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control dbcol" col="title">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sector</label>
+                        <select class="form-select dbcol-opt" col="sector">
+                            {% for sector in all_sectors %}
+                            <option id="add_stock_modal_sector_{{ sector['id'] }}" db-id="{{ sector['id'] }}">{{
+                                sector['title'] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">BuyIn</label>
+                        <input type="number" class="form-control dbcol" col="buyIn">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control dbcol" col="quantity">
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary submit_form">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

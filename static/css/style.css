@@ -1,0 +1,197 @@
+.hidden {
+    display: none;
+}
+
+.shown {
+    display: block;
+}
+
+a, a:hover, a:active {
+    color: rgba(0, 0, 0, .87);
+}
+
+.table thead tr th {
+    border-top: 0px;
+}
+
+
+.card-header, .card-footer {
+    background: none;
+}
+
+.card-header {
+    background: none;
+}
+
+.card .more, .button.active {
+    border-radius: 0px !important;
+    cursor: pointer;
+}
+
+#portfolio_stocks .edit_stock_button, #portfolio_stocks #add_stock_button, .profit_label {
+    cursor: pointer;
+}
+
+.step, .steps, .card {
+    border-radius: 0 !important;
+}
+
+.steps .step .content .description {
+    padding: .2em 0 0 0;
+    font-weight: 400;
+    font-size: 1.1rem;
+    font-style: normal;
+}
+
+#top_steps .steps {
+    width: 100%;
+}
+
+#top_steps .steps .step {
+    padding: 2em;
+    justify-content: left;
+}
+
+
+#top_steps .ordered_step_number {
+    position: absolute;
+    right: 1em;
+    display: block;
+    text-align: center;
+    -ms-flex-item-align: middle;
+    margin-left: 1rem;
+    font-size: 2.1em;
+    counter-increment: ordered;
+    font-family: inherit;
+    font-weight: 700;
+    justify-content: right;
+}
+
+@media screen and (max-width: 1400px) {
+    .ui.steps .step {
+        padding: 1em !important;
+        margin-left: 0 !important;
+    }
+
+    .ui.steps .step .ordered_step_number {
+        font-size: 1.3em !important;
+    }
+}
+
+.profit_label .label, #sector_stocks .label, #sector_distribution .label {
+    float: right;
+    min-width: 55px !important;
+    display: inline-block !important
+}
+
+#profit_label_title {
+    text-align: right;
+}
+
+.ui.sub.header {
+    font-size: 1.205714286em !important;
+}
+
+
+#sector_distribution .card-footer, #stock_distribution .card-footer {
+    padding: 0;
+    display: none;
+}
+
+.card-header {
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    line-height: 1.28571429em;
+    text-transform: none;
+    color: rgba(0, 0, 0, .87);
+}
+
+.card-header .settings {
+    position: absolute;
+    display: block;
+    right: 0;
+    top: 0;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    border-radius: 0 !important;
+}
+
+.asset_elem {
+    transition: .2s;
+}
+
+.asset_elem:hover, .portfolio_elem:hover, .asset_elem.active, .portfolio_elem.active {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, .05);
+}
+
+.asset_elem.active, .portfolio_elem.active {
+    transition: 2s linear all;
+}
+
+
+.ui.label.red {
+    background-color: rgb(252, 239, 235) !important;
+    color: rgb(235, 110, 67) !important;
+}
+
+.ui.label.green {
+    background-color: rgba(237, 251, 242) !important;
+    color: rgb(122, 221, 139) !important;
+}
+
+.ui.label {
+    background-color: rgba(246, 246, 247) !important;
+    color: rgb(140, 140, 146) !important;
+}
+
+
+#searchbar_wrapper, #searchbar {
+    width: 98% !important;
+    margin: 0 1%;
+}
+
+#searchbar {
+    border-radius: 0 !important;
+}
+
+#portfolio_stocks_card {
+    max-height: 414px !important;
+    overflow-y: hidden;
+}
+
+#newsfeed .card-body {
+    max-height: 340px !important;
+    overflow-y: hidden;
+}
+
+
+#portfolio_stocks_card::-webkit-scrollbar {
+    display: none;
+}
+
+.portfolio_elem .ui.header, .asset_elem .ui.header {
+    text-transform: none;
+}
+
+.asset_elem .ui.header a:hover + .asset_elem span.relative_subheader {
+    display: block;
+}
+
+.ui.accordion .content p {
+    padding: 0 0 0 5%;
+
+}
+
+.ui.accordion .title span:hover {
+    /*color: rgba(0, 0, 0, .6) !important;*/
+    text-decoration: underline;
+}
+
+.subtitle {
+    font-weight: 400;
+    font-size: .85714286em;
+    font-style: normal;
+    color: rgba(0, 0, 0, .4);
+}
+

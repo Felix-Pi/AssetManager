@@ -1,0 +1,30 @@
+{% extends "base/base.html" -%}
+{% block content -%}
+
+
+{% if asset.type == 1 %} <!-- stock -->
+{% include "assets/stock/stock.html" %}
+{% endif %}
+
+
+{% if asset.type == 2 %} <!-- etf -->
+{% include "assets/etf/etf.html" %}
+{% endif %}
+
+
+{% if asset.type == 3 %} <!-- crypto -->
+{% include "assets/crypto/crypto.html" %}
+{% endif %}
+
+
+{%- endblock content %}
+
+{% block footer -%}
+
+
+<script>
+    let symbol = '{{ asset.symbol }}';
+    let title = '{{ asset.title }}';
+    let price = '{{ asset.price }}';
+</script>
+{%- endblock footer %}

@@ -1,0 +1,57 @@
+<!-- Modal edit stock -->
+<div class="modal fade" id="edit_stock_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="edit_stock_modal_label">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" class="dbcol" col="id">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control dbcol" col="title">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">BuyIn</label>
+                        <input type="number" class="form-control dbcol" col="buyIn">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control dbcol" col="quantity">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Portfolio</label>
+                        <select class="form-select dbcol-opt" col="portfolio">
+                            {% for user_portfolio in user_portfolios_with_same_type %}
+                            <option id="edit_stock_modal_portfolio_{{ user_portfolio['id'] }}"
+                                    db-id="{{ user_portfolio['id'] }}">
+                                {{ user_portfolio['title'] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Sector</label>
+                        <select class="form-select dbcol-opt" col="sector">
+                            {% for sector in all_sectors %}
+                            <option id="edit_stock_modal_sector_{{ sector['id'] }}" db-id="{{ sector['id'] }}">{{
+                                sector['title'] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary submit_form">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

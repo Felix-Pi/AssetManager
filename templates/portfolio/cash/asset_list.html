@@ -1,0 +1,32 @@
+<div class="card mb-4">
+    <div id="portfolio_stocks_card" class="card-body overflow-auto" style="padding: 0;">
+        <table id="portfolio_stocks" class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Category</th>
+                <th scope="col">
+                    <span id="add_stock_button"><i class="fas fa-plus"></i></span>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for asset in assets %}
+            <tr>
+                <th scope="row">
+                    <h5 class="ui sub header">
+                        {{ asset.title }}
+                    </h5>
+                </th>
+                <td>
+                            <span class="edit_stock_button" portfolio_id="{{ portfolio_id }}"
+                                  asset_id="{{ asset.id }}"><i
+                                    class="fas fa-ellipsis-v"></i>
+                            </span>
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
