@@ -6,7 +6,7 @@ from app.routes.api import bp
 
 @bp.route('/update_all', methods=['GET'])
 def update_everything():
-    Asset.update_all_assets_price()
+    update_all_assets_price()
     Portfolio.update_all_portfolio_positions()
 
     return jsonify(True)

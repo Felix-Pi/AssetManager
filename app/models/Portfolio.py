@@ -12,115 +12,18 @@ class Portfolio(db.Model):
 
     title = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    positions_db = db.relationship("Portfolio_positions", lazy='dynamic')
     transactions = db.relationship("Transaction", lazy='dynamic')
-    value = db.Column(db.String(64))
+    positions_db = db.relationship("Portfolio_positions", lazy='dynamic')
+    value = db.Column(db.Float)
 
     @orm.reconstructor
     def init_on_load(self):
         self.positions = self.get_positions()
-        self.value = self.calc_portfolio_value()
 
-    def to_dict(self):
-        data = {
-            'type': self.type,
-            'title': self.title,
-            'user_id': self.user_id,
-            'positions': self.positions,
-            'transactions': [t.to_dict() for t in self.transactions.all()],
-        }
-        return data
-
-    def __repr__(self):
-        return '<Portfolio {}>'.format(self.to_dict())
-
-    @staticmethod
-    def get_portfolio(id):
-        return db.session.query(Portfolio).filter_by(id=id).first()
-
-    def remove_transaction(self, id):
-        pass
-
-    def get_positions(self):
-        positions = self.positions_db.all()
-        res = []
-
-        for position in positions:
-            res.append(position.get_data())
-
-        return res
-
-    def update_position(self, symbol):
-        transactions = db.session.query(Transaction).filter_by(symbol=symbol, portfolio_id=self.id) \
-            .all()
-
-
-        data = {
-            'quantity': 0,
-            'buyin': 0,
-            'value': 0,
-            'transactions_above_zero': 0,
-        }
-        for transaction in transactions:
-            type = transaction.type
-            quantity = float(transaction.quantity)
-
-            price = float(transaction.price)
-
-            if type == 1:  # buy
-                data['quantity'] += quantity
-                data['transactions_above_zero'] += 1
-                data['buyin'] = round((data['buyin'] + price) / data['transactions_above_zero'], 2)
-
-            if type == 2:  # sell
-                data['quantity'] -= quantity
-
-                if data['quantity'] == 0:
-                    data['buyin'] = 0
-                    data['transactions_above_zero'] = 0
-
-        data['value'] = round(data['quantity'] * Asset.get_symbol(symbol).price, 2)
-
-        position = db.session.query(Portfolio_positions).filter_by(portfolio=self.id, symbol=symbol).first()
-
-        if position is None:
-            position = Portfolio_positions(portfolio=self.id, symbol=symbol, quantity=data['quantity'],
-                                           value=data['value'], buyin=data['buyin'])
-
-            db.session.add(position)
-        else:
-            position.quantity = data['quantity']
-            position.value = data['value']
-            position.buyin = data['buyin']
-
-
-        db.session.commit()
-
-        self.value = self.calc_portfolio_value()
-
-        return position
-
-    def add_transaction_(self, symbol, type, timestamp, price, quantity):
-        transaction = Transaction(portfolio_id=self.id, symbol=symbol, type=type, timestamp=timestamp, price=price,
-                                  quantity=quantity)
-
-        db.session.add(transaction)
-        db.session.commit()
-
-        self.update_position(symbol)
-
-        return transaction
-
-    @staticmethod
-    def add_transaction(portfolio_id, symbol, timestamp, type, price, quantity):
-        portfolio = Portfolio.get_portfolio(portfolio_id)
-
-        portfolio.add_transaction_(symbol, type, timestamp, price, quantity)
-
-    def calc_portfolio_value(self):
+    def calc_value(self):
         return round(sum(pos['value'] for pos in self.positions), 2)
 
-    def calc_portfolio_profit(self):
+    def calc_profit(self):
         total_absolute = sum(pos['profit']['total_absolute'] for pos in self.positions)
         total_relative = total_absolute / self.value * 100
         today_absolute = sum(pos['profit']['today_absolute'] for pos in self.positions)
@@ -184,22 +87,102 @@ class Portfolio(db.Model):
                 'data_absolute': [data[key]['total'] for key in data],
                 'labels': [key for key in data]}
 
+    def get_positions(self):
+        positions = self.positions_db.all()
+        result = []
+
+        for position in positions:
+            result.append(position.get_data())
+
+        return result
 
     def update_portfolio_positions(self):
         for pos in self.positions:
             self.update_position(pos['symbol'])
 
-        self.value = self.calc_portfolio_value()
+    def update_position(self, symbol):
+        transactions = db.session.query(Transaction).filter_by(symbol=symbol, portfolio_id=self.id) \
+            .all()
 
-    @staticmethod
-    def update_all_portfolio_positions():
-        portfolios = db.session.query(Portfolio).all()
+        data = {
+            'quantity': 0,
+            'buyin': 0,
+            'value': 0,
+            'transactions_above_zero': 0,
+        }
+        for transaction in transactions:
+            type = transaction.type
+            quantity = float(transaction.quantity)
 
-        app.logger.info('Updating positions for  \'{}\' Portfolios'.format(len(portfolios)))
-        for pf in portfolios:
-            pf.update_portfolio_positions()
+            price = float(transaction.price)
 
+            if type == 1:  # buy
+                data['quantity'] += quantity
+                data['transactions_above_zero'] += 1
+                data['buyin'] = round((data['buyin'] + price) / data['transactions_above_zero'], 2)
 
+            if type == 2:  # sell
+                data['quantity'] -= quantity
+
+                if data['quantity'] == 0:
+                    data['buyin'] = 0
+                    data['transactions_above_zero'] = 0
+
+        # data['value'] = round(data['quantity'] * get_symbol(symbol).price, 2)
+
+        position = db.session.query(Portfolio_positions).filter_by(portfolio=self.id, symbol=symbol).first()
+
+        if position is None:
+            position = Portfolio_positions(portfolio=self.id, symbol=symbol, quantity=data['quantity'],
+                                           buyin=data['buyin'])
+
+            position.value = position.calc_value()
+            position.profit = position.calc_profit()
+            position.dividend = position.calc_dividend()
+            position.portfolio_percentage = position.calc_portfolio_percentage()
+            db.session.add(position)
+        else:
+            position.quantity = data['quantity']
+            position.buyin = data['buyin']
+            position.value = position.calc_value()
+            position.profit = position.calc_profit()
+            position.dividend = position.calc_dividend()
+            position.portfolio_percentage = position.calc_portfolio_percentage()
+
+        db.session.commit()
+
+        self.positions = self.get_positions()
+        self.value = self.calc_value()
+        db.session.commit()
+
+        return position
+
+    def add_transaction(self, symbol, type, timestamp, price, quantity):
+        transaction = Transaction(portfolio_id=self.id, symbol=symbol, type=type, timestamp=timestamp, price=price,
+                                  quantity=quantity)
+
+        db.session.add(transaction)
+        db.session.commit()
+
+        self.update_position(symbol)
+
+        return transaction
+
+    def remove_transaction(self, id):
+        pass
+
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'title': self.title,
+            'user_id': self.user_id,
+            'positions': self.positions,
+            'transactions': [t.to_dict() for t in self.transactions.all()],
+        }
+        return data
+
+    def __repr__(self):
+        return '<Portfolio {}>'.format(self.to_dict())
 
 
 class Transaction(db.Model):
@@ -210,9 +193,6 @@ class Transaction(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     price = db.Column(db.Float())
     quantity = db.Column(db.Float())
-
-    def get_data(self):
-        return {}
 
     def to_dict(self, include_email=False):
         data = {

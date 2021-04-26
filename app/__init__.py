@@ -23,7 +23,7 @@ app.logger.setLevel(logging.DEBUG)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from app import routes
+
 from app.models.User import *
 from app.models.Portfolio import *
 from app.models.Asset import *
@@ -40,4 +40,5 @@ app.register_blueprint(portfolio_bp, url_prefix='/portfolio')
 app.register_blueprint(asset_bp, url_prefix='/asset')
 app.register_blueprint(api_bp, url_prefix='/api')
 
+from app import routes
 # app.logger.info('Routes: '.format(print(app.url_map)))

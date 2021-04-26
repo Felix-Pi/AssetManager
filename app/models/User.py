@@ -17,7 +17,7 @@ class User(db.Model):
         return self.prename + ' ' + self.surname
 
     def calc_networth(self):
-        return round(sum([pf.calc_portfolio_value() for pf in self.portfolios.all()]), 2)
+        return round(sum([pf.calc_value() for pf in self.portfolios.all()]), 2)
 
     def calc_profit(self):
         return {
@@ -31,9 +31,9 @@ class User(db.Model):
         networth = self.calc_networth()
 
         profit_total_absolute = round(
-            sum([pf.calc_portfolio_profit()['total_absolute'] for pf in self.portfolios.all()]), 2)
+            sum([pf.calc_profit()['total_absolute'] for pf in self.portfolios.all()]), 2)
         profit_today_absolute = round(
-            sum([pf.calc_portfolio_profit()['today_absolute'] for pf in self.portfolios.all()]), 2)
+            sum([pf.calc_profit()['today_absolute'] for pf in self.portfolios.all()]), 2)
 
         profit_total_relative = profit_total_absolute / networth * 100
         profit_today_relative = profit_today_absolute / networth * 100
@@ -47,7 +47,6 @@ class User(db.Model):
         return data
 
     def calc_dividend(self):
-
         return sum([pf.calc_dividend() for pf in self.portfolios.all()])
 
     def get_asset_distribution(self):
@@ -56,7 +55,7 @@ class User(db.Model):
         data = {}
         for portfolio in portfolios:
             networth = self.calc_networth()
-            pf_value = portfolio.calc_portfolio_value()
+            pf_value = portfolio.calc_value()
             pf_type = portfolio.type_str.type
 
             if pf_type not in data:
