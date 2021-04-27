@@ -48,7 +48,7 @@ stock_api_template = {
     'fiveYearAvgDividendYield': 'summaryDetail.fiveYearAvgDividendYield.raw',  # todo currency
 
     # # financial data
-    'currency': 'summaryDetail.currency.raw',
+    'currency': 'summaryDetail.currency',
     'totalCash': 'financialData.totalCash.raw',
     'totalCashPerShare': 'financialData.totalCashPerShare.raw',
     'totalDebt': 'financialData.totalDebt.raw',
@@ -111,4 +111,11 @@ price_template = {
     'modules': ['price'],
     'price': 'price.regularMarketPrice.raw|convert_currency',
     'price_open': 'price.regularMarketOpen.raw|convert_currency',
+}
+
+currency_template = {
+    'modules': ['price'],
+    'price': 'price.regularMarketPrice.raw',
+    'title': 'price.shortName',
+    'price_open': 'price.regularMarketOpen.raw',
 }

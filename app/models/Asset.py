@@ -22,7 +22,7 @@ class Asset(db.Model):
     def init_on_load(self):
         self.data = self.get_data()
 
-        if self.data is not None:
+        if isinstance(self.data, dict) is False:
             self.data = self.data.to_dict()
 
             for d in self.data:
@@ -99,8 +99,11 @@ class Asset(db.Model):
             # 'data': self.data if hasattr(self, 'data') else self.get_data(),
         }
 
-        for d in self.data:
-            data[d] = self.data[d]
+        print('self.data before: ', self.data)
+        if hasattr(self, 'data'):
+            for d in self.data:
+                data[d] = self.data[d]
+        print('self.data after: ', self.data)
 
         return data
 
@@ -252,6 +255,35 @@ class Crypto_data(db.Model):
     regularMarketVolume = db.Column(db.Float())
     regularMarketDayLow = db.Column(db.Float())
     regularMarketDayHigh = db.Column(db.Float())
+
+    def to_dict(self):
+        data = {}
+        blacklist = ['__abstract__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__',
+                     '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__',
+                     '__le__', '__lt__', '__mapper__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__',
+                     '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__table__',
+                     '__tablename__', '__weakref__', '_sa_class_manager', '_sa_instance_state', '_sa_registry']
+
+        attributes = dir(self)
+
+        for attr in attributes:
+            if attr not in blacklist:
+                data[attr] = getattr(self, attr)
+
+        return data
+
+    def __repr__(self):
+        return '<Crypto_data {}>'.format(self.to_dict())
+
+
+class Currency_data(db.Model):
+    # general
+    id = db.Column(db.Integer, primary_key=True)
+    symbol = db.Column(db.Integer, db.ForeignKey('asset.symbol'), unique=True)
+
+    price = db.Column(db.Float())
+    price_open = db.Column(db.Float())
+    title = db.Column(db.String(64))
 
     def to_dict(self):
         data = {}

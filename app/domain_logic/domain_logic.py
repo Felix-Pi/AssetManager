@@ -1,6 +1,7 @@
-from app import db, Asset, Stock_data, Etf_data, Crypto_data, Portfolio, User, app
+from app import db, Asset, Stock_data, Etf_data, Crypto_data, Portfolio, User, app, Currency_data
 from app.domain_logic.YahooApi import YahooApi
-from app.domain_logic.asset_templates import stock_api_template, etf_api_template, crypto_api_template, price_template
+from app.domain_logic.asset_templates import stock_api_template, etf_api_template, crypto_api_template, price_template, \
+    currency_template
 
 
 ### Asset Stuff
@@ -20,15 +21,20 @@ def update_asset_full(asset):
         template = etf_api_template
     if asset.type == 3:
         template = crypto_api_template
+    if asset.type == 4:
+        template = currency_template
 
     symbol = asset.symbol
 
-    if asset.alternative_symbol is not None:
-        symbol = asset.alternative_symbol
+    # use alternative symbol on update
+    # if asset.alternative_symbol is not None:
+    #     symbol = asset.alternative_symbol
 
     dataset = YahooApi().build_data(symbol, template)
-    dataset.pop('symbol')
-    dataset.pop('modules')
+    if 'symbol' in dataset:
+        dataset.pop('symbol')
+    if 'modules' in dataset:
+        dataset.pop('modules')
 
     update_asset_data(asset.symbol, dataset)
 
@@ -58,6 +64,12 @@ def update_asset_data(symbol, dataset):
         asset_data_is_none = asset_data is None
         if asset_data_is_none:
             asset_data = Crypto_data(**dataset, symbol=symbol)
+    if asset.type == 4:
+        asset_data = db.session.query(Currency_data).filter_by(symbol=asset.symbol).first()
+
+        asset_data_is_none = asset_data is None
+        if asset_data_is_none:
+            asset_data = Currency_data(**dataset, symbol=symbol)
 
     if asset_data_is_none:
         db.session.add(asset_data)
@@ -77,7 +89,12 @@ def update_asset_data(symbol, dataset):
 
 def update_all_assets_price():
     for asset in db.session.query(Asset).all():
-        dataset = YahooApi().build_data(asset.symbol, price_template)
+        template = price_template
+
+        if asset.type == 4:
+            template = currency_template
+
+        dataset = YahooApi().build_data(asset.symbol, template)
         dataset.pop('modules')
 
         update_asset_data(asset.symbol, dataset)
@@ -116,6 +133,9 @@ def add_symbol(symbol, typee):
 
     alternative_symbol, title = search_alternative_symbol(symbol)
 
+
+    if title is None:
+        title = ''
     title = title.lower()
     title = title.capitalize()
 

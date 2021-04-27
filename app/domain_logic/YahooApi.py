@@ -5,7 +5,7 @@ import sqlalchemy
 from pip._vendor import requests
 
 # https://query2.finance.yahoo.com/v6/finance/quote/validate?symbols=MSFT validate symbol
-from app import app
+from app import app, Asset, db
 
 # https://stackoverflow.com/questions/44030983/yahoo-finance-url-not-working
 # https://observablehq.com/@stroked/yahoofinance
@@ -28,7 +28,9 @@ class YahooApi:
     def __init__(self):
         self.url = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/'
         # self.usd_eur = self.build_data('USDEUR=X', usd_eur)['course']
-        self.usd_eur = 1
+        self.convert_currency_to = 'EUR'
+
+        self.currencies = db.session.query(Asset).filter(Asset.type == 4).all()
 
     def request(self, url, params):
         req = requests.get(url, params=params)
@@ -75,7 +77,6 @@ class YahooApi:
     def search_alternative_symbols(self, symbol, match_ratio=80):
         # get stock title
         data = self.yahoo_search_request(symbol, 'DE', 'de-DE')
-        print(data)
         if data is None or len(data) == 0:
             app.logger.info('No alternative symbol found for: '.format(symbol))
             return [], None
@@ -85,7 +86,7 @@ class YahooApi:
         # search for symbols with stock name on us market to get ticker with information
         alternative_symbols = self.yahoo_search_request(title, 'US', 'en-US')
 
-        print('alternative_symbols: ', alternative_symbols)
+        #print('alternative_symbols: ', alternative_symbols)
         # select tickers with matching title
         result = []
         for symbol in alternative_symbols:
@@ -105,7 +106,13 @@ class YahooApi:
         """
         data = data['quoteSummary']['result'][0]
 
-        currency = self.get_symbol_currency(symbol)
+        symbol_currency = None
+        if 'price' in data:
+            if 'currency' in data['price']:
+                symbol_currency = data['price']['currency']
+
+        if symbol_currency is None:
+            symbol_currency = self.get_symbol_currency(symbol)
 
         def get(value):
             """
@@ -142,7 +149,27 @@ class YahooApi:
                     return sqlalchemy.sql.null()
                 return value
 
-            def convert_currency(value, currency_to):  # todo
+            def convert_currency(value):  # todo
+                if value is None or value == 'NULL' or isinstance(value, sqlalchemy.sql.elements.Null):
+                    return value
+
+                if symbol_currency == self.convert_currency_to:
+                    return value
+
+                currency_symbol = symbol_currency + self.convert_currency_to + '=X'
+
+                for c in self.currencies:
+                    if c.symbol == currency_symbol:
+                        #print('symbol:{}, value: {}, price: {}, value_type: {}'.format(symbol, value, c.price, type(value)))
+                        return round(value * c.price, 2)
+
+                #todo add symbol of not in db
+                #symbol not found: add symbol
+
+                #c = add_symbol(currency_symbol, 4)
+                #if c.symbol == currency_symbol:
+                #    return round(value * c.price, 2)
+
                 return value
 
             if '|' in key:
@@ -150,7 +177,7 @@ class YahooApi:
                 value = get(key)
 
                 if options == 'convert_currency':
-                    value = convert_currency(value, 'EUR')
+                    value = convert_currency(value)
                 if options == 'toString':
                     value = str(value)
             else:

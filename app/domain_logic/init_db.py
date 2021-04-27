@@ -22,6 +22,7 @@ def asset_types():
         Asset_types(type='Stock'),
         Asset_types(type='Etf'),
         Asset_types(type='Crypto'),
+        Asset_types(type='Currency'),
     ]
     commit(asset_types)
 
@@ -46,6 +47,7 @@ def portfolios():
 
 
 def assets():
+    add_symbol('USDEUR=X', 4)
     add_symbol('APC.F', 1)
     add_symbol('BAYN.DE', 1)
     add_symbol('3CP.F', 1)
