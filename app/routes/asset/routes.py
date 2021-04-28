@@ -20,8 +20,18 @@ def asset_index(symbol):
 
     financials = {
         'price': {
-            'regularMarketPrice': asset.get_property('regularMarketPrice'),
-            'regularMarketOpen': asset.get_property('regularMarketOpen'),
+            'price': asset.get_property('price'),
+            'price open': asset.get_property('price_open'),
+            'volume': asset.get_property('regularMarketVolume'),
+            'day low': asset.get_property('regularMarketDayLow'),
+            'day hig': asset.get_property('regularMarketDayHigh'),
+            'averageVolume': asset.get_property('averageVolume'),
+            'bid': asset.get_property('bid'),
+            'ask': asset.get_property('ask'),
+        },
+        'price_more': {
+            'regularMarketPrice': asset.get_property('price'),
+            'regularMarketOpen': asset.get_property('price_open'),
             'regularMarketVolume': asset.get_property('regularMarketVolume'),
             'regularMarketDayLow': asset.get_property('regularMarketDayLow'),
             'regularMarketDayHigh': asset.get_property('regularMarketDayHigh'),

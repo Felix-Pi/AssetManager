@@ -84,7 +84,10 @@ class Asset(db.Model):
         return result
 
     def parse_earnings(self):
-        return self.earnings
+        if hasattr(self, 'earnings'):
+            return self.earnings
+
+        return None
 
     def to_dict(self):
         data = {

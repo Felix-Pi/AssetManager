@@ -11,6 +11,12 @@
                         <td>{{ financials['price'][info] }}</td>
                     </tr>
                     {% endfor %}
+                    {% for info in financials['price_more'] %}
+                    <tr>
+                        <th scope="row">{{ info }}</th>
+                        <td>{{ financials['price_more'][info] }}</td>
+                    </tr>
+                    {% endfor %}
                 </table>
             </div>
         </div>

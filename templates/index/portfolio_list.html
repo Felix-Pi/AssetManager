@@ -14,8 +14,7 @@
 
 
                     <h1 class="ui sub header">
-                        <a href="{{ url_for('portfolio.portfolio') }}?id={{ portfolio.id }}">{{ portfolio.title
-                            }}</a>
+                        <a href="{{ url_for('portfolio.portfolio') }}?id={{ portfolio.id }}">{{ portfolio.title }}</a>
                     </h1>
                     <span>
                         <div class="ui label">
@@ -25,22 +24,19 @@
                 </th>
 
                 <td>
-                    {% if portfolio.portfolio_type == 1 or
-                    portfolio.portfolio_type == 2 or
-                    portfolio.portfolio_type == 3%}
-                    <span class="profit_label" counter="0"
-                          data-val="{{ portfolio.total_absolute }}~{{ portfolio.today_relative }}~{{ portfolio.today_absolute }}~{{ portfolio.total_relative }}">
-                            {% if portfolio.calc_portfolio_profit().total_absolute >= 0 %}
-                            <div class="ui label green">
-                                <i class="fas fa-caret-up"></i> <span>{{ portfolio.calc_portfolio_profit().total_absolute }}</span>
+
+                    <span class="profit_label"
+                          data-val="{{ portfolio.profit['total_absolute'] }}~{{ portfolio.profit['today_relative'] }}~{{ portfolio.profit['today_absolute'] }}~{{ portfolio.profit['total_relative'] }}">
+                            {% if portfolio.profit['total_absolute'] >= 0 %}
+                                <div class="ui label green">
+                                <i class="fas fa-caret-up"></i> <span>{{ portfolio.profit['total_absolute'] }}</span>
                             </div>
                             {% else %}
-                            <div class="ui label red">
-                                <i class="fas fa-caret-down"></i> <span>{{ portfolio.calc_portfolio_profit().total_absolute }}</span>
+                                <div class="ui label red">
+                                <i class="fas fa-caret-down"></i> <span>{{ portfolio.profit['total_absolute'] }}</span>
                             </div>
                             {% endif %}
                              </span>
-                    {% endif %}
                 </td>
 
 

@@ -76,6 +76,27 @@ function set_loader_inactive(id) {
     $(id).find('.loader').removeClass('active');
 }
 
+/**
+ * sets loader div active
+ * @param id html id
+ */
+function add_spinner(id) {
+    target = $(id);
+
+    console.log($(id + ' .spinner'))
+    if ($(id + ' .spinner').length == 0) {
+        target.append('<i class="fas spinner fa-spinner fa-spin"></i>')
+    }
+}
+
+/**
+ * sets loader div inactive
+ * @param id html id
+ */
+function remove_spinner(id) {
+    $(id + ' .spinner').remove()
+}
+
 
 /**
  * sets html element active, removes other active elements for this target
@@ -170,33 +191,33 @@ $(document).ready(function () {
      * call update_data() to refresh data
      */
     $(document).on('click', '#update_data_price', function (e, f) {
-        set_loader_active('.navbar')
+        add_spinner('#update_data_price')
         $.ajax({
             method: "GET",
             url: "/api/update_data_price",
             success: function (data) {
-                set_loader_inactive('.navbar')
+                remove_spinner('#update_data_price')
             }
         });
     });
 
     $(document).on('click', '#update_data_full', function (e, f) {
-        set_loader_active('.navbar')
+        add_spinner('#update_data_full')
         $.ajax({
             method: "GET",
             url: "/api/update_data_full",
             success: function (data) {
-                set_loader_inactive('.navbar')
+                remove_spinner('#update_data_full')
             }
         });
     });
     $(document).on('click', '#update_all_positions', function (e, f) {
-        set_loader_active('.navbar')
+        add_spinner('#update_all_positions')
         $.ajax({
             method: "GET",
             url: "/api/update_all_positions",
             success: function (data) {
-                set_loader_inactive('.navbar')
+                remove_spinner('#update_all_positions')
             }
         });
     });

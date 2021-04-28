@@ -1,9 +1,11 @@
 import json
+import locale
 from datetime import datetime
 
 import requests
 from dateutil.relativedelta import relativedelta
 
+#locale.setlocale(locale.LC_TIME, "de_DE")
 
 def request_historical_data(symbol, days, interval):
     now = datetime.now()
