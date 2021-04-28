@@ -1,0 +1,63 @@
+<div class="row row-cols-1" id="top_steps">
+
+    <div class="col-md-3 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Performance today</div>
+                    <div class="description">
+                        {% if position.profit['today_relative'] >= 0 %}
+                            + {% endif %}{{ position.profit['today_relative'] }} %
+                    </div>
+                </div>
+                <div class="ordered_step_number">
+                    {% if position.profit['today_absolute'] >= 0 %} + {% endif %}
+                    {{ position.profit['today_absolute'] }} €
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title"> overall return</div>
+                    <div class="description">
+                        {% if position.profit['total_relative'] >= 0 %}
+                            +{% endif %}{{ position.profit['total_relative'] }} %
+                    </div>
+                </div>
+                <div class="ordered_step_number">
+                    {% if position.profit['total_absolute'] >= 0 %} +{% endif %}{{ position.profit['total_absolute'] }}
+                    €
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Value</div>
+                    <div class="description">&nbsp;quantity: {{ position.quantity }}  </div>
+                </div>
+                <div class="ordered_step_number"> {{ position.value }} €</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Dividend</div>
+                    <div class="description"> &nbsp;</div>
+                </div>
+                <div class="ordered_step_number"> {{ position.dividend }} €</div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

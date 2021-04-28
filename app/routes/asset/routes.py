@@ -1,12 +1,14 @@
 from flask import render_template
 
-from app import db, Asset
+from app import db, Asset, Portfolio_positions
 from app.routes.asset import bp
 
 
-@bp.route('/<string:symbol>/')
-def asset_index(symbol):
+@bp.route('/<int:portfolio_id>/<string:symbol>/')
+def asset_index(portfolio_id, symbol):
     asset = db.session.query(Asset).filter_by(symbol=symbol).first()
+    position = db.session.query(Portfolio_positions).filter(Portfolio_positions.symbol == symbol,
+                                                            Portfolio_positions.portfolio == portfolio_id).first()
 
     general_info = {
         'title': asset.get_property('title'),
@@ -79,10 +81,10 @@ def asset_index(symbol):
         'Ex dividend date': asset.get_property('ex_dividend_date'),
     }
 
-
     print(events)
     templateData = {
         'asset': asset,
+        'position': position,
         'general_info': general_info,
         'financials': financials,
         'events': events,

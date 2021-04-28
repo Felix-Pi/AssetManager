@@ -11,12 +11,13 @@
             </tr>
             </thead>
             <tbody>
+
             {% for asset in assets %}
                 <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title="{{ asset.title }}"
                     data-price="{{ asset.price }}">
                     <th scope="row">
                         <h5 class="ui sub header">
-                            <a href="{{ url_for('asset.asset_index', symbol=asset.symbol) }}">
+                            <a href="{{ url_for('asset.asset_index',portfolio_id=portfolio.id, symbol=asset.symbol) }}">
                                 {{ asset.title }} </a>
                         </h5>
                         {% set quantity = asset.quantity %}

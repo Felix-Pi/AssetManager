@@ -17,7 +17,7 @@
             <tr>
                 <td>
                     <h5 class="ui sub header">
-                        <a href="{{ url_for('asset.asset_index', symbol=asset.id) }}?portfolio={{ portfolio.id }}&stock={{ asset.id }}">{{
+                        <a href="{{ url_for('asset.asset_index', symbol=asset.id, portfolio_id=portfolio.id) }}">{{
                             asset.title }}</a>
                     </h5>
                     <span>
