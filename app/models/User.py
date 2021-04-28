@@ -15,7 +15,7 @@ class User(db.Model):
     def calc_networth(self):
         return round(sum([pf.calc_value() for pf in self.portfolios.all()]), 2)
 
-    def calc_profit(self):
+    def calc_profit(self):  # todo remove profit_
         networth = self.calc_networth()
 
         profit_total_absolute = round(
@@ -36,6 +36,26 @@ class User(db.Model):
 
     def calc_dividend(self):
         return sum([pf.calc_dividend() for pf in self.portfolios.all()])
+
+    def get_all_transactions(self):
+        transactions = []
+        for portfolio in self.portfolios.all():
+            for transaction in portfolio.transactions.all():
+                transactions.append(transaction)
+
+        transactions.sort(key=lambda t: t.timestamp, reverse=True)
+
+        return transactions
+
+    def calc_transaction_cost(self):
+        portfolios = self.portfolios.all()
+
+        res = 0.0
+        for portfolio in portfolios:
+            for pos in portfolio.transactions.all():
+                res += pos.cost
+
+        return res
 
     def get_asset_distribution(self):
 

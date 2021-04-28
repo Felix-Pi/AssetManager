@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app import db, app
+from app import db
 from app.models.Asset import *
 from app.models.Portfolio_position import Portfolio_positions
 
@@ -9,10 +9,9 @@ class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.Integer, db.ForeignKey('portfolio_types.id'))
     type_str = db.relationship("Portfolio_types")
-
     title = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    transactions = db.relationship("Transaction", lazy='dynamic')
+    transactions = db.relationship("Transaction", lazy='dynamic', order_by="desc(Transaction.timestamp)")
     positions_db = db.relationship("Portfolio_positions", lazy='dynamic')
     value = db.Column(db.Float)
 
@@ -135,10 +134,10 @@ class Portfolio(db.Model):
                     if data['quantity'] == 0:
                         data['buyin'] = 0
 
-        data['buyin'] = round(data['buyin'] / data['quantity'], 7)
-        data['quantity'] = round(data['quantity'], 7)
+        if data['buyin'] != 0:
+            data['buyin'] = round(data['buyin'] / data['quantity'], 7)
 
-        print(data)
+        data['quantity'] = round(data['quantity'], 7)
 
         position = db.session.query(Portfolio_positions).filter_by(portfolio=self.id, symbol=symbol).first()
 
@@ -167,9 +166,15 @@ class Portfolio(db.Model):
 
         return position
 
-    def add_transaction(self, symbol, type, timestamp, price, quantity):
+    def add_transaction(self, symbol, type, timestamp, price, quantity, cost=None):
+        if cost is None:
+            if type == 1 or type == 2:
+                cost = 1.0
+            if type == 3 or type == 4 or type == 5:
+                cost = 0.0
+
         transaction = Transaction(portfolio_id=self.id, symbol=symbol, type=type, timestamp=timestamp, price=price,
-                                  quantity=quantity)
+                                  quantity=quantity, cost=cost)
 
         db.session.add(transaction)
         db.session.commit()
@@ -201,10 +206,12 @@ class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'))
     symbol = db.Column(db.Integer, db.ForeignKey('asset.symbol'))
-    type = db.Column(db.Integer)
+    type = db.Column(db.Integer, db.ForeignKey('transaction_types.id'))
+    type_str = db.relationship("Transaction_types")
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     price = db.Column(db.Float())
     quantity = db.Column(db.Float())
+    cost = db.Column(db.Float())
 
     def to_dict(self, include_email=False):
         data = {
@@ -212,6 +219,7 @@ class Transaction(db.Model):
             'portfolio_id': self.portfolio_id,
             'symbol': self.symbol,
             'type': self.type,
+            'type_str': self.type_str,
             'timestamp': self.timestamp,
             'price': self.price,
             'quantity': self.quantity,
@@ -220,6 +228,21 @@ class Transaction(db.Model):
 
     def __repr__(self):
         return '<Transaction {}>'.format(self.to_dict())
+
+
+class Transaction_types(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(64))
+
+    def to_dict(self, include_email=False):
+        data = {
+            'id': self.id,
+            'title': self.title,
+        }
+        return data
+
+    def __repr__(self):
+        return '<Transaction_type {}>'.format(self.to_dict())
 
 
 class Portfolio_types(db.Model):

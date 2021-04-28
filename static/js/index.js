@@ -20,5 +20,16 @@ function setup() {
 $(document).ready(function () {
     setup();
 
+    $('.toggleble_nav .item:first-child').addClass('active')
+    $('.toggleble_nav_content .elem:first-child').removeClass('hidden')
+    $(document).on('click', '.toggleble_nav .item', function () {
+        let elem = $(this);
 
+        let target = elem.attr('data-attr');
+
+        set_active('.toggleble_nav .item', elem)
+
+        $('.toggleble_nav_content .elem').addClass('hidden');
+        $('.toggleble_nav_content .elem[data-attr=' + target + ']').removeClass('hidden');
+    });
 });
