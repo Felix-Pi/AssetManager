@@ -19,7 +19,7 @@
                     </h1>
                     <span>
                         <div class="ui label">
-                            {{ portfolio.calc_portfolio_value() }}
+                            {{ portfolio.value }}
                         </div>
                     </span>
                 </th>
@@ -29,14 +29,14 @@
                     portfolio.portfolio_type == 2 or
                     portfolio.portfolio_type == 3%}
                     <span class="profit_label" counter="0"
-                          data-val="{{ portfolio.profit_total_absolute }}~{{ portfolio.profit_today_relative }}~{{ portfolio.profit_today_absolute }}~{{ portfolio.profit_total_relative }}">
-                            {% if portfolio.calc_portfolio_profit().profit_total_absolute >= 0 %}
+                          data-val="{{ portfolio.total_absolute }}~{{ portfolio.today_relative }}~{{ portfolio.today_absolute }}~{{ portfolio.total_relative }}">
+                            {% if portfolio.calc_portfolio_profit().total_absolute >= 0 %}
                             <div class="ui label green">
-                                <i class="fas fa-caret-up"></i> <span>{{ portfolio.calc_portfolio_profit().profit_total_absolute }}</span>
+                                <i class="fas fa-caret-up"></i> <span>{{ portfolio.calc_portfolio_profit().total_absolute }}</span>
                             </div>
                             {% else %}
                             <div class="ui label red">
-                                <i class="fas fa-caret-down"></i> <span>{{ portfolio.calc_portfolio_profit().profit_total_absolute }}</span>
+                                <i class="fas fa-caret-down"></i> <span>{{ portfolio.calc_portfolio_profit().total_absolute }}</span>
                             </div>
                             {% endif %}
                              </span>

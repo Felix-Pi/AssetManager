@@ -169,11 +169,32 @@ $(document).ready(function () {
     /**
      * call update_data() to refresh data
      */
-    $(document).on('click', '#update_data', function (e, f) {
+    $(document).on('click', '#update_data_price', function (e, f) {
         set_loader_active('.navbar')
         $.ajax({
             method: "GET",
-            url: "/api/update_all",
+            url: "/api/update_data_price",
+            success: function (data) {
+                set_loader_inactive('.navbar')
+            }
+        });
+    });
+
+    $(document).on('click', '#update_data_full', function (e, f) {
+        set_loader_active('.navbar')
+        $.ajax({
+            method: "GET",
+            url: "/api/update_data_full",
+            success: function (data) {
+                set_loader_inactive('.navbar')
+            }
+        });
+    });
+    $(document).on('click', '#update_all_positions', function (e, f) {
+        set_loader_active('.navbar')
+        $.ajax({
+            method: "GET",
+            url: "/api/update_all_positions",
             success: function (data) {
                 set_loader_inactive('.navbar')
             }

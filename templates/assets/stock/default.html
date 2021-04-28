@@ -6,7 +6,13 @@
 
     <!-- filler -->
     <div class="col-md-3 mb-4">
-        {% include "modules/placeholder.html" %}
+        <div class="card">
+            <div class="card-header">Info</div>
+            <div class="card-body">
+
+            </div>
+            <div class="card-footer"></div>
+        </div>
     </div>
 
     <!-- recommendations -->
@@ -18,6 +24,8 @@
             </div>
             <div class="card-footer"></div>
         </div>
+
+
     </div>
 
 
@@ -36,7 +44,7 @@
                     <button class="ui button" data-id="max" data-days="1800" data-period="1mo">Max</button>
                 </div>
 
-                <span>{{asset.title}}</span>
+                <span>{{ asset.title }}</span>
             </div>
             <div class="card-body">
                 <div class="ui active loader"></div>

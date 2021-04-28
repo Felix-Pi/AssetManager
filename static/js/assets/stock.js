@@ -10,18 +10,15 @@ function load_recommendations(id, symbol) {
     });
 }
 
-function setup() {
-    load_newsfeed(symbol);
-
+function setup_stock() {
+    // console.log('LOADED: stock.js')
     load_historical_data('#linechart', symbol, $('#linechart .settings button.active'));
     load_recommendations('#recommendations', symbol);
-
 }
 
 
 $(document).ready(function () {
-    setup();
-
+    setup_stock();
 
     /*
     Line Chart

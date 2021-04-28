@@ -1,7 +1,7 @@
 from flask import render_template
 
 from app import db, User, Portfolio, USER_ID
-from app.index import bp
+from app.routes.index import bp
 
 
 @bp.route('/')

@@ -2,19 +2,19 @@
 {% block content -%}
 
 
-{% if asset.type == 1 %} <!-- stock -->
-{% include "assets/stock/stock.html" %}
-{% endif %}
+    {% if asset.type == 1 %} <!-- stock -->
+        {% include "assets/stock/base.html" %}
+    {% endif %}
 
 
-{% if asset.type == 2 %} <!-- etf -->
-{% include "assets/etf/etf.html" %}
-{% endif %}
+    {% if asset.type == 2 %} <!-- etf -->
+        {% include "assets/etf/base.html" %}
+    {% endif %}
 
 
-{% if asset.type == 3 %} <!-- crypto -->
-{% include "assets/crypto/crypto.html" %}
-{% endif %}
+    {% if asset.type == 3 %} <!-- crypto -->
+        {% include "assets/crypto/crypto.html" %}
+    {% endif %}
 
 
 {%- endblock content %}
@@ -22,9 +22,10 @@
 {% block footer -%}
 
 
-<script>
-    let symbol = '{{ asset.symbol }}';
-    let title = '{{ asset.title }}';
-    let price = '{{ asset.price }}';
-</script>
+    <script>
+        let symbol = '{{ asset.symbol }}';
+        let title = '{{ asset.title }}';
+        let price = '{{ asset.price }}';
+    </script>
+    <script src="{{ url_for('static', filename='js/assets/asset.js') }}"></script>
 {%- endblock footer %}

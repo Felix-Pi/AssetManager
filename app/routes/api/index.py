@@ -1,7 +1,7 @@
 from flask import jsonify
 
 from app import db, User
-from app.api import *
+from app.routes.api import *
 
 
 @bp.route('/index/<int:user_id>/asset_distribution', methods=['GET'])

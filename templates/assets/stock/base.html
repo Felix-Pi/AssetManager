@@ -1,8 +1,4 @@
-{% extends "base/base.html" -%}
-{% block content -%}
-
-
-<h1>{{asset.symbol}}: {{asset.price}} €</h1>
+<h1>{{ asset.title }}: {{ asset.price }} €</h1>
 
 <div id="stock_navigation" class="ui secondary pointing menu">
     <a class="active item" data-attr="default">
@@ -10,6 +6,9 @@
     </a>
     <a class="item" data-attr="info">
         Info
+    </a>
+    <a class="item" data-attr="financials">
+        Financials
     </a>
     <a class="item" data-attr="calendar_events">
         Calendar Events
@@ -20,28 +19,28 @@
 
     <div class="right menu">
         <a class="ui item">
-            {{asset.title}}
+            {{ asset.title }}
         </a>
     </div>
 </div>
 
-<div id="content">
+<div id="stock_navigation_content">
     <div class="elem" data-attr="default">
         {% include "assets/stock/default.html" %}
     </div>
-    <div class="elem hidden" data-attr="info"></div>
+    <div class="elem hidden" data-attr="info">
+        {% include "assets/stock/info.html" %}
+    </div>
     <div class="elem hidden" data-attr="calendar_events">
         {% include "assets/stock/calendar_events.html" %}
     </div>
+    <div class="elem hidden" data-attr="financials">
+        {% include "assets/stock/financials.html" %}
+    </div>
 </div>
 
-{%- endblock content %}
-
-{% block footer -%}
 
 <script src="https://cdn.jsdelivr.net/npm/luxon@1.24.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@0.2.1"></script>
 <script src="{{ url_for('static', filename='js/frameworks/financial-chart.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/stock.js') }}"></script>
-
-{%- endblock footer %}
+<script src="{{ url_for('static', filename='js/assets/stock.js') }}"></script>

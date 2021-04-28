@@ -1,0 +1,67 @@
+<div class="row">
+        <!-- general info -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">Price</div>
+            <div class="card-body">
+                <table class="table">
+                    {% for info in financials['price'] %}
+                    <tr>
+                        <th scope="row">{{ info }}</th>
+                        <td>{{ financials['price'][info] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">Company Financials</div>
+            <div class="card-body">
+                <table class="table">
+                    {% for info in financials['company_financials'] %}
+                    <tr>
+                        <th scope="row">{{ info }}</th>
+                        <td>{{ financials['company_financials'][info] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">Dividend info</div>
+            <div class="card-body">
+                <table class="table">
+                    {% for info in financials['dividend'] %}
+                    <tr>
+                        <th scope="row">{{ info }}</th>
+                        <td>{{ financials['dividend'][info] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">Earnings</div>
+            <div class="card-body">
+                <table class="table">
+                    {% for info in financials['earnings'] %}
+                    <tr>
+                        <th scope="row">{{ info }}</th>
+                        <td>{{ financials['earnings'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>

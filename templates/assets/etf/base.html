@@ -1,8 +1,4 @@
-{% extends "base/base.html" -%}
-{% block content -%}
-
-
-<h1>{{asset.title}}: {{asset.regularMarketPrice}} €</h1>
+<h1>{{asset.title}}: {{asset.price}} €</h1>
 
 <div id="stock_navigation" class="ui secondary pointing menu">
     <a class="active item" data-attr="default">
@@ -27,14 +23,9 @@
     <div class="elem hidden" data-attr="info"></div>
 </div>
 
-{%- endblock content %}
-
-{% block footer -%}
-
 
 <script>
     let symbol = '{{ asset.symbol }}';
     let portfolio_id = '{{ portfolio_id }}';
 </script>
 <script src="{{ url_for('static', filename='js/etf.js') }}"></script>
-{%- endblock footer %}
