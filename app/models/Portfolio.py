@@ -135,8 +135,10 @@ class Portfolio(db.Model):
                     if data['quantity'] == 0:
                         data['buyin'] = 0
 
+        data['buyin'] = round(data['buyin'] / data['quantity'], 7)
+        data['quantity'] = round(data['quantity'], 7)
 
-        data['buyin'] =  data['buyin'] / data['quantity']
+        print(data)
 
         position = db.session.query(Portfolio_positions).filter_by(portfolio=self.id, symbol=symbol).first()
 
