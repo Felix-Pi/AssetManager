@@ -16,14 +16,6 @@ class User(db.Model):
         return round(sum([pf.calc_value() for pf in self.portfolios.all()]), 2)
 
     def calc_profit(self):
-        return {
-            'today_absolute': 0,
-            'today_relative': 0,
-            'total_absolute': 0,
-            'total_relative': 0,
-        }
-
-    def calc_profit(self):
         networth = self.calc_networth()
 
         profit_total_absolute = round(

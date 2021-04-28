@@ -1,4 +1,4 @@
-from app import db, Asset, Stock_data, Etf_data, Crypto_data, Portfolio, User, app, Currency_data
+from app import db, Asset, Stock_data, Etf_data, Crypto_data, Portfolio, User, app, Currency_data, Asset_types, datetime
 from app.domain_logic.YahooApi import YahooApi
 from app.domain_logic.asset_templates import stock_api_template, etf_api_template, crypto_api_template, price_template, \
     currency_template
@@ -28,13 +28,14 @@ def update_asset_full(asset):
 
     # use alternative symbol on update
     # if asset.alternative_symbol is not None:
-    #     symbol = asset.alternative_symbol
+    #     symbol=asset.alternative_symbol
 
     dataset = YahooApi().build_data(symbol, template)
     if 'symbol' in dataset:
         dataset.pop('symbol')
     if 'modules' in dataset:
         dataset.pop('modules')
+
 
     update_asset_data(asset.symbol, dataset)
 
@@ -108,17 +109,18 @@ def add_symbol(symbol, typee):
         api = YahooApi()
         res, title = api.search_alternative_symbols(symbol)
 
-        for alt_symbol in res:
-            if alt_symbol['symbol'] != symbol:
-                return alt_symbol['symbol'], title
+        if res is not None:
+            for alt_symbol in res:
+                if alt_symbol['symbol'] != symbol:
+                    return alt_symbol['symbol'], title
 
         return None, title
         # search for NASDAQ (NMS)
-        # alternative_symbol = None
+        # alternative_symbol=None
         # for alt_symbol in res:
         #     print(symbol, alt_symbol['exchange'], alt_symbol['symbol'])
         #     if alt_symbol['exchange'] in alt_exchanges:
-        #         alternative_symbol = alt_symbol['symbol']
+        #         alternative_symbol=alt_symbol['symbol']
         #         # return alternative_symbol
         #
         # if alternative_symbol != symbol:
@@ -134,10 +136,12 @@ def add_symbol(symbol, typee):
     alternative_symbol, title = search_alternative_symbol(symbol)
 
 
-    if title is None:
-        title = ''
-    title = title.lower()
-    title = title.capitalize()
+    if title is not None:
+        title = title.lower()
+        title = title.capitalize()
+
+    if title is None or len(title) < 1:
+        title = symbol
 
     app.logger.info('Alternative symbol for {}: \'{}\'->\'{}\''.format(title, symbol, alternative_symbol))
     asset = Asset(symbol=symbol, title=title, type=typee, alternative_symbol=alternative_symbol)
@@ -164,13 +168,48 @@ def update_all_portfolio_positions():
         pf.update_portfolio_positions()
 
 
-def add_transaction(portfolio_id, symbol, timestamp, type, price, quantity):
-    portfolio = get_portfolio(portfolio_id)
+def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity):
+    portfolio = get_portfolio(pf_id)
 
-    portfolio.add_transaction(symbol, type, timestamp, price, quantity)
+    fetch_existing = db.session.query(Asset).filter_by(symbol=symbol).first()
+
+    if fetch_existing is None:
+        symbol_type = YahooApi().get_symbol_type(symbol)
+
+        asset_type = db.session.query(Asset_types).filter(Asset_types.type == symbol_type).first()
+
+        add_symbol(symbol, asset_type.id)
+
+    timestamp = datetime.strptime(timestamp, '%d.%m.%y')
+    portfolio.add_transaction(symbol, transcation_type, timestamp, price, quantity)
 
 
 ### USER
 
 def get_user(id):
     return db.session.query(User).filter_by(id=id).first()
+
+# 1 - Buy
+# 2 - Sell
+# 3 - monthly
+# 4 - Money Transfer
+# 5 - Dividend
+#    'Einz', type = 4, quantity = 1, price = 35, timestamp = "29.05"
+#    'Einz', type = 4, quantity = 1, price = 40, timestamp = "03.06"
+#    'Einz', type = 4, quantity = 1, price = 100, timestamp = "16.06"
+#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "01.07"
+#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "03.08"
+#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "04.08"
+#    'Einz', type = 4, quantity = 1, price = 400, timestamp = "24.08"
+#    'Einz', type = 4, quantity = 1, price = 30, timestamp = '01.09'
+#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "29.09"
+#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "29.10"
+#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "4.11"
+#    'Einz', type = 4, quantity = 1, price = 45, timestamp = "30.11"
+#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "03.12"
+#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "04.01"
+#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "03.02"
+#    'Einz', type = 4, quantity = 1, price = 85, timestamp = "26.02"
+#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "03.03"
+#    'Einz', type = 4, quantity = 1, price = 85, timestamp = "06.04"
+#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "06.04"

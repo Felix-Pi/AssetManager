@@ -99,11 +99,9 @@ class Asset(db.Model):
             # 'data': self.data if hasattr(self, 'data') else self.get_data(),
         }
 
-        print('self.data before: ', self.data)
         if hasattr(self, 'data'):
             for d in self.data:
                 data[d] = self.data[d]
-        print('self.data after: ', self.data)
 
         return data
 
@@ -203,7 +201,8 @@ class Stock_data(db.Model):
 
         for attr in attributes:
             if attr not in blacklist:
-                data[attr] = getattr(self, attr)
+                if hasattr(self, attr):
+                    data[attr] = getattr(self, attr)
 
         return data
 

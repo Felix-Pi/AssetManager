@@ -16,3 +16,10 @@ def update_data_full():
     update_all_assets_full()
 
     return jsonify(True)
+
+
+@bp.route('/update_all_positions', methods=['GET'])
+def update_all_positions():
+    update_all_portfolio_positions()
+
+    return jsonify(True)

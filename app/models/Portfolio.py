@@ -93,11 +93,13 @@ class Portfolio(db.Model):
                 'labels': [key for key in data]}
 
     def get_positions(self):
-        positions = self.positions_db.all()
+        positions = self.positions_db.filter(Portfolio_positions.quantity > 0).order_by(
+            Portfolio_positions.value.desc()).all()
         result = []
 
         for position in positions:
-            result.append(position.get_data())
+            if position.quantity > 0:
+                result.append(position.get_data())
 
         return result
 
@@ -113,27 +115,28 @@ class Portfolio(db.Model):
             'quantity': 0,
             'buyin': 0,
             'value': 0,
-            'transactions_above_zero': 0,
         }
+
         for transaction in transactions:
             type = transaction.type
-            quantity = float(transaction.quantity)
 
-            price = float(transaction.price)
+            if type == 1 or type == 2 or type == 3:  # buy, sell, monthly
+                quantity = float(transaction.quantity)
+                price = float(transaction.price)
 
-            if type == 1:  # buy
-                data['quantity'] += quantity
-                data['transactions_above_zero'] += 1
-                data['buyin'] = round((data['buyin'] + price) / data['transactions_above_zero'], 2)
+                if type == 1 or type == 3:  # buy, monthly
+                    data['quantity'] += quantity
+                    data['buyin'] += (price * quantity)
 
-            if type == 2:  # sell
-                data['quantity'] -= quantity
+                if type == 2:  # sell
+                    data['quantity'] -= quantity
+                    data['buyin'] -= (price * quantity)
 
-                if data['quantity'] == 0:
-                    data['buyin'] = 0
-                    data['transactions_above_zero'] = 0
+                    if data['quantity'] == 0:
+                        data['buyin'] = 0
 
-        # data['value'] = round(data['quantity'] * get_symbol(symbol).price, 2)
+
+        data['buyin'] =  data['buyin'] / data['quantity']
 
         position = db.session.query(Portfolio_positions).filter_by(portfolio=self.id, symbol=symbol).first()
 

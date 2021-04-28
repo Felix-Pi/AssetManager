@@ -190,6 +190,16 @@ $(document).ready(function () {
             }
         });
     });
+    $(document).on('click', '#update_all_positions', function (e, f) {
+        set_loader_active('.navbar')
+        $.ajax({
+            method: "GET",
+            url: "/api/update_all_positions",
+            success: function (data) {
+                set_loader_inactive('.navbar')
+            }
+        });
+    });
 
 
     /**

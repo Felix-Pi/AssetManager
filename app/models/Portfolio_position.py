@@ -38,20 +38,29 @@ class Portfolio_positions(db.Model):
 
     def calc_profit(self):
         price_open = self.symbol_elem.price_open
+        value = self.value
 
-        total_absolute = self.value - (self.quantity * self.buyin)
+        try:
+            total_absolute = value - (self.quantity * self.buyin)
 
-        today_relative = total_absolute / self.value * 100
-        today_absolute = self.value - (self.quantity * price_open)
-        total_relative = today_absolute / self.value * 100
+            today_relative = total_absolute / value * 100
+            today_absolute = value - (self.quantity * price_open)
+            total_relative = today_absolute / self.value * 100
 
-        data = {
-            'today_absolute': round(today_absolute, 2),
-            'today_relative': round(today_relative, 2),
-            'total_absolute': round(total_absolute, 2),
-            'total_relative': round(total_relative, 2),
-        }
-        return data
+            data = {
+                'today_absolute': round(today_absolute, 2),
+                'today_relative': round(today_relative, 2),
+                'total_absolute': round(total_absolute, 2),
+                'total_relative': round(total_relative, 2),
+            }
+            return data
+        except ZeroDivisionError:
+            return {
+                'today_absolute': 0,
+                'today_relative': 0,
+                'total_absolute': 0,
+                'total_relative': 0,
+            }
 
     def calc_portfolio_percentage(self):
         if self.portfolio_elem is None or self.portfolio_elem.value == 0:
@@ -69,18 +78,22 @@ class Portfolio_positions(db.Model):
         return 0
 
     def to_dict(self):
-        data = {
-            'portfolio': self.portfolio,
-            'symbol': self.symbol,
-            'title': self.symbol_elem.title,
-            'symbol_elem': self.symbol_elem,  # todo delete?
-            'quantity': self.quantity,
-            'value': self.value,
-            'buyin': self.buyin,
-            'profit': self.profit,
-            'portfolio_percentage': self.portfolio_percentage,
-            'dividend': self.dividend,
-        }
+        data = {}
+        blacklist = ['__abstract__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__',
+                     '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__',
+                     '__le__', '__lt__', '__mapper__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__',
+                     '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__table__',
+                     '__tablename__', '__weakref__', '_sa_class_manager', '_sa_instance_state', '_sa_registry']
+
+        attributes = dir(self)
+
+        for attr in attributes:
+            if attr not in blacklist:
+                if hasattr(self, attr):
+                    data[attr] = getattr(self, attr)
+
+        if hasattr(self, 'symbol_elem'):
+            data['title'] = self.symbol_elem.title
         return data
 
     def __repr__(self):

@@ -35,7 +35,10 @@ class YahooApi:
     def request(self, url, params):
         req = requests.get(url, params=params)
         # print(req.url)
-        return req.json()
+        try:
+            return req.json()
+        except ValueError:
+            return None
 
     def get_stock_data(self, symbol, modules):
         params = {
@@ -55,15 +58,17 @@ class YahooApi:
         data = data['quoteSummary']['result'][0]
         return data['summaryDetail']['currency']
 
-    def yahoo_search_request(self, query, region, lang):
-
-        url = 'http://d.yimg.com/aq/autoc'
+    def get_symbol_type(self, symbol):
         params = {
-            'query': query,
-            'region': region,
-            'lang': lang,
+            'symbol': symbol,
+            'modules': 'price',
         }
 
+        data = self.request(self.url, params)  # todo if not none
+        data = data['quoteSummary']['result'][0]
+        return data['price']['quoteType']
+
+    def yahoo_search_request(self, query, region, lang):
         url = 'https://query1.finance.yahoo.com/v1/finance/search'
         params = {
             'q': query,
@@ -72,7 +77,11 @@ class YahooApi:
         }
 
         res = self.request(url, params)
-        return res['quotes']
+
+        if res is not None and 'quotes' in res:
+            return res['quotes']
+
+        return None
 
     def search_alternative_symbols(self, symbol, match_ratio=80):
         # get stock title
@@ -86,16 +95,22 @@ class YahooApi:
         # search for symbols with stock name on us market to get ticker with information
         alternative_symbols = self.yahoo_search_request(title, 'US', 'en-US')
 
-        #print('alternative_symbols: ', alternative_symbols)
-        # select tickers with matching title
-        result = []
-        for symbol in alternative_symbols:
-            ratio = int(difflib.SequenceMatcher(None, title.lower(), symbol['shortname'].lower()).ratio() * 100)
-            # print(title.lower(), '|', symbol['name'].lower(), ratio)
-            if ratio > match_ratio:
-                result.append(symbol)
 
-        return result, title
+
+
+        # print('alternative_symbols: ', alternative_symbols)
+        # select tickers with matching title
+        if alternative_symbols is not None:
+            result = []
+            for symbol in alternative_symbols:
+                ratio = int(difflib.SequenceMatcher(None, title.lower(), symbol['shortname'].lower()).ratio() * 100)
+                # print(title.lower(), '|', symbol['name'].lower(), ratio)
+                if ratio > match_ratio:
+                    result.append(symbol)
+
+            return result, title
+
+        return [], None
 
     def parse(self, template, data, symbol):
         """
@@ -160,14 +175,14 @@ class YahooApi:
 
                 for c in self.currencies:
                     if c.symbol == currency_symbol:
-                        #print('symbol:{}, value: {}, price: {}, value_type: {}'.format(symbol, value, c.price, type(value)))
+                        # print('symbol:{}, value: {}, price: {}, value_type: {}'.format(symbol, value, c.price, type(value)))
                         return round(value * c.price, 2)
 
-                #todo add symbol of not in db
-                #symbol not found: add symbol
+                # todo add symbol of not in db
+                # symbol not found: add symbol
 
-                #c = add_symbol(currency_symbol, 4)
-                #if c.symbol == currency_symbol:
+                # c = add_symbol(currency_symbol, 4)
+                # if c.symbol == currency_symbol:
                 #    return round(value * c.price, 2)
 
                 return value
