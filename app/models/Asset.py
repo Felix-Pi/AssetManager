@@ -44,6 +44,13 @@ class Asset(db.Model):
             attr = getattr(self, property)
             if attr is not None:
                 return attr
+        if hasattr(self, 'dividendYield'):
+            val = getattr(self, 'dividendYield')
+            if val is None:
+                val = 0
+
+            setattr(self, 'dividendYield_fmt', round(val * 100, 2))
+
         return '-'
 
     def parse_recommendation_trend(self):

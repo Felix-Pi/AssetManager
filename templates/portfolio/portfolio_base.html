@@ -1,6 +1,7 @@
 {% extends "base/base.html" -%}
 {% block content -%}
 
+{% include "portfolio/main_navigation.html" %}
 
 {% if portfolio.type == 1 %} <!-- stock -->
 {% include "portfolio/stock/portfolio_stock.html" %}

@@ -67,6 +67,28 @@ a, a:hover, a:active {
     justify-content: right;
 }
 
+#top_steps .ordered_step_number {
+    position: absolute;
+    right: 1em;
+    display: block;
+    text-align: center;
+    -ms-flex-item-align: middle;
+    margin-left: 1rem;
+    font-size: 2.1em;
+    counter-increment: ordered;
+    font-family: inherit;
+    font-weight: 700;
+    justify-content: right;
+}
+
+#top_steps .ordered_step_number.small {
+    right: 1em;
+    margin-left: 1rem;
+    font-size: 1.3em;
+    font-family: inherit;
+    font-weight: 700;
+}
+
 @media screen and (max-width: 1400px) {
     .ui.steps .step {
         padding: 1em !important;

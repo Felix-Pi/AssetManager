@@ -1,6 +1,8 @@
 {% extends "base/base.html" -%}
 {% block content -%}
 
+    {% include "index/main_navigation.html" %}
+
     {% include "index/top_steps.html" %}
 
     <div class="row">
@@ -22,7 +24,7 @@
 
 
         <div class="col-md-6 mb-4">
-        {% include "modules/placeholder.html" %}
+            {% include "modules/placeholder.html" %}
         </div>
 
         <div class="col-md-4 mb-4">

@@ -1,6 +1,6 @@
 {% extends "base/base.html" -%}
 {% block content -%}
-
+    {% include "assets/main_navigation.html" %}
 
     {% if asset.type == 1 %} <!-- stock -->
         {% include "assets/stock/base.html" %}

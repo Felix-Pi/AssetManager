@@ -102,8 +102,10 @@ class Portfolio(db.Model):
 
         return result
 
-    def update_portfolio_positions(self):
-        app.logger.info('Updating Portfolio Positions for \'{}\': '.format(self.title))
+    def update_portfolio_positions(self, log=False):
+        if log:
+            app.logger.info('Updating Portfolio Positions for \'{}\': '.format(self.title))
+
         for pos in self.positions:
             self.update_position(pos['symbol'])
 

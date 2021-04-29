@@ -11,7 +11,7 @@ def update_all_assets_full():
     for asset in db.session.query(Asset).all():
         update_asset_full(asset)
 
-    # update_all_portfolio_positions()
+    update_all_portfolio_positions()
 
 
 def update_asset_full(asset):
@@ -35,7 +35,6 @@ def update_asset_full(asset):
         dataset.pop('symbol')
     if 'modules' in dataset:
         dataset.pop('modules')
-
 
     update_asset_data(asset.symbol, dataset)
 
@@ -89,7 +88,10 @@ def update_asset_data(symbol, dataset):
 
 
 def update_all_assets_price():
-    for asset in db.session.query(Asset).all():
+    assets = db.session.query(Asset).all()
+    app.logger.info('Updating Price for all assets ({}) '.format(len(assets)))
+
+    for asset in assets:
         template = price_template
 
         if asset.type == 4:
@@ -98,9 +100,7 @@ def update_all_assets_price():
         dataset = YahooApi().build_data(asset.symbol, template)
         dataset.pop('modules')
 
-        update_asset_data(asset.symbol, dataset)
-
-    # update_all_portfolio_positions()
+    update_all_portfolio_positions()
 
 
 def add_symbol(symbol, typee):
@@ -135,7 +135,6 @@ def add_symbol(symbol, typee):
 
     alternative_symbol, title = search_alternative_symbol(symbol)
 
-
     if title is not None:
         title = title.lower()
         title = title.capitalize()
@@ -163,7 +162,7 @@ def get_portfolio(id):
 def update_all_portfolio_positions():
     portfolios = db.session.query(Portfolio).all()
 
-    # app.logger.info('Updating positions for  \'{}\' Portfolios'.format(len(portfolios)))
+    app.logger.info('Updating positions for all Portfolios ({}) '.format(len(portfolios)))
     for pf in portfolios:
         pf.update_portfolio_positions()
 
