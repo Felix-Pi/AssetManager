@@ -3,18 +3,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{{title}}</title>
+    <title>{{ title }}</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/semantic.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='frameworks/semanticUI/semantic.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='frameworks/bootstrap/css/bootstrap.min.css') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-    <script src="{{ url_for('static', filename='js/frameworks/font-awesome.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/frameworks/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/frameworks/semantic.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/frameworks/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='frameworks/jQuery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='frameworks/fontAwesome/font-awesome.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='frameworks/semanticUI/semantic.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='frameworks/bootstrap/js/bootstrap.min.js') }}"></script>
 
 </head>
 <body>
@@ -27,7 +29,6 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <div id="content">
-                <br/>
                 {% block content %}{% endblock content %}
             </div>
         </main>
@@ -35,7 +36,7 @@
 </div>
 
 
-<script src="{{ url_for('static', filename='js/frameworks/chart2.9.4.js') }}"></script>
+<script src="{{ url_for('static', filename='frameworks/chartJS/chart2.9.4.js') }}"></script>
 <script src="{{ url_for('static', filename='js/myCharts.js') }}"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% block footer %}{% endblock footer %}
