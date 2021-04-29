@@ -1,0 +1,24 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+
+        {% for category, message in messages %}
+            {% set type = 'blue' %}
+
+            {% if category == 'error' %}
+                {% set type = 'red' %}
+            {% endif %}
+            {% if category == 'success' %}
+                {% set type = 'green' %}
+            {% endif %}
+
+            <div class="main_message ui message {{ type }} transition">
+                <i class="close icon"></i>
+                <div class="header">
+                    Notification
+                </div>
+                <p>{{ message }}</p>
+            </div>
+        {% endfor %}
+
+    {% endif %}
+{% endwith %}

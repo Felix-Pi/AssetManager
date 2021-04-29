@@ -1,7 +1,8 @@
 from flask import render_template, request, url_for
 from flask_breadcrumbs import register_breadcrumb
+from flask_login import login_required, current_user
 
-from app import db, Asset, Portfolio_positions, Portfolio
+from app import db, Asset, Portfolio_positions, Portfolio, User
 from app.routes.asset import bp
 
 
@@ -14,7 +15,11 @@ def view_user_dlc(*args, **kwargs):
 
 @bp.route('/<int:portfolio_id>/<string:symbol>/')
 @register_breadcrumb(bp, '.portfolio.asset_index', 'Asset', dynamic_list_constructor=view_user_dlc)
+@login_required
 def asset_index(portfolio_id, symbol):
+    USER_ID = current_user.get_id()
+    user = db.session.query(User).filter_by(id=USER_ID).first()
+
     asset = db.session.query(Asset).filter_by(symbol=symbol).first()
     position = db.session.query(Portfolio_positions).filter(Portfolio_positions.symbol == symbol,
                                                             Portfolio_positions.portfolio == portfolio_id).first()
@@ -92,6 +97,7 @@ def asset_index(portfolio_id, symbol):
 
     print(events)
     templateData = {
+        'user': user,
         'asset': asset,
         'position': position,
         'general_info': general_info,

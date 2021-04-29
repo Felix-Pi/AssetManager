@@ -11,8 +11,7 @@ def commit(list):
 
 def users():
     users = [
-        User(prename='Felix', surname='Pieschka', email='felix@felixpi.de'),
-        User(prename='Demo', surname='Demo', email='demo@demo.de')
+        User(username='Felix Pieschka', email='felix@felixpi.de', password_hash=generate_password_hash('password')),
     ]
     commit(users)
 
@@ -51,7 +50,6 @@ def assets():
     add_symbol('USDEUR=X', 4)
 
 
-
 def transactions():
     transaction_types = [
         Transaction_types(title='Bought'),
@@ -61,7 +59,6 @@ def transactions():
         Transaction_types(title='Dividend payment')
     ]
     commit(transaction_types)
-
 
     add_transaction(pf_id=2, symbol='RRU.F', transcation_type=1, quantity=3.641, price=1,
                     timestamp="03.06.20")  # RollsRoyce

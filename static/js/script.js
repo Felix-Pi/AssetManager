@@ -175,6 +175,19 @@ function load_historical_data(id, symbol, elem) {
 }
 
 $(document).ready(function () {
+    $('.ui.dropdown').dropdown();
+
+
+    //MAIN_NAVIGATION
+    $(document).on('click', '.main_navigation .item', function () {
+        let elem = $(this);
+        let target = elem.attr('data-attr');
+
+        set_active('.main_navigation .item', elem)
+
+        $('.main_navigation_content .elem').addClass('hidden');
+        $('.main_navigation_content .elem[data-attr=' + target + ']').removeClass('hidden');
+    });
 
     /**
      * accordeon logic
@@ -220,6 +233,13 @@ $(document).ready(function () {
                 remove_spinner('#update_all_positions')
             }
         });
+    });
+
+
+    $(document).on('click', '.main_message .close', function (e, f) {
+        target = $(this).parent()
+        target.fadeToggle()
+        target.remove()
     });
 
 

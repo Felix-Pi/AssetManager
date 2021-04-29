@@ -114,3 +114,11 @@ body {
     margin: 10px 0 !important;
     background: none;
 }
+
+.main_message {
+    position: absolute !important;
+    right: 20%;
+    left: 20%;
+    top: 5%;
+    z-index: 100;
+}
