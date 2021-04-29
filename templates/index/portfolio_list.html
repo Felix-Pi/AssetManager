@@ -9,21 +9,19 @@
             </thead>
             <tbody>
             {% for portfolio in portfolios %}
-            <tr class="portfolio_elem">
-                <th scope="row">
+                <tr class="portfolio_elem">
+                    <th scope="row">
+                        <h1 class="ui sub header">
+                            <a href="{{ url_for('portfolio.portfolio', portfolio_id=portfolio.id) }}">{{ portfolio.title }}</a>
+                        </h1>
+                        <span>
+                            <div class="ui label">
+                                {{ portfolio.value }}
+                            </div>
+                        </span>
+                    </th>
 
-
-                    <h1 class="ui sub header">
-                        <a href="{{ url_for('portfolio.portfolio') }}?id={{ portfolio.id }}">{{ portfolio.title }}</a>
-                    </h1>
-                    <span>
-                        <div class="ui label">
-                            {{ portfolio.value }}
-                        </div>
-                    </span>
-                </th>
-
-                <td>
+                    <td>
 
                     <span class="profit_label"
                           data-val="{{ portfolio.profit['total_absolute'] }}~{{ portfolio.profit['today_relative'] }}~{{ portfolio.profit['today_absolute'] }}~{{ portfolio.profit['total_relative'] }}">
@@ -37,10 +35,10 @@
                             </div>
                             {% endif %}
                              </span>
-                </td>
+                    </td>
 
 
-            </tr>
+                </tr>
             {% endfor %}
             </tbody>
         </table>

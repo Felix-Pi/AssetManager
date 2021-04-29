@@ -1,10 +1,19 @@
-from flask import render_template
+from flask import render_template, request, url_for
+from flask_breadcrumbs import register_breadcrumb
 
-from app import db, Asset, Portfolio_positions
+from app import db, Asset, Portfolio_positions, Portfolio
 from app.routes.asset import bp
 
 
+def view_user_dlc(*args, **kwargs):
+    portfolio_id = request.view_args['portfolio_id']
+    symbol = request.view_args['symbol']
+
+    return [{'text': symbol, 'url': url_for('asset.asset_index', symbol=symbol, portfolio_id=portfolio_id)}]
+
+
 @bp.route('/<int:portfolio_id>/<string:symbol>/')
+@register_breadcrumb(bp, '.portfolio.asset_index', 'Asset', dynamic_list_constructor=view_user_dlc)
 def asset_index(portfolio_id, symbol):
     asset = db.session.query(Asset).filter_by(symbol=symbol).first()
     position = db.session.query(Portfolio_positions).filter(Portfolio_positions.symbol == symbol,

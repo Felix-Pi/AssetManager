@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app import db
+from app import db, app
 from app.models.Asset import *
 from app.models.Portfolio_position import Portfolio_positions
 
@@ -103,6 +103,7 @@ class Portfolio(db.Model):
         return result
 
     def update_portfolio_positions(self):
+        app.logger.info('Updating Portfolio Positions for \'{}\': '.format(self.title))
         for pos in self.positions:
             self.update_position(pos['symbol'])
 

@@ -1,6 +1,7 @@
 import logging
 
 from flask import Flask
+from flask_breadcrumbs import Breadcrumbs
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -12,17 +13,9 @@ app = Flask(__name__, template_folder='../templates/', static_folder='../static/
 
 app.config.from_object(Config)
 
-from flask.logging import default_handler
-
-default_handler.setFormatter(logging.Formatter(
-    ' * [%(levelname)s][%(filename)s:%(lineno)d]: %(message)s'
-))
-
-app.logger.setLevel(logging.DEBUG)
-
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
+Breadcrumbs(app)
 
 from app.models.User import *
 from app.models.Portfolio import *
@@ -41,4 +34,7 @@ app.register_blueprint(asset_bp, url_prefix='/asset')
 app.register_blueprint(api_bp, url_prefix='/api')
 
 from app import routes
-# app.logger.info('Routes: '.format(print(app.url_map)))
+
+app.logger.setLevel(Config.log_level)
+#print(app.url_map)
+#app.logger.info('Routes: {}'.format(param))
