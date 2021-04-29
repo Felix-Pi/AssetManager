@@ -54,7 +54,6 @@ class User(UserMixin, db.Model):
             return
         return User.query.get(id)
 
-
     def get_name(self):
         return self.prename + ' ' + self.surname
 
@@ -103,6 +102,26 @@ class User(UserMixin, db.Model):
 
         return res
 
+    def get_monthly_transactions(self):
+        transactions = self.get_all_transactions()
+
+        data = {}
+        for transaction in transactions:
+            print(transaction.type)
+            if transaction.type == 4:
+                timestamp = transaction.timestamp
+                #month = datetime.strptime(month, '%m.%y')
+                month = timestamp.strftime('%b %Y')
+                value = transaction.price * transaction.quantity
+
+                if month not in data:
+                    data[month] = {'total': value}
+                else:
+                    data[month]['total'] += value
+
+        return {'data_absolute': [data[key]['total'] for key in data],
+                'labels': list(data.keys())}
+
     def get_asset_distribution(self):
 
         portfolios = self.portfolios.all()
@@ -124,6 +143,7 @@ class User(UserMixin, db.Model):
         return {'data_relative': [data[key]['relative'] for key in data],
                 'data_absolute': [data[key]['total'] for key in data],
                 'labels': list(data.keys())}
+
 
 @login.user_loader
 def load_user(id):

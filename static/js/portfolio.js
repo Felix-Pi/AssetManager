@@ -37,6 +37,18 @@ function setup() {
             var sector_distribution_chart = bar_chart('#sector_distribution', 'Sector distribution', result, '%', 'auto', 200)
         }
     });
+    /* setup industry distribution */
+    $.ajax({
+        url: '/api/portfolio/' + portfolio_id + '/industry_distribution',
+        success: function (result) {
+            result.colored = true;
+            result.data = result.data_relative;
+
+            var id = '#industry_distribution'
+
+            var sector_distribution_chart = bar_chart('#industry_distribution', 'Industry distribution', result, '%', 'auto', 200)
+        }
+    });
 
     /* setup country data */
     $.ajax({

@@ -224,3 +224,8 @@ a, a:hover, a:active {
     padding: 15px;
     margin: auto;
 }
+
+
+.dropdown.active {
+    font-weight: normal !important;
+}

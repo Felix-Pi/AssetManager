@@ -15,6 +15,22 @@ function setup() {
 
         }
     });
+
+    $.ajax({
+        url: "/api/index/"+ USER_ID +"/monthly_transactions",
+        success: function (result) {
+            var id = '#monthly_transactions'
+
+            result.data = result.data_absolute;
+            result.colored = true;
+
+            console.log(result)
+
+            monthly_transactions_chart = bar_chart(id, 'Monthly Payments', result, '€', 'auto', 150)
+
+
+        }
+    });
 }
 
 $(document).ready(function () {

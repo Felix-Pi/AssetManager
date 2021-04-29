@@ -1,0 +1,29 @@
+<div class="card">
+    <div class="card-header">Transaction</div>
+    <div class="card-body transactions_wrapper">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Action</th>
+                <th>Symbol</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Timestamp</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for transaction in portfolio.transactions %}
+                <tr>
+                    <th scope="row">{{ transaction.type_str.title }}</th>
+                    <td>{{ transaction.symbol }}</td>
+                    <td>{{ transaction.price }}</td>
+                    <td>{{ transaction.quantity }}</td>
+                    <td>{{ transaction.timestamp.strftime('%m.%d.%Y') }}</td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

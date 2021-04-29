@@ -181,12 +181,15 @@ $(document).ready(function () {
     //MAIN_NAVIGATION
     $(document).on('click', '.main_navigation .item', function () {
         let elem = $(this);
-        let target = elem.attr('data-attr');
 
-        set_active('.main_navigation .item', elem)
+        if (!elem.hasClass('dropdown')) {
+            let target = elem.attr('data-attr');
 
-        $('.main_navigation_content .elem').addClass('hidden');
-        $('.main_navigation_content .elem[data-attr=' + target + ']').removeClass('hidden');
+            set_active('.main_navigation .item', elem)
+
+            $('.main_navigation_content .elem').addClass('hidden');
+            $('.main_navigation_content .elem[data-attr=' + target + ']').removeClass('hidden');
+        }
     });
 
     /**

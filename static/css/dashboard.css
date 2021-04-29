@@ -122,3 +122,7 @@ body {
     top: 5%;
     z-index: 100;
 }
+
+.main_navigation .dropdown.item:active{
+    border-color: rgba(255, 255, 255, 0) !important;
+}

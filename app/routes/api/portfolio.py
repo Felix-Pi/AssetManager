@@ -17,6 +17,11 @@ def get_sector_distribution(id):
     pf = get_portfolio(id)
     return jsonify(pf.calc_sector_distribution())
 
+@bp.route('/portfolio/<int:id>/industry_distribution', methods=['GET'])
+def get_industry_distribution(id):
+    pf = get_portfolio(id)
+    return jsonify(pf.calc_industry_distribution())
+
 
 @bp.route('/portfolio/<int:id>/country_distribution', methods=['GET'])
 def get_country_distribution(id):

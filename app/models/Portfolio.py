@@ -58,7 +58,7 @@ class Portfolio(db.Model):
     def calc_sector_distribution(self):
         data = {}
         for pos in self.positions:
-            sector = pos['industry']
+            sector = pos['sector']
             value = pos['value']
 
             if sector not in data:
@@ -66,6 +66,24 @@ class Portfolio(db.Model):
             else:
                 data[sector]['total'] += value
                 data[sector]['relative'] = data[sector]['total'] / self.value * 100
+
+        data = dict(sorted(data.items(), key=lambda t: t[1]['total'], reverse=True))
+
+        return {'data_relative': [data[key]['relative'] for key in data],
+                'data_absolute': [data[key]['total'] for key in data],
+                'labels': [key for key in data]}
+
+    def calc_industry_distribution(self):
+        data = {}
+        for pos in self.positions:
+            industry = pos['industry']
+            value = pos['value']
+
+            if industry not in data:
+                data[industry] = {'total': value, 'relative': value / self.value * 100}
+            else:
+                data[industry]['total'] += value
+                data[industry]['relative'] = data[industry]['total'] / self.value * 100
 
         data = dict(sorted(data.items(), key=lambda t: t[1]['total'], reverse=True))
 
@@ -176,13 +194,18 @@ class Portfolio(db.Model):
             if type == 3 or type == 4 or type == 5:
                 cost = 0.0
 
-        transaction = Transaction(portfolio_id=self.id, symbol=symbol, type=type, timestamp=timestamp, price=price,
-                                  quantity=quantity, cost=cost)
+        if type == 4:  # money transfer
+            transaction = Transaction(portfolio_id=self.id, symbol=None, type=type, timestamp=timestamp, price=price,
+                                      quantity=quantity, cost=cost)
+        else:
+            transaction = Transaction(portfolio_id=self.id, symbol=symbol, type=type, timestamp=timestamp, price=price,
+                                      quantity=quantity, cost=cost)
 
         db.session.add(transaction)
         db.session.commit()
 
-        self.update_position(symbol)
+        if type != 4:
+            self.update_position(symbol)
 
         return transaction
 

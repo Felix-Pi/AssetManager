@@ -1,38 +1,38 @@
 {% extends "base/base.html" -%}
 {% block content -%}
 
-{% include "portfolio/main_navigation.html" %}
+    {% include "portfolio/main_navigation.html" %}
 
-{% if portfolio.type == 1 %} <!-- stock -->
-{% include "portfolio/stock/portfolio_stock.html" %}
-{% endif %}
-
-
-{% if portfolio.type == 2 %} <!-- etf -->
-{% include "portfolio/etf/portfolio_etf.html" %}
-{% endif %}
+    {% if portfolio.type == 1 %} <!-- stock -->
+        {% include "portfolio/stock/portfolio_stock.html" %}
+    {% endif %}
 
 
-{% if portfolio.type == 3 %} <!-- crypto -->
-{% include "portfolio/crypto/portfolio_crypto.html" %}
-{% endif %}
-
-{% if portfolio.type == 4 %} <!-- cash -->
-{% include "portfolio/cash/portfolio_cash.html" %}
-{% endif %}
+    {% if portfolio.type == 2 %} <!-- etf -->
+        {% include "portfolio/etf/portfolio_etf.html" %}
+    {% endif %}
 
 
-{% include "portfolio/modals/add.html" %}
-{% include "portfolio/modals/edit.html" %}
+    {% if portfolio.type == 3 %} <!-- crypto -->
+        {% include "portfolio/crypto/portfolio_crypto.html" %}
+    {% endif %}
+
+    {% if portfolio.type == 4 %} <!-- cash -->
+        {% include "portfolio/cash/portfolio_cash.html" %}
+    {% endif %}
+
+
+    {% include "portfolio/modals/add.html" %}
+    {% include "portfolio/modals/edit.html" %}
 
 {%- endblock content %}
 
 {% block footer -%}
 
-<script>
-    let portfolio_id = '{{ portfolio.id }}';
-    let portfolio_symbols = '{{ assets[0]['symbol'] }}';
-</script>
-<script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>
+    <script>
+        let portfolio_id = '{{ portfolio.id }}';
+        let portfolio_symbols = '{{ assets[0]['symbol'] }}';
+    </script>
+    <script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>
 
 {%- endblock footer %}

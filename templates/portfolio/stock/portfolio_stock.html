@@ -29,7 +29,10 @@
                 <!-- doughnut sectors -->
                 {% include "portfolio/stock/portfolio_sector_distribution.html" %}
             </div>
-
+            <div class="col-md-3">
+                <!-- doughnut industry -->
+                {% include "portfolio/stock/portfolio_industry_distribution.html" %}
+            </div>
 
         </div>
     </div>
@@ -38,6 +41,22 @@
         <div class="row row-cols-1">
             <div class="col-md-6">
                 {% include "modules/newsfeed/newsfeed.html" %}
+            </div>
+        </div>
+    </div>
+
+    <div class="elem hidden" data-attr="transactions">
+        <div class="row row-cols-1">
+            <div class="col-md-6">
+                {% include "portfolio/modules/transactions.html" %}
+            </div>
+        </div>
+    </div>
+
+    <div class="elem hidden" data-attr="add_transaction">
+        <div class="row row-cols-1">
+            <div class="col-md-6">
+                {% include "portfolio/modules/add_transaction.html" %}
             </div>
         </div>
     </div>

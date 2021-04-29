@@ -1,0 +1,15 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+<form>
+    {{ wtf.form_field(add_transaction_form.type, class='form-control') }}
+    {{ wtf.form_field(add_transaction_form.symbol, class='form-control') }}
+    {{ wtf.form_field(add_transaction_form.price, class='form-control') }}
+    {{ wtf.form_field(add_transaction_form.quantity, class='form-control') }}
+    {{ wtf.form_field(add_transaction_form.date, class='form-control') }}
+    {{ wtf.form_field(add_transaction_form.submit, class='form-control btn-primary') }}
+
+
+
+
+
+</form>

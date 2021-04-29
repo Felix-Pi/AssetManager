@@ -3,7 +3,9 @@ from flask_breadcrumbs import register_breadcrumb
 from flask_login import login_required, current_user
 
 from app import db, Portfolio, User
+from app.domain_logic.utils import return_error
 from app.routes.portfolio import bp
+from app.routes.portfolio.forms import AddTransactionForm
 
 
 def view_user_dlc(*args, **kwargs):
@@ -22,10 +24,17 @@ def portfolio(portfolio_id):
     user = db.session.query(User).filter_by(id=USER_ID).first()
 
 
+
+    add_transaction_form = AddTransactionForm()
+
+    if portfolio is None:
+        return return_error(500, 'Not allowed!')
+
     templateData = {
-        'user': portfolio,
+        'user': user,
         'portfolio': portfolio,
         'assets': portfolio.positions,
+        'add_transaction_form': add_transaction_form,
     }
 
     return render_template('portfolio/portfolio_base.html', **templateData, title=('Home'))

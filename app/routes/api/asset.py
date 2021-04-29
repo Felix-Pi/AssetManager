@@ -1,12 +1,10 @@
 from flask import request, make_response, jsonify
 
 from app import Asset, db
+from app.domain_logic.utils import return_error
 from app.routes.api import *
 from app.domain_logic.YahooHistoricalData import get_historical_data
 
-
-def return_error(code, description):
-    return make_response(jsonify(description), code)
 
 
 @bp.route('/asset/<string:symbol>/historical_data', methods=['GET'])

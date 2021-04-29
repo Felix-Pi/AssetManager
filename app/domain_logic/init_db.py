@@ -261,6 +261,26 @@ def transactions():
     add_transaction(pf_id=4, symbol='DOGE-EUR', transcation_type=1, quantity=300, price=0.2,
                     timestamp="17.04.21")  # DOGE
 
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=35, timestamp="29.05.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=40, timestamp="03.06.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=100, timestamp="16.06.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=30, timestamp="01.07.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=30, timestamp="03.08.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=30, timestamp="04.08.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=400, timestamp="24.08.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=30, timestamp='01.09.20')
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=30, timestamp="29.09.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=30, timestamp="29.10.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="4.11.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=45, timestamp="30.11.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.12.20")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="04.01.21")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.02.21")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=85, timestamp="26.02.21")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.03.21")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=85, timestamp="06.04.21")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="06.04.21")
+
 
 def init_all():
     users()

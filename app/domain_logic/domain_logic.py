@@ -170,14 +170,15 @@ def update_all_portfolio_positions():
 def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity):
     portfolio = get_portfolio(pf_id)
 
-    fetch_existing = db.session.query(Asset).filter_by(symbol=symbol).first()
+    if symbol is not None:  # for transcation_type = 4
+        fetch_existing = db.session.query(Asset).filter_by(symbol=symbol).first()
 
-    if fetch_existing is None:
-        symbol_type = YahooApi().get_symbol_type(symbol)
+        if fetch_existing is None:
+            symbol_type = YahooApi().get_symbol_type(symbol)
 
-        asset_type = db.session.query(Asset_types).filter(Asset_types.type == symbol_type).first()
+            asset_type = db.session.query(Asset_types).filter(Asset_types.type == symbol_type).first()
 
-        add_symbol(symbol, asset_type.id)
+            add_symbol(symbol, asset_type.id)
 
     timestamp = datetime.strptime(timestamp, '%d.%m.%y')
     portfolio.add_transaction(symbol, transcation_type, timestamp, price, quantity)
@@ -193,22 +194,3 @@ def get_user(id):
 # 3 - monthly
 # 4 - Money Transfer
 # 5 - Dividend
-#    'Einz', type = 4, quantity = 1, price = 35, timestamp = "29.05"
-#    'Einz', type = 4, quantity = 1, price = 40, timestamp = "03.06"
-#    'Einz', type = 4, quantity = 1, price = 100, timestamp = "16.06"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "01.07"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "03.08"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "04.08"
-#    'Einz', type = 4, quantity = 1, price = 400, timestamp = "24.08"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = '01.09'
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "29.09"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "29.10"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "4.11"
-#    'Einz', type = 4, quantity = 1, price = 45, timestamp = "30.11"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "03.12"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "04.01"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "03.02"
-#    'Einz', type = 4, quantity = 1, price = 85, timestamp = "26.02"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "03.03"
-#    'Einz', type = 4, quantity = 1, price = 85, timestamp = "06.04"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "06.04"

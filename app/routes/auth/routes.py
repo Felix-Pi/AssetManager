@@ -1,4 +1,4 @@
-#https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xxiii-application-programming-interfaces-apis
+# https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xxiii-application-programming-interfaces-apis
 
 from flask import render_template, redirect, url_for, flash, request
 from werkzeug.urls import url_parse
@@ -16,7 +16,7 @@ from app.models.User import *
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('index.index'))
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -30,7 +30,7 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index.index')
 
-        app.logger.info('Auth: successfull login for \'{}\''.format(user.email))
+        app.logger.info('Auth: successful logged for \'{}\''.format(user.email))
         return redirect(next_page)
     return render_template('auth/login.html', title='Sign In', form=form)
 
