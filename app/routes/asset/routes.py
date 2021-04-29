@@ -103,7 +103,7 @@ def asset_index(portfolio_id, symbol):
         'general_info': general_info,
         'financials': financials,
         'events': events,
-        'ownership': financials,
+        'ownership': asset.parse_ownership(),
     }
 
     return render_template('assets/base.html', **templateData, title=('Home'))

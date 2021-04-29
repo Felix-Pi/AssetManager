@@ -177,7 +177,8 @@ a, a:hover, a:active {
     border-radius: 0 !important;
 }
 
-#portfolio_stocks_card {
+#portfolio_stocks_card, .fixed_scrollable_hight {
+
     max-height: 414px !important;
     overflow-y: hidden;
 }

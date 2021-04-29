@@ -1,0 +1,32 @@
+<div class="row">
+    <!-- general info -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">Ownership</div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Organization</th>
+                        <th>Percentage held</th>
+                        <th>Position</th>
+                        <th>InfoValue</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for info in ownership %}
+                        <tr>
+                            <td>{{ info['organization'] }}</td>
+                            <td>{{ info['pctHeld']['fmt'] }}</td>
+                            <td>{{ info['position']['fmt'] }}</td>
+                            <td>{{ info['value']['fmt'] }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>

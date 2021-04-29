@@ -317,6 +317,8 @@ $(document).ready(function () {
 
     $('.profit_label').each(function () {
         elem = $(this)
+
+        console.log(elem)
         profit_val = parseFloat(elem.text())
 
         elem_text = elem.find('.label').find('span')

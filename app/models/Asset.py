@@ -91,8 +91,19 @@ class Asset(db.Model):
         return result
 
     def parse_earnings(self):
-        if hasattr(self, 'earnings'):
-            return self.earnings
+        if 'earnings' in self.data:
+            return self.data['earnings']
+
+        print(self.data)
+        return None
+
+    def parse_ownership(self):
+        if 'ownershipList' in self.data:
+            data = self.data['ownershipList']
+            data = data.replace('\'', '"')
+            data = json.loads(data)
+
+            return data
 
         return None
 
