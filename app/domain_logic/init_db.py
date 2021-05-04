@@ -280,6 +280,8 @@ def transactions():
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.03.21")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=85, timestamp="06.04.21")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="06.04.21")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="06.04.21")
+    add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.05.21")
 
 
 def init_all():
@@ -293,4 +295,5 @@ def init_all():
 
 if __name__ == '__main__':
     init_all()
+
     # transactions()

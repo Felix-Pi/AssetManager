@@ -105,12 +105,14 @@ class User(UserMixin, db.Model):
     def get_monthly_transactions(self):
         transactions = self.get_all_transactions()
 
+        transactions.sort(key=lambda t: t.timestamp)
+
         data = {}
         for transaction in transactions:
             print(transaction.type)
             if transaction.type == 4:
                 timestamp = transaction.timestamp
-                #month = datetime.strptime(month, '%m.%y')
+                # month = datetime.strptime(month, '%m.%y')
                 month = timestamp.strftime('%b %Y')
                 value = transaction.price * transaction.quantity
 
@@ -119,11 +121,15 @@ class User(UserMixin, db.Model):
                 else:
                     data[month]['total'] += value
 
-        return {'data_absolute': [data[key]['total'] for key in data],
-                'labels': list(data.keys())}
+
+        data_absolute = [data[key]['total'] for key in data]
+        return {
+            'data_absolute': data_absolute,
+            'labels': list(data.keys()),
+            'average': round(sum(data_absolute) / len(data_absolute), 2)
+        }
 
     def get_asset_distribution(self):
-
         portfolios = self.portfolios.all()
         data = {}
         for portfolio in portfolios:

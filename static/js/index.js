@@ -23,10 +23,11 @@ function setup() {
 
             result.data = result.data_absolute;
             result.colored = true;
+            title = 'Monthly Payments:~<i class=\'icon ban rotated\'></i>' + result['average'] + ' € per month'
 
             console.log(result)
 
-            monthly_transactions_chart = bar_chart(id, 'Monthly Payments', result, '€', 'auto', 150)
+            monthly_transactions_chart = bar_chart(id, title, result, '€', 'auto', 150)
 
 
         }
