@@ -226,12 +226,19 @@ $(document).ready(function () {
         $.ajax({
             url: "/api/asset/" + $('#linechart').attr('data-symbol') + "/historical_data",
             data: {
-                'days': elem.attr('data-days'),
-                'period': elem.attr('data-period')
+                'period': elem.attr('data-period'),
+                'interval': elem.attr('data-interval'),
             },
-            success: function (dataset) {
-                dataset = JSON.parse(dataset)
-                update_chart(linechart, dataset[0].median, dataset[0].timestamps)
+            success: function (result) {
+                result = JSON.parse(result)
+
+                result.median = Object.values(result['Median'])
+                result.labels = Object.values(result['timestamps'])
+                result.colored = false;
+
+                result = [result]
+
+                update_chart(linechart, result[0].median, result[0].labels)
             }
         });
 
@@ -241,20 +248,32 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.asset_elem', function () {
-        let elem = $(this)
-        let id = '#linechart'
-        let settings = $(id + ' .settings button.active')
+        let elem = $(this);
+        let id = '#linechart';
+        let settings = $(id + ' .settings button.active');
 
-        let title = elem.attr('data-title')
-        let symbol = elem.attr('data-symbol')
-        let price = elem.attr('data-price')
+        let title = elem.attr('data-title');
+        let symbol = elem.attr('data-symbol');
+        let price = elem.attr('data-price');
+
+        $(id).attr('data-symbol', symbol);
 
         $.ajax({
             url: "/api/asset/" + symbol + "/historical_data",
-            data: {'days': settings.attr('data-days'), 'period': settings.attr('data-period')},
-            success: function (dataset) {
-                dataset = JSON.parse(dataset)
-                update_chart(linechart, dataset[0].median, dataset[0].timestamps)
+            data: {
+                'period': settings.attr('data-period'),
+                'interval': settings.attr('data-interval'),
+            },
+            success: function (result) {
+                result = JSON.parse(result)
+
+                result.median = Object.values(result['Median'])
+                result.labels = Object.values(result['timestamps'])
+                result.colored = false;
+
+                result = [result]
+
+                update_chart(linechart, result[0].median, result[0].labels)
             }
         });
 

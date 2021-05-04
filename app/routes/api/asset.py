@@ -9,8 +9,8 @@ from app.domain_logic.YahooHistoricalData import get_historical_data
 
 @bp.route('/asset/<string:symbol>/historical_data', methods=['GET'])
 def get_historical_data_(symbol):
-    data = get_historical_data(symbol, request.args.get('days'),
-                               request.args.get('period'))
+    data = get_historical_data(symbol, request.args.get('period'),
+                               request.args.get('interval'))
     return jsonify(data)
 
 

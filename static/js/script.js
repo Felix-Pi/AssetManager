@@ -159,16 +159,20 @@ function load_historical_data(id, symbol, elem) {
     $.ajax({
         url: "/api/asset/" + symbol + "/historical_data",
         data: {
-            'days': elem.attr('data-days'),
-            'period': elem.attr('data-period')
+            'period': elem.attr('data-period'),
+            'interval': elem.attr('data-interval'),
         },
         success: function (result) {
             result = JSON.parse(result)
+
+            result.median = Object.values(result['Median'])
+            result.labels = Object.values(result['timestamps'])
             result.colored = false;
 
             $(id).attr('data-symbol', symbol)
 
-            linechart = chart_linechart(id, 'Line chart', result, '€')
+
+            linechart = chart_linechart(id, 'Line chart', [result], '€')
             $(id + ' .card-header span').text(title + ': ' + price);
         }
     });
