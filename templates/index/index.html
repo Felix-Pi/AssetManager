@@ -12,22 +12,23 @@
             {% include "index/portfolio_list.html" %}
         </div>
 
+        <!-- line chart -->
+        <div class="col-md-6 mb-4">
+            {% include "portfolio/modules/linechart.html" %}
+        </div>
 
         <!-- doughnut -->
         <div class="col-md-3 mb-4">
             {% include "index/portfolio_asset_distribution.html" %}
         </div>
 
-        <div class="col-md-6 mb-4">
-            {% include "modules/newsfeed/newsfeed.html" %}
-        </div>
 
 
         <div class="col-md-6 mb-4">
             {% include "index/monthly_transactions.html" %}
         </div>
 
-        <div class="col-md-4 mb-4">
+        <div class="col-md-6 mb-4">
             {% set transactions = user.get_all_transactions() %}
             {% include "portfolio/modules/transactions.html" %}
         </div>
@@ -41,7 +42,7 @@
     <script>
         //all_symbols = '{{ all_symbols }}';
         all_symbols = '["APC.F"]';
-        user_id = '{{ USER_ID }}';
+        user_id = '{{ user.id }}';
     </script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {%- endblock footer %}

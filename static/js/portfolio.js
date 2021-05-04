@@ -7,9 +7,6 @@ function setup() {
     symbol = target.attr('data-symbol');
     price = target.attr('data-price');
 
-
-    load_historical_data('#linechart', symbol, $('#linechart .settings button.active'))
-
     /* setup stock distribution */
     $.ajax({
         url: '/api/portfolio/' + portfolio_id + '/stock_distribution',
@@ -23,7 +20,6 @@ function setup() {
 
         }
     });
-
 
     /* setup sector distribution */
     $.ajax({
@@ -62,6 +58,8 @@ function setup() {
 
         }
     });
+
+    load_historical_data('#linechart', portfolio_id, $('#linechart .settings button.active'), action='init', 'portfolio')
 }
 
 
@@ -221,30 +219,12 @@ $(document).ready(function () {
      */
 
     $(document).on('click', '#linechart .settings button', function () {
-        let elem = $(this)
-
-        $.ajax({
-            url: "/api/asset/" + $('#linechart').attr('data-symbol') + "/historical_data",
-            data: {
-                'period': elem.attr('data-period'),
-                'interval': elem.attr('data-interval'),
-            },
-            success: function (result) {
-                result = JSON.parse(result)
-
-                result.median = Object.values(result['Median'])
-                result.labels = Object.values(result['timestamps'])
-                result.colored = false;
-
-                result = [result]
-
-                update_chart(linechart, result[0].median, result[0].labels)
-            }
-        });
 
         //set clicked btn active
         elem.parent().find('.active').removeClass('active');
         elem.addClass('active');
+
+        load_historical_data('#linechart', portfolio_id, $('#linechart .settings button.active'), action = 'update', 'portfolio')
     });
 
     $(document).on('click', '.asset_elem', function () {

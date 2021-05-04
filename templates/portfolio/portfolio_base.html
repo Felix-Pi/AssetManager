@@ -31,7 +31,8 @@
 
     <script>
         let portfolio_id = '{{ portfolio.id }}';
-        let portfolio_symbols = '{{ assets[0]['symbol'] }}';
+        let portfolio_symbols = '{{ symbols }}';
+        let symbol_list = '{{ symbol_list }}';
     </script>
     <script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>
 

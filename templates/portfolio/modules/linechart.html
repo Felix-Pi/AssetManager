@@ -2,7 +2,7 @@
     <div class="card-header">
         <!-- [2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo] -->
         <div class="settings ui mini basic icon buttons">
-            <button class="ui button active" id="today" data-period="1d" data-interval="1m">Today</button>
+            <button class="ui button active" id="today" data-period="1d" data-interval="5m">Today</button>
             <button class="ui button" data-id="week" data-period="5d" data-interval="15m">Week</button>
             <button class="ui button" data-id="month" data-period="1mo" data-interval="90m">Month</button>
             <button class="ui button" data-id="year" data-period="1y" data-interval="1d">Year</button>
@@ -11,5 +11,7 @@
 
         <span></span>
     </div>
-    <div class="card-body"></div>
+    <div class="card-body">
+        <div class="ui active loader"></div>
+    </div>
 </div>

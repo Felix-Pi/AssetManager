@@ -20,6 +20,7 @@ class Portfolio(db.Model):
         self.positions = self.get_positions()
         self.value = self.calc_value()
         self.profit = self.calc_profit()
+        self.calc_position_counter = 0
 
     def calc_value(self):
         return round(sum(pos['value'] for pos in self.positions), 2)
@@ -127,9 +128,15 @@ class Portfolio(db.Model):
         for pos in self.positions:
             self.update_position(pos['symbol'])
 
-    def update_position(self, symbol):
-        transactions = db.session.query(Transaction).filter_by(symbol=symbol, portfolio_id=self.id) \
-            .all()
+    def calc_position(self, symbol, transactions=None, until_data=None):
+        self.calc_position_counter += 1
+
+        if transactions is not None:
+            transactions = list(filter(lambda x: x.symbol == symbol, transactions))
+        else:
+            transactions = db.session.query(Transaction).filter_by(symbol=symbol, portfolio_id=self.id).all()
+        if until_data is not None:
+            transactions = list(filter(lambda x: x.timestamp <= until_data.replace(tzinfo=None), transactions))
 
         data = {
             'quantity': 0,
@@ -159,6 +166,11 @@ class Portfolio(db.Model):
             data['buyin'] = round(data['buyin'] / data['quantity'], 7)
 
         data['quantity'] = round(data['quantity'], 7)
+
+        return data
+
+    def update_position(self, symbol):
+        data = self.calc_position(symbol)
 
         position = db.session.query(Portfolio_positions).filter_by(portfolio=self.id, symbol=symbol).first()
 

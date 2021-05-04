@@ -23,8 +23,6 @@ def portfolio(portfolio_id):
     portfolio = db.session.query(Portfolio).filter_by(id=portfolio_id, user_id=USER_ID).first()
     user = db.session.query(User).filter_by(id=USER_ID).first()
 
-
-
     add_transaction_form = AddTransactionForm()
 
     if portfolio is None:
@@ -34,7 +32,10 @@ def portfolio(portfolio_id):
         'user': user,
         'portfolio': portfolio,
         'assets': portfolio.positions,
+        'symbols': [s['symbol'] for s in portfolio.positions],
+        'symbol_list': ','.join([s['symbol'] for s in portfolio.positions]),
         'add_transaction_form': add_transaction_form,
     }
 
+    print(templateData['symbols'])
     return render_template('portfolio/portfolio_base.html', **templateData, title=('Home'))

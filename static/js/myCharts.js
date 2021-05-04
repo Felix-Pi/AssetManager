@@ -482,6 +482,8 @@ function enable_xaxis_label(chart) {
 
 
 function update_chart(chart, data, labels) { //ToDo
+
+    console.log('data: ', data)
     if (chart.data.datasets.length === 0) {
         chart.data.datasets = [{data: []}];
     } else {

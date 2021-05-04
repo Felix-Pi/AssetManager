@@ -155,9 +155,11 @@ function load_content(id, endpoint, data) {
     set_loader_inactive(id);
 }
 
-function load_historical_data(id, symbol, elem) {
+function load_historical_data(id, symbol, elem, action = 'init', url = 'asset') {
+    set_loader_active(id + ' .card-body');
+
     $.ajax({
-        url: "/api/asset/" + symbol + "/historical_data",
+        url: '/api/' + url + '/' + symbol + '/historical_data',
         data: {
             'period': elem.attr('data-period'),
             'interval': elem.attr('data-interval'),
@@ -169,11 +171,24 @@ function load_historical_data(id, symbol, elem) {
             result.labels = Object.values(result['timestamps'])
             result.colored = false;
 
-            $(id).attr('data-symbol', symbol)
+            result = [result];
+
+            $(id).attr('data-symbol', id)
 
 
-            linechart = chart_linechart(id, 'Line chart', [result], '€')
+            if (action === 'init') {
+                linechart = chart_linechart(id, 'Line chart', result, '€')
+            }
+            if (action === 'update') {
+                update_chart(linechart, result[0].median, result[0].labels)
+            }
             $(id + ' .card-header span').text(title + ': ' + price);
+
+            if (url === 'portfolio') {
+                $(id + ' .card-header span').text('Portfolio performance');
+            }
+
+            set_loader_inactive(id + ' .card-body');
         }
     });
 }
