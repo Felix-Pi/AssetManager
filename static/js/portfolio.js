@@ -7,9 +7,6 @@ function setup() {
     symbol = target.attr('data-symbol');
     price = target.attr('data-price');
 
-
-    load_historical_data('#linechart', symbol, $('#linechart .settings button.active'))
-
     /* setup stock distribution */
     $.ajax({
         url: '/api/portfolio/' + portfolio_id + '/stock_distribution',
@@ -24,7 +21,6 @@ function setup() {
         }
     });
 
-
     /* setup sector distribution */
     $.ajax({
         url: '/api/portfolio/' + portfolio_id + '/sector_distribution',
@@ -35,6 +31,18 @@ function setup() {
             var id = '#sector_distribution'
 
             var sector_distribution_chart = bar_chart('#sector_distribution', 'Sector distribution', result, '%', 'auto', 200)
+        }
+    });
+    /* setup industry distribution */
+    $.ajax({
+        url: '/api/portfolio/' + portfolio_id + '/industry_distribution',
+        success: function (result) {
+            result.colored = true;
+            result.data = result.data_relative;
+
+            var id = '#industry_distribution'
+
+            var sector_distribution_chart = bar_chart('#industry_distribution', 'Industry distribution', result, '%', 'auto', 200)
         }
     });
 
@@ -50,6 +58,8 @@ function setup() {
 
         }
     });
+
+    load_historical_data('#linechart', portfolio_id, $('#linechart .settings button.active'), action='init', 'portfolio')
 }
 
 
@@ -209,40 +219,41 @@ $(document).ready(function () {
      */
 
     $(document).on('click', '#linechart .settings button', function () {
-        let elem = $(this)
-
-        $.ajax({
-            url: "/api/asset/" + $('#linechart').attr('data-symbol') + "/historical_data",
-            data: {
-                'days': elem.attr('data-days'),
-                'period': elem.attr('data-period')
-            },
-            success: function (dataset) {
-                dataset = JSON.parse(dataset)
-                update_chart(linechart, dataset[0].median, dataset[0].timestamps)
-            }
-        });
 
         //set clicked btn active
         elem.parent().find('.active').removeClass('active');
         elem.addClass('active');
+
+        load_historical_data('#linechart', portfolio_id, $('#linechart .settings button.active'), action = 'update', 'portfolio')
     });
 
     $(document).on('click', '.asset_elem', function () {
-        let elem = $(this)
-        let id = '#linechart'
-        let settings = $(id + ' .settings button.active')
+        let elem = $(this);
+        let id = '#linechart';
+        let settings = $(id + ' .settings button.active');
 
-        let title = elem.attr('data-title')
-        let symbol = elem.attr('data-symbol')
-        let price = elem.attr('data-price')
+        let title = elem.attr('data-title');
+        let symbol = elem.attr('data-symbol');
+        let price = elem.attr('data-price');
+
+        $(id).attr('data-symbol', symbol);
 
         $.ajax({
             url: "/api/asset/" + symbol + "/historical_data",
-            data: {'days': settings.attr('data-days'), 'period': settings.attr('data-period')},
-            success: function (dataset) {
-                dataset = JSON.parse(dataset)
-                update_chart(linechart, dataset[0].median, dataset[0].timestamps)
+            data: {
+                'period': settings.attr('data-period'),
+                'interval': settings.attr('data-interval'),
+            },
+            success: function (result) {
+                result = JSON.parse(result)
+
+                result.median = Object.values(result['Median'])
+                result.labels = Object.values(result['timestamps'])
+                result.colored = false;
+
+                result = [result]
+
+                update_chart(linechart, result[0].median, result[0].labels)
             }
         });
 

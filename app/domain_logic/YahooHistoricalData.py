@@ -1,80 +1,138 @@
 import json
-from datetime import datetime
 
-import requests
-from dateutil.relativedelta import relativedelta
+import yfinance as yf
+import pandas as pd
 
-
-def request_historical_data(symbol, days, interval):
-    now = datetime.now()
-    now = str(now).split('.')[0]
-    now = datetime.strptime(now, '%Y-%m-%d %H:%M:%S')
-
-    period2 = str(datetime.timestamp(now))  # prev format: 1617109848.86177
-    period1 = str(datetime.timestamp(now - relativedelta(days=int(days))))
-    period2 = str(period2).split('.')[0]
-    period1 = str(period1).split('.')[0]
-
-    url = 'https://query1.finance.yahoo.com/v8/finance/chart/?symbol={}&period1={}&period2={}&interval={}&chart'.format(
-        symbol, period1, period2, interval)
-
-    result = requests.get(url)
-
-    return result.json()
+# locale.setlocale(locale.LC_TIME, "de_DE")
+from app import db, Portfolio, User
 
 
-def get_historical_data(symbols, days, interval):
-    # [2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo]
-    datasets = []
-    symbols = symbols.split(',')
+def get_historical_data_for_portfolio(id, period, interval, return_json=True, domain='portfolio'):
+    pd.set_option("display.max_rows", None, "display.max_columns", None)
+
+    if domain == 'index':
+        user = db.session.query(User).filter_by(id=id).first()
+
+        transactions = []
+        positions = []
+
+        for portfolio in user.portfolios.all():
+            pf = portfolio
+            for tr in portfolio.transactions.all():
+                transactions.append(tr)
+
+            for pos in portfolio.positions:
+                positions.append(pos)
+
+    else:
+        pf = db.session.query(Portfolio).filter_by(id=id).first()
+        transactions = pf.transactions.all()
+        positions = pf.positions
+
+    print(len(transactions))
+
+    symbols = [s['symbol'] for s in positions]
+
+    ticker_list = ' '.join(symbols)
+
+    tickers = yf.Tickers(ticker_list)
+
+    print(tickers)
+
+    df = tickers.history(period, interval)
+
+    del df['Open']
+    del df['Close']
+    del df['Volume']
+    del df['Dividends']
+    del df['Stock Splits']
+
+    cols = ['High', 'Low']
+
     for symbol in symbols:
-        data = request_historical_data(symbol, days, interval)
-        data = data['chart']['result'][0]
-        if 'timestamp' not in data:
-            return json.dumps([])
+        df_symbol = df['High'][symbol].fillna(method='backfill').fillna(method='ffill').items()
+        quantity = None
+        day = None
+        refresh_quantity = True
+        for timesamp, value in df_symbol:
+            if ('1d' == period or '2d' == period) and timesamp.strftime("%H:%M") == '12:00':
+                quantity = None
+            else:
+                if day != timesamp.strftime("%d"):
+                    quantity = None
 
-        timestamps = data['timestamp']
+            if quantity is None:
+                quantity = pf.calc_position(symbol=symbol, transactions=transactions, until_data=timesamp)[
+                    'quantity']
 
-        high = data['indicators']['quote'][0]['high']
-        low = data['indicators']['quote'][0]['low']
-        open = data['indicators']['quote'][0]['open']
-        close = data['indicators']['quote'][0]['close']
+            day = timesamp.strftime("%d")
 
-        assert (len(low) == len(high) == len(timestamps) == len(open) == len(close))
-        data_dict = {'timestamps': [], 'timestamps_raw': [], 'high': [], 'low': [], 'open': [], 'close': [],
-                     'median': []}
+            df['High'][symbol][timesamp] *= quantity
+            df['Low'][symbol][timesamp] *= quantity
 
-        for i in range(len(high)):
-            if high[i] is not None:
-                data_dict['title'] = symbol
-                data_dict['timestamps'].append(parse_historical_data(timestamps[i], days, interval))
-                data_dict['timestamps_raw'].append(timestamps[i])
-                data_dict['high'].append(high[i])
-                data_dict['low'].append(low[i])
-                data_dict['open'].append(open[i])
-                data_dict['close'].append(close[i])
-                data_dict['median'].append((high[i] + low[i]) / 2)
+    df['HighAll'] = df['High'].fillna(method='backfill').fillna(method='ffill').loc[:, symbols].sum(axis=1)
+    df['LowAll'] = df['Low'].fillna(method='backfill').fillna(method='ffill').loc[:, symbols].sum(axis=1)
 
-        datasets.append(data_dict)
+    df['Median'] = (df['HighAll'] + df['LowAll']) / 2
 
-    return json.dumps(datasets)
+    del df['High']
+    del df['Low']
+
+    del df['HighAll']
+    del df['LowAll']
+
+    df['timestamps'] = df['Median'].keys()
+    df = parse_historical_data(df, period)
+
+    # remove multi level column
+    df.columns = [col[0] for col in df.columns]
+
+    df.to_csv('data/csv/{}/{}_{}_{}_{}.csv'.format(domain, domain, id, period, interval))
+
+    if return_json:
+        return df.to_json()
+
+    return df
 
 
-def parse_historical_data(timestamp, days, period):
-    now = datetime.now()
+def get_historical_data(symbol, period, interval, return_json=True):
+    print(symbol, period, interval)
+    symbol = yf.Ticker(symbol)
+    hist = symbol.history(period=period, interval=interval)
 
-    ts_formatted = str(datetime.fromtimestamp(timestamp))
-    ts_formatted = datetime.strptime(ts_formatted, '%Y-%m-%d %H:%M:%S')
-    # pubDate.strftime("%a, %m %b, %H:%M")
-    if '2m' == period or '5m' == period or '15m' == period:
-        ts_formatted = ts_formatted.strftime("%a, %H:%M")
-    if '60m' == period:
-        ts_formatted = ts_formatted.strftime("%a, %d %b %H:%M")
+    hist['Open'].fillna(method='backfill').fillna(method='ffill')
+    hist['High'].fillna(method='backfill').fillna(method='ffill')
+    hist['Low'].fillna(method='backfill').fillna(method='ffill')
+    hist['Close'].fillna(method='backfill').fillna(method='ffill')
+
+    hist['Median'] = ((hist['High'] + hist['Low']) / 2)
+    hist['Median'].fillna(method='backfill').fillna(method='ffill')
+    hist['timestamps'] = hist['High'].keys()
+
+    hist = parse_historical_data(hist, period)
+
+    pd.set_option("display.max_rows", None, "display.max_columns", None)
+
+    if return_json:
+        return hist.to_json()
+
+    return hist
+
+
+def parse_historical_data(df, period):
     if '1d' == period:
-        ts_formatted = ts_formatted.strftime("%d %b")
+        df['timestamps'] = df['timestamps'].dt.strftime("%H:%M")
+    if '2d' == period:
+        df['timestamps'] = df['timestamps'].dt.strftime("%a, %H:%M")
     if '5d' == period:
-        ts_formatted = ts_formatted.strftime("%d %b %Y")
+        df['timestamps'] = df['timestamps'].dt.strftime("%a, %d %b %H:%M")
     if '1mo' == period:
-        ts_formatted = ts_formatted.strftime("%b %Y")
+        df['timestamps'] = df['timestamps'].dt.strftime("%d %b, %H:%M")
+    if '3mo' == period:
+        df['timestamps'] = df['timestamps'].dt.strftime("%d %b")
+    if '1y' == period:
+        df['timestamps'] = df['timestamps'].dt.strftime("%d %b %Y")
+    if '5y' == period or 'max' == period:
+        df['timestamps'] = df['timestamps'].dt.strftime("%b %Y")
 
-    return ts_formatted
+    return df

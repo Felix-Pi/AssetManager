@@ -1,0 +1,28 @@
+<div class="card">
+    <div class="card-header">Transaction</div>
+    <div class="card-body oberflow-auto">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Action</th>
+                <th>Symbol</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Timestamp</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for transaction in transactions %}
+                <tr>
+                    <th scope="row">{{ transaction.type_str.title }}</th>
+                    <td>{{ transaction.symbol }}</td>
+                    <td>{{ transaction.price }}</td>
+                    <td>{{ transaction.quantity }}</td>
+                    <td>{{ transaction.timestamp.strftime('%d.%m.%Y') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

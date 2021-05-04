@@ -1,12 +1,28 @@
-from flask import render_template
+from flask import render_template, request, url_for
+from flask_breadcrumbs import register_breadcrumb
+from flask_login import login_required, current_user
 
-from app import db, Asset
+from app import db, Asset, Portfolio_positions, Portfolio, User
 from app.routes.asset import bp
 
 
-@bp.route('/<string:symbol>/')
-def asset_index(symbol):
+def view_user_dlc(*args, **kwargs):
+    portfolio_id = request.view_args['portfolio_id']
+    symbol = request.view_args['symbol']
+
+    return [{'text': symbol, 'url': url_for('asset.asset_index', symbol=symbol, portfolio_id=portfolio_id)}]
+
+
+@bp.route('/<int:portfolio_id>/<string:symbol>/')
+@register_breadcrumb(bp, '.portfolio.asset_index', 'Asset', dynamic_list_constructor=view_user_dlc)
+@login_required
+def asset_index(portfolio_id, symbol):
+    USER_ID = current_user.get_id()
+    user = db.session.query(User).filter_by(id=USER_ID).first()
+
     asset = db.session.query(Asset).filter_by(symbol=symbol).first()
+    position = db.session.query(Portfolio_positions).filter(Portfolio_positions.symbol == symbol,
+                                                            Portfolio_positions.portfolio == portfolio_id).first()
 
     general_info = {
         'title': asset.get_property('title'),
@@ -20,8 +36,18 @@ def asset_index(symbol):
 
     financials = {
         'price': {
-            'regularMarketPrice': asset.get_property('regularMarketPrice'),
-            'regularMarketOpen': asset.get_property('regularMarketOpen'),
+            'price': asset.get_property('price'),
+            'price open': asset.get_property('price_open'),
+            'volume': asset.get_property('regularMarketVolume'),
+            'day low': asset.get_property('regularMarketDayLow'),
+            'day hig': asset.get_property('regularMarketDayHigh'),
+            'averageVolume': asset.get_property('averageVolume'),
+            'bid': asset.get_property('bid'),
+            'ask': asset.get_property('ask'),
+        },
+        'price_more': {
+            'regularMarketPrice': asset.get_property('price'),
+            'regularMarketOpen': asset.get_property('price_open'),
             'regularMarketVolume': asset.get_property('regularMarketVolume'),
             'regularMarketDayLow': asset.get_property('regularMarketDayLow'),
             'regularMarketDayHigh': asset.get_property('regularMarketDayHigh'),
@@ -69,14 +95,15 @@ def asset_index(symbol):
         'Ex dividend date': asset.get_property('ex_dividend_date'),
     }
 
-
     print(events)
     templateData = {
+        'user': user,
         'asset': asset,
+        'position': position,
         'general_info': general_info,
         'financials': financials,
         'events': events,
-        'ownership': financials,
+        'ownership': asset.parse_ownership(),
     }
 
     return render_template('assets/base.html', **templateData, title=('Home'))

@@ -1,0 +1,11 @@
+<div class="ui small breadcrumb">
+    {%- for breadcrumb in breadcrumbs -%}
+        {% if not loop.last %}
+            <a class="section" href="{{ breadcrumb.url }}">{{ breadcrumb.text }}</a>
+            <i class="right chevron icon divider"></i>
+        {% else %}
+            <div class="active section">{{ breadcrumb.text }}</div>
+        {% endif %}
+
+    {%- endfor -%}
+</div>

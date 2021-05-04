@@ -44,6 +44,13 @@ class Asset(db.Model):
             attr = getattr(self, property)
             if attr is not None:
                 return attr
+        if hasattr(self, 'dividendYield'):
+            val = getattr(self, 'dividendYield')
+            if val is None:
+                val = 0
+
+            setattr(self, 'dividendYield_fmt', round(val * 100, 2))
+
         return '-'
 
     def parse_recommendation_trend(self):
@@ -84,7 +91,21 @@ class Asset(db.Model):
         return result
 
     def parse_earnings(self):
-        return self.earnings
+        if 'earnings' in self.data:
+            return self.data['earnings']
+
+        print(self.data)
+        return None
+
+    def parse_ownership(self):
+        if 'ownershipList' in self.data:
+            data = self.data['ownershipList']
+            data = data.replace('\'', '"')
+            data = json.loads(data)
+
+            return data
+
+        return None
 
     def to_dict(self):
         data = {

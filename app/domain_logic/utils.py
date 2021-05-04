@@ -1,3 +1,6 @@
+from flask import make_response, jsonify
+
+
 def html_decode(s):
     """
     Returns the ASCII decoded version of the given HTML string. This does
@@ -18,3 +21,7 @@ def html_decode(s):
 def html_encode(html):
     """Returns the given HTML with ampersands, quotes and carets encoded."""
     return html.replace(" ", '&quot;')
+
+
+def return_error(code, description):
+    return make_response(jsonify(description), code)

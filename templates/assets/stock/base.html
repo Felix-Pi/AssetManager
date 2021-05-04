@@ -1,5 +1,4 @@
-<h1>{{ asset.title }}: {{ asset.price }} €</h1>
-
+{% include "assets/stock/top_steps.html" %}
 <div id="stock_navigation" class="ui secondary pointing menu">
     <a class="active item" data-attr="default">
         Home
@@ -15,6 +14,10 @@
     </a>
     <a class="item" data-attr="sec_filings">
         SEC Filings
+    </a>
+
+    <a class="item" data-attr="ownership">
+        Ownership
     </a>
 
     <div class="right menu">
@@ -36,6 +39,9 @@
     </div>
     <div class="elem hidden" data-attr="financials">
         {% include "assets/stock/financials.html" %}
+    </div>
+    <div class="elem hidden" data-attr="ownership">
+        {% include "assets/stock/ownership.html" %}
     </div>
 </div>
 

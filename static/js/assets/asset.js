@@ -15,7 +15,6 @@ $(document).ready(function () {
 
         $('#stock_navigation_content .elem').addClass('hidden');
         $('#stock_navigation_content .elem[data-attr=' + target + ']').removeClass('hidden');
-
     });
 
 

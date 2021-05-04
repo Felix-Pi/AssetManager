@@ -110,8 +110,8 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
 
     //in case of empty input
     if (input.length > 0) {
-        labels = input[0].timestamps
-        title = input[0].title
+        labels = input[0].labels
+        // title = input[0].title
     }
 
 
@@ -248,7 +248,6 @@ function bar_chart(id, title, input, label_suffix, width, height) {
             myCustomOptions: {},
         }
     }
-    console.log('options', config);
     return insert_chart(id, title, config, label_suffix, width, height);
 
 }
@@ -398,7 +397,7 @@ function change_chart_type(chart) {
     let body_elem = $(parent_id).find('.card-body');
     let current_type = chart.config.type;
     let isHalfDoughnut = chart.options.isHalfDoughnut;
-    console.log(chart)
+
     let title = $(chart_id + ' .card-header span').text();
     let width = chart.config.options.myCustomOptions.width;
     let height = chart.config.options.myCustomOptions.height;
@@ -447,6 +446,13 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
     let settings_change_chart_elem = $(id + ' .settings .change_chart_type')
 
     $(id).attr('label-suffix', label_suffix);
+
+
+    if (title.includes('~')) {
+        let description = title.split('~')[1]
+        title = title.split('~')[0]
+        header_elem.find('.description').html(description);
+    }
     header_elem.find('span').text(title);
 
     if (settings_change_chart_elem.length > 0) {
@@ -476,6 +482,8 @@ function enable_xaxis_label(chart) {
 
 
 function update_chart(chart, data, labels) { //ToDo
+
+    console.log('data: ', data)
     if (chart.data.datasets.length === 0) {
         chart.data.datasets = [{data: []}];
     } else {

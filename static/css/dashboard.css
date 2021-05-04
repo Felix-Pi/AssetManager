@@ -106,3 +106,23 @@ body {
     box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
 }
 
+.main_navigation {
+    margin: 8px 0 !important;
+}
+
+.ui.breadcrumb {
+    margin: 10px 0 !important;
+    background: none;
+}
+
+.main_message {
+    position: absolute !important;
+    right: 20%;
+    left: 20%;
+    top: 5%;
+    z-index: 100;
+}
+
+.main_navigation .dropdown.item:active{
+    border-color: rgba(255, 255, 255, 0) !important;
+}

@@ -76,6 +76,27 @@ function set_loader_inactive(id) {
     $(id).find('.loader').removeClass('active');
 }
 
+/**
+ * sets loader div active
+ * @param id html id
+ */
+function add_spinner(id) {
+    target = $(id);
+
+    console.log($(id + ' .spinner'))
+    if ($(id + ' .spinner').length == 0) {
+        target.append('<i class="fas spinner fa-spinner fa-spin"></i>')
+    }
+}
+
+/**
+ * sets loader div inactive
+ * @param id html id
+ */
+function remove_spinner(id) {
+    $(id + ' .spinner').remove()
+}
+
 
 /**
  * sets html element active, removes other active elements for this target
@@ -134,26 +155,61 @@ function load_content(id, endpoint, data) {
     set_loader_inactive(id);
 }
 
-function load_historical_data(id, symbol, elem) {
+function load_historical_data(id, symbol, elem, action = 'init', url = 'asset') {
+    set_loader_active(id + ' .card-body');
+
     $.ajax({
-        url: "/api/asset/" + symbol + "/historical_data",
+        url: '/api/' + url + '/' + symbol + '/historical_data',
         data: {
-            'days': elem.attr('data-days'),
-            'period': elem.attr('data-period')
+            'period': elem.attr('data-period'),
+            'interval': elem.attr('data-interval'),
         },
         success: function (result) {
             result = JSON.parse(result)
+
+            result.median = Object.values(result['Median'])
+            result.labels = Object.values(result['timestamps'])
             result.colored = false;
 
-            $(id).attr('data-symbol', symbol)
+            result = [result];
 
-            linechart = chart_linechart(id, 'Line chart', result, '€')
+            $(id).attr('data-symbol', id)
+
+
+            if (action === 'init') {
+                linechart = chart_linechart(id, 'Line chart', result, '€')
+            }
+            if (action === 'update') {
+                update_chart(linechart, result[0].median, result[0].labels)
+            }
             $(id + ' .card-header span').text(title + ': ' + price);
+
+            if (url === 'portfolio') {
+                $(id + ' .card-header span').text('Portfolio performance');
+            }
+
+            set_loader_inactive(id + ' .card-body');
         }
     });
 }
 
 $(document).ready(function () {
+    $('.ui.dropdown').dropdown();
+
+
+    //MAIN_NAVIGATION
+    $(document).on('click', '.main_navigation .item', function () {
+        let elem = $(this);
+
+        if (!elem.hasClass('dropdown')) {
+            let target = elem.attr('data-attr');
+
+            set_active('.main_navigation .item', elem)
+
+            $('.main_navigation_content .elem').addClass('hidden');
+            $('.main_navigation_content .elem[data-attr=' + target + ']').removeClass('hidden');
+        }
+    });
 
     /**
      * accordeon logic
@@ -170,35 +226,42 @@ $(document).ready(function () {
      * call update_data() to refresh data
      */
     $(document).on('click', '#update_data_price', function (e, f) {
-        set_loader_active('.navbar')
+        add_spinner('#update_data_price')
         $.ajax({
             method: "GET",
             url: "/api/update_data_price",
             success: function (data) {
-                set_loader_inactive('.navbar')
+                remove_spinner('#update_data_price')
             }
         });
     });
 
     $(document).on('click', '#update_data_full', function (e, f) {
-        set_loader_active('.navbar')
+        add_spinner('#update_data_full')
         $.ajax({
             method: "GET",
             url: "/api/update_data_full",
             success: function (data) {
-                set_loader_inactive('.navbar')
+                remove_spinner('#update_data_full')
             }
         });
     });
     $(document).on('click', '#update_all_positions', function (e, f) {
-        set_loader_active('.navbar')
+        add_spinner('#update_all_positions')
         $.ajax({
             method: "GET",
             url: "/api/update_all_positions",
             success: function (data) {
-                set_loader_inactive('.navbar')
+                remove_spinner('#update_all_positions')
             }
         });
+    });
+
+
+    $(document).on('click', '.main_message .close', function (e, f) {
+        target = $(this).parent()
+        target.fadeToggle()
+        target.remove()
     });
 
 
@@ -273,6 +336,8 @@ $(document).ready(function () {
 
     $('.profit_label').each(function () {
         elem = $(this)
+
+        console.log(elem)
         profit_val = parseFloat(elem.text())
 
         elem_text = elem.find('.label').find('span')

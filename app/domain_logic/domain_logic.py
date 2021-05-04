@@ -11,7 +11,7 @@ def update_all_assets_full():
     for asset in db.session.query(Asset).all():
         update_asset_full(asset)
 
-    # update_all_portfolio_positions()
+    update_all_portfolio_positions()
 
 
 def update_asset_full(asset):
@@ -35,7 +35,6 @@ def update_asset_full(asset):
         dataset.pop('symbol')
     if 'modules' in dataset:
         dataset.pop('modules')
-
 
     update_asset_data(asset.symbol, dataset)
 
@@ -89,7 +88,10 @@ def update_asset_data(symbol, dataset):
 
 
 def update_all_assets_price():
-    for asset in db.session.query(Asset).all():
+    assets = db.session.query(Asset).all()
+    app.logger.info('Updating Price for all assets ({}) '.format(len(assets)))
+
+    for asset in assets:
         template = price_template
 
         if asset.type == 4:
@@ -98,9 +100,7 @@ def update_all_assets_price():
         dataset = YahooApi().build_data(asset.symbol, template)
         dataset.pop('modules')
 
-        update_asset_data(asset.symbol, dataset)
-
-    # update_all_portfolio_positions()
+    update_all_portfolio_positions()
 
 
 def add_symbol(symbol, typee):
@@ -135,7 +135,6 @@ def add_symbol(symbol, typee):
 
     alternative_symbol, title = search_alternative_symbol(symbol)
 
-
     if title is not None:
         title = title.lower()
         title = title.capitalize()
@@ -163,7 +162,7 @@ def get_portfolio(id):
 def update_all_portfolio_positions():
     portfolios = db.session.query(Portfolio).all()
 
-    # app.logger.info('Updating positions for  \'{}\' Portfolios'.format(len(portfolios)))
+    app.logger.info('Updating positions for all Portfolios ({}) '.format(len(portfolios)))
     for pf in portfolios:
         pf.update_portfolio_positions()
 
@@ -171,14 +170,15 @@ def update_all_portfolio_positions():
 def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity):
     portfolio = get_portfolio(pf_id)
 
-    fetch_existing = db.session.query(Asset).filter_by(symbol=symbol).first()
+    if symbol is not None:  # for transcation_type = 4
+        fetch_existing = db.session.query(Asset).filter_by(symbol=symbol).first()
 
-    if fetch_existing is None:
-        symbol_type = YahooApi().get_symbol_type(symbol)
+        if fetch_existing is None:
+            symbol_type = YahooApi().get_symbol_type(symbol)
 
-        asset_type = db.session.query(Asset_types).filter(Asset_types.type == symbol_type).first()
+            asset_type = db.session.query(Asset_types).filter(Asset_types.type == symbol_type).first()
 
-        add_symbol(symbol, asset_type.id)
+            add_symbol(symbol, asset_type.id)
 
     timestamp = datetime.strptime(timestamp, '%d.%m.%y')
     portfolio.add_transaction(symbol, transcation_type, timestamp, price, quantity)
@@ -194,22 +194,3 @@ def get_user(id):
 # 3 - monthly
 # 4 - Money Transfer
 # 5 - Dividend
-#    'Einz', type = 4, quantity = 1, price = 35, timestamp = "29.05"
-#    'Einz', type = 4, quantity = 1, price = 40, timestamp = "03.06"
-#    'Einz', type = 4, quantity = 1, price = 100, timestamp = "16.06"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "01.07"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "03.08"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "04.08"
-#    'Einz', type = 4, quantity = 1, price = 400, timestamp = "24.08"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = '01.09'
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "29.09"
-#    'Einz', type = 4, quantity = 1, price = 30, timestamp = "29.10"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "4.11"
-#    'Einz', type = 4, quantity = 1, price = 45, timestamp = "30.11"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "03.12"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "04.01"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "03.02"
-#    'Einz', type = 4, quantity = 1, price = 85, timestamp = "26.02"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "03.03"
-#    'Einz', type = 4, quantity = 1, price = 85, timestamp = "06.04"
-#    'Einz', type = 4, quantity = 1, price = 50, timestamp = "06.04"

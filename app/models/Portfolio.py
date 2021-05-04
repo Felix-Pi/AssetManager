@@ -9,10 +9,9 @@ class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.Integer, db.ForeignKey('portfolio_types.id'))
     type_str = db.relationship("Portfolio_types")
-
     title = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    transactions = db.relationship("Transaction", lazy='dynamic')
+    transactions = db.relationship("Transaction", lazy='dynamic', order_by="desc(Transaction.timestamp)")
     positions_db = db.relationship("Portfolio_positions", lazy='dynamic')
     value = db.Column(db.Float)
 
@@ -21,6 +20,7 @@ class Portfolio(db.Model):
         self.positions = self.get_positions()
         self.value = self.calc_value()
         self.profit = self.calc_profit()
+        self.calc_position_counter = 0
 
     def calc_value(self):
         return round(sum(pos['value'] for pos in self.positions), 2)
@@ -59,7 +59,7 @@ class Portfolio(db.Model):
     def calc_sector_distribution(self):
         data = {}
         for pos in self.positions:
-            sector = pos['industry']
+            sector = pos['sector']
             value = pos['value']
 
             if sector not in data:
@@ -67,6 +67,24 @@ class Portfolio(db.Model):
             else:
                 data[sector]['total'] += value
                 data[sector]['relative'] = data[sector]['total'] / self.value * 100
+
+        data = dict(sorted(data.items(), key=lambda t: t[1]['total'], reverse=True))
+
+        return {'data_relative': [data[key]['relative'] for key in data],
+                'data_absolute': [data[key]['total'] for key in data],
+                'labels': [key for key in data]}
+
+    def calc_industry_distribution(self):
+        data = {}
+        for pos in self.positions:
+            industry = pos['industry']
+            value = pos['value']
+
+            if industry not in data:
+                data[industry] = {'total': value, 'relative': value / self.value * 100}
+            else:
+                data[industry]['total'] += value
+                data[industry]['relative'] = data[industry]['total'] / self.value * 100
 
         data = dict(sorted(data.items(), key=lambda t: t[1]['total'], reverse=True))
 
@@ -103,13 +121,22 @@ class Portfolio(db.Model):
 
         return result
 
-    def update_portfolio_positions(self):
+    def update_portfolio_positions(self, log=False):
+        if log:
+            app.logger.info('Updating Portfolio Positions for \'{}\': '.format(self.title))
+
         for pos in self.positions:
             self.update_position(pos['symbol'])
 
-    def update_position(self, symbol):
-        transactions = db.session.query(Transaction).filter_by(symbol=symbol, portfolio_id=self.id) \
-            .all()
+    def calc_position(self, symbol, transactions=None, until_data=None):
+        self.calc_position_counter += 1
+
+        if transactions is not None:
+            transactions = list(filter(lambda x: x.symbol == symbol, transactions))
+        else:
+            transactions = db.session.query(Transaction).filter_by(symbol=symbol, portfolio_id=self.id).all()
+        if until_data is not None:
+            transactions = list(filter(lambda x: x.timestamp <= until_data.replace(tzinfo=None), transactions))
 
         data = {
             'quantity': 0,
@@ -135,8 +162,15 @@ class Portfolio(db.Model):
                     if data['quantity'] == 0:
                         data['buyin'] = 0
 
+        if data['buyin'] != 0:
+            data['buyin'] = round(data['buyin'] / data['quantity'], 7)
 
-        data['buyin'] =  data['buyin'] / data['quantity']
+        data['quantity'] = round(data['quantity'], 7)
+
+        return data
+
+    def update_position(self, symbol):
+        data = self.calc_position(symbol)
 
         position = db.session.query(Portfolio_positions).filter_by(portfolio=self.id, symbol=symbol).first()
 
@@ -165,14 +199,25 @@ class Portfolio(db.Model):
 
         return position
 
-    def add_transaction(self, symbol, type, timestamp, price, quantity):
-        transaction = Transaction(portfolio_id=self.id, symbol=symbol, type=type, timestamp=timestamp, price=price,
-                                  quantity=quantity)
+    def add_transaction(self, symbol, type, timestamp, price, quantity, cost=None):
+        if cost is None:
+            if type == 1 or type == 2:
+                cost = 1.0
+            if type == 3 or type == 4 or type == 5:
+                cost = 0.0
+
+        if type == 4:  # money transfer
+            transaction = Transaction(portfolio_id=self.id, symbol=None, type=type, timestamp=timestamp, price=price,
+                                      quantity=quantity, cost=cost)
+        else:
+            transaction = Transaction(portfolio_id=self.id, symbol=symbol, type=type, timestamp=timestamp, price=price,
+                                      quantity=quantity, cost=cost)
 
         db.session.add(transaction)
         db.session.commit()
 
-        self.update_position(symbol)
+        if type != 4:
+            self.update_position(symbol)
 
         return transaction
 
@@ -199,10 +244,12 @@ class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'))
     symbol = db.Column(db.Integer, db.ForeignKey('asset.symbol'))
-    type = db.Column(db.Integer)
+    type = db.Column(db.Integer, db.ForeignKey('transaction_types.id'))
+    type_str = db.relationship("Transaction_types")
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     price = db.Column(db.Float())
     quantity = db.Column(db.Float())
+    cost = db.Column(db.Float())
 
     def to_dict(self, include_email=False):
         data = {
@@ -210,6 +257,7 @@ class Transaction(db.Model):
             'portfolio_id': self.portfolio_id,
             'symbol': self.symbol,
             'type': self.type,
+            'type_str': self.type_str,
             'timestamp': self.timestamp,
             'price': self.price,
             'quantity': self.quantity,
@@ -218,6 +266,21 @@ class Transaction(db.Model):
 
     def __repr__(self):
         return '<Transaction {}>'.format(self.to_dict())
+
+
+class Transaction_types(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(64))
+
+    def to_dict(self, include_email=False):
+        data = {
+            'id': self.id,
+            'title': self.title,
+        }
+        return data
+
+    def __repr__(self):
+        return '<Transaction_type {}>'.format(self.to_dict())
 
 
 class Portfolio_types(db.Model):

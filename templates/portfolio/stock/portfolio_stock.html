@@ -2,34 +2,65 @@
     {% include "portfolio/top_steps.html" %}
 </div>
 
-<div class="row row-cols-1">
 
-    <!-- table -->
-    <div class="col-md-3 mb-4">
-        {% include "portfolio/modules/asset_list.html" %}
+<div class="main_navigation_content">
+    <div class="elem" data-attr="main">
+        <div class="row row-cols-1">
+            <!-- table -->
+            <div class="col-md-3 mb-4">
+                {% include "portfolio/modules/asset_list.html" %}
+            </div>
+
+            <!-- line chart -->
+            <div class="col-md-6 mb-4">
+                {% include "portfolio/modules/linechart.html" %}
+            </div>
+
+            <div class="col-md-3">
+                <!-- doughnut countries -->
+                {% include "portfolio/stock/portfolio_country_distribution.html" %}
+            </div>
+
+            <div class="col-md-3">
+                <!-- stock distribution -->
+                {% include "portfolio/modules/portfolio_stock_distribution.html" %}
+            </div>
+            <div class="col-md-3">
+                <!-- doughnut sectors -->
+                {% include "portfolio/stock/portfolio_sector_distribution.html" %}
+            </div>
+            <div class="col-md-3">
+                <!-- doughnut industry -->
+                {% include "portfolio/stock/portfolio_industry_distribution.html" %}
+            </div>
+
+        </div>
     </div>
 
-    <!-- line chart -->
-    <div class="col-md-6 mb-4">
-        {% include "portfolio/modules/linechart.html" %}
+    <div class="elem hidden" data-attr="news">
+        <div class="row row-cols-1">
+            <div class="col-md-6">
+                {% include "modules/newsfeed/newsfeed.html" %}
+            </div>
+        </div>
     </div>
 
-    <div class="col-md-3">
-        <!-- doughnut countries -->
-        {% include "portfolio/stock/portfolio_country_distribution.html" %}
+    <div class="elem hidden" data-attr="transactions">
+        <div class="row row-cols-1">
+            <div class="col-md-6">
+                {% set transactions = portfolio.transactions %}
+                {% include "portfolio/modules/transactions.html" %}
+            </div>
+        </div>
     </div>
 
-    <div class="col-md-3">
-        <!-- stock distribution -->
-        {% include "portfolio/modules/portfolio_stock_distribution.html" %}
-    </div>
-    <div class="col-md-3">
-        <!-- doughnut sectors -->
-        {% include "portfolio/stock/portfolio_sector_distribution.html" %}
-    </div>
+    <div class="elem hidden" data-attr="add_transaction">
+        <div class="row row-cols-1">
+            <div class="col-md-6">
 
-    <div class="col-md-6">
-        {% include "modules/newsfeed/newsfeed.html" %}
+                {% include "portfolio/modules/add_transaction.html" %}
+            </div>
+        </div>
     </div>
 
 </div>

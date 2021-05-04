@@ -1,0 +1,90 @@
+<div class="row row-cols-1" id="top_steps">
+
+    <div class="col-md-2 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Price</div>
+                    <div class="description">open: {{ asset.price_open }} €</div>
+                </div>
+                <div class="ordered_step_number small"> {{ asset.price }} €</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Today</div>
+                    <div class="description">
+                        {% if position.profit['today_relative'] >= 0 %}
+                            + {% endif %}{{ position.profit['today_relative'] }} %
+                    </div>
+                </div>
+                <div class="ordered_step_number small">
+                    {% if position.profit['today_absolute'] >= 0 %} + {% endif %}
+                    {{ position.profit['today_absolute'] }} €
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title"> Overall return</div>
+                    <div class="description">
+                        {% if position.profit['total_relative'] >= 0 %}
+                            +{% endif %}{{ position.profit['total_relative'] }} %
+                    </div>
+                </div>
+                <div class="ordered_step_number small">
+                    {% if position.profit['total_absolute'] >= 0 %} +{% endif %}{{ position.profit['total_absolute'] }}
+                    €
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Quantity</div>
+                    <div class="description"> &nbsp;</div>
+                </div>
+                <div class="ordered_step_number small">{{ position.quantity }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Value</div>
+                    <div class="description"> &nbsp;</div>
+                </div>
+                <div class="ordered_step_number small"> {{ position.value }} €</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Dividend</div>
+                    <div class="description">{{ asset.dividendYield_fmt }} %</div>
+                </div>
+                <div class="ordered_step_number small"> {{ position.dividend }} €</div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>

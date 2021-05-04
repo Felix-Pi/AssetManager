@@ -11,19 +11,19 @@
             </thead>
             <tbody>
             {% for asset in assets %}
-            <tr>
-                <th scope="row">
-                    <h5 class="ui sub header">
-                        {{ asset.title }}
-                    </h5>
-                </th>
-                <td>
-                            <span class="edit_stock_button" portfolio_id="{{ portfolio_id }}"
-                                  asset_id="{{ asset.id }}"><i
-                                    class="fas fa-ellipsis-v"></i>
-                            </span>
-                </td>
-            </tr>
+                <tr>
+                    <th scope="row">
+                        <h5 class="ui sub header">
+                            {{ asset.title }}
+                        </h5>
+                    </th>
+                    <td>
+                    <span class="edit_stock_button" portfolio_id="{{ portfolio_id }}"
+                          asset_id="{{ asset.id }}"><i
+                            class="fas fa-ellipsis-v"></i>
+                    </span>
+                    </td>
+                </tr>
             {% endfor %}
 
             </tbody>
