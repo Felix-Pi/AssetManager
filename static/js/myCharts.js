@@ -447,6 +447,12 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
     let settings_change_chart_elem = $(id + ' .settings .change_chart_type')
 
     $(id).attr('label-suffix', label_suffix);
+
+    if (title.includes('~')) {
+        let description = title.split('~')[1]
+        title = title.split('~')[0]
+        header_elem.find('.description').html(description);
+    }
     header_elem.find('span').text(title);
 
     if (settings_change_chart_elem.length > 0) {

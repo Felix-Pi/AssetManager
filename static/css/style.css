@@ -137,6 +137,9 @@ a, a:hover, a:active {
     border-top: 0 !important;
     border-radius: 0 !important;
 }
+.card-header .description {
+    float: right;
+}
 
 .asset_elem {
     transition: .2s;
