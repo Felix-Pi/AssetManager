@@ -1,5 +1,3 @@
-import logging
-
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate

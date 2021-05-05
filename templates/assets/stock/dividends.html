@@ -1,0 +1,35 @@
+<div class="row">
+    <!-- general info -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">Dividends</div>
+            <div class="card-body">
+                <table class="table">
+                    {% for key, value in dividends.items() %}
+                        <tr>
+                            <th scope="row">{{ key.strftime('%d.%m.%Y') }}</th>
+                            <td>{{ value }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-header">Splits</div>
+            <div class="card-body">
+                <table class="table">
+                    {% for key, value in splits.items() %}
+                        <tr>
+                            <th scope="row">{{ key.strftime('%d.%m.%Y') }}</th>
+                            <td>{{ value }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from sqlalchemy import orm
+
 from app import db, app
 from app.models.Asset import *
 from app.models.Portfolio_position import Portfolio_positions
@@ -95,14 +97,14 @@ class Portfolio(db.Model):
     def calc_country_distribution(self):
         data = {}
         for pos in self.positions:
-            country = pos['country']
+            industry = pos['country']
             value = pos['value']
 
-            if country not in data:
-                data[country] = {'total': value, 'relative': value / self.value * 100}
+            if industry not in data:
+                data[industry] = {'total': value, 'relative': value / self.value * 100}
             else:
-                data[country]['total'] += value
-                data[country]['relative'] = data[country]['total'] / self.value * 100
+                data[industry]['total'] += value
+                data[industry]['relative'] = data[industry]['total'] / self.value * 100
 
         data = dict(sorted(data.items(), key=lambda t: t[1]['total'], reverse=True))
 

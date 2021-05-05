@@ -30,9 +30,7 @@ def get_historical_data_for_portfolio(id, period, interval, domain='portfolio'):
 
     symbols = [s['symbol'] for s in positions]
 
-    ticker_list = ' '.join(symbols)
-
-    tickers = yf.Tickers(ticker_list)
+    tickers = yf.Tickers(' '.join(symbols))
 
     df = tickers.history(period, interval)
 

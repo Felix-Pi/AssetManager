@@ -47,7 +47,8 @@ def portfolios():
 
 
 def assets():
-    add_symbol('USDEUR=X', 4)
+    # add_symbol('USDEUR=X', 4)
+    pass
 
 
 def transactions():

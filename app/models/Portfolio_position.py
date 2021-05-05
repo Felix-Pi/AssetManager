@@ -69,7 +69,7 @@ class Portfolio_positions(db.Model):
 
     def calc_dividend(self):
         if self.symbol_elem.type == 1 or self.symbol_elem.type == 2:
-            dividend_rate = self.symbol_elem.dividend_rate
+            dividend_rate = self.symbol_elem.dividend
 
             if dividend_rate is None:
                 dividend_rate = 0
@@ -93,7 +93,7 @@ class Portfolio_positions(db.Model):
                     data[attr] = getattr(self, attr)
 
         if hasattr(self, 'symbol_elem'):
-            data['title'] = self.symbol_elem.title
+            data['name'] = self.symbol_elem.name
         return data
 
     def __repr__(self):
