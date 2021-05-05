@@ -247,21 +247,19 @@ $(document).ready(function () {
             success: function (result) {
                 result = JSON.parse(result)
 
-                result.median = Object.values(result['Median'])
+                result.data = Object.values(result['Median'])
                 result.labels = Object.values(result['timestamps'])
                 result.colored = false;
+                result.title = symbol;
 
-                result = [result]
 
-                update_chart(linechart, result[0].median, result[0].labels)
+                add_dataset_to_chart(linechart, result)
             }
         });
 
 
         set_active('.asset_elem', elem);
 
-        //set card title
-        $(id + ' .card-header span').text(title + ': ' + price);
     });
 
     $(document).on('click', '.asset_elem_subheader_absolute', function () {

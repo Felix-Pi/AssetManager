@@ -1,0 +1,17 @@
+Flask~=1.1.2
+python-dateutil~=2.8.1
+SQLAlchemy~=1.4.9
+Werkzeug~=1.0.1
+requests~=2.25.1
+xmltodict~=0.12.0
+pip~=21.1.1
+alembic~=1.5.8
+flask_migrate
+flask_sqlalchemy
+flask-breadcrumbs
+flask-login
+flask-wtf
+email-validator
+jwt
+flask-bootstrap
+yfinance

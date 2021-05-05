@@ -95,7 +95,6 @@ def asset_index(portfolio_id, symbol):
         'Ex dividend date': asset.get_property('ex_dividend_date'),
     }
 
-    print(events)
     templateData = {
         'user': user,
         'asset': asset,

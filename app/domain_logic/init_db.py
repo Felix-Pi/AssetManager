@@ -283,6 +283,9 @@ def transactions():
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="06.04.21")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.05.21")
 
+    add_transaction(pf_id=1, symbol='BAYN.DE', transcation_type=5, quantity=3, price=2.00, timestamp="29.04.21")
+    add_transaction(pf_id=1, symbol='BAS.F', transcation_type=5, quantity=0.6843, price=3.30, timestamp="04.05.21")
+
 
 def init_all():
     users()

@@ -158,6 +158,7 @@ function load_content(id, endpoint, data) {
 function load_historical_data(id, symbol, elem, action = 'init', url = 'asset') {
     set_loader_active(id + ' .card-body');
 
+
     $.ajax({
         url: '/api/' + url + '/' + symbol + '/historical_data',
         data: {
@@ -167,9 +168,15 @@ function load_historical_data(id, symbol, elem, action = 'init', url = 'asset') 
         success: function (result) {
             result = JSON.parse(result)
 
+            console.log('load_historical_data: ', result)
             result.median = Object.values(result['Median'])
             result.labels = Object.values(result['timestamps'])
             result.colored = false;
+
+            result.title = symbol;
+            if (url === 'portfolio') {
+                result.title = 'Portfolio';
+            }
 
             result = [result];
 

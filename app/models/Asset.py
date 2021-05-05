@@ -94,7 +94,6 @@ class Asset(db.Model):
         if 'earnings' in self.data:
             return self.data['earnings']
 
-        print(self.data)
         return None
 
     def parse_ownership(self):

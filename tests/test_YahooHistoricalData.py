@@ -12,7 +12,7 @@ class Test(TestCase):
         print(res)
 
     def test_get_historical_data_for_multiple_symbols(self):
-        res = get_historical_data_for_portfolio(1, '3mo', '1h', return_json=True, domain='user')
+        res = get_historical_data_for_portfolio(1, '3mo', '1h', domain='user')
         pd.set_option("display.max_rows", None, "display.max_columns", None)
 
         #print(res)

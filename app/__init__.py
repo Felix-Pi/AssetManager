@@ -8,7 +8,6 @@ from flask_login import LoginManager
 from flask_breadcrumbs import Breadcrumbs
 from app.config import Config
 
-
 app = Flask(__name__, template_folder='../templates/', static_folder='../static/')
 
 app.config.from_object(Config)
@@ -19,7 +18,6 @@ migrate = Migrate(app, db)
 Breadcrumbs(app)
 bootstrap = Bootstrap(app)
 login = LoginManager(app)
-
 
 from app.models.User import *
 from app.models.Portfolio import *
@@ -42,5 +40,5 @@ app.register_blueprint(api_bp, url_prefix='/api')
 from app import routes
 
 app.logger.setLevel(Config.log_level)
-#print(app.url_map)
-#app.logger.info('Routes: {}'.format(param))
+# print(app.url_map)
+# app.logger.info('Routes: {}'.format(param))

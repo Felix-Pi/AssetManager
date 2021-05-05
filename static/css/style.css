@@ -137,6 +137,7 @@ a, a:hover, a:active {
     border-top: 0 !important;
     border-radius: 0 !important;
 }
+
 .card-header .description {
     float: right;
 }
@@ -232,4 +233,10 @@ a, a:hover, a:active {
 
 .dropdown.active {
     font-weight: normal !important;
+}
+
+.ui.vertical.menu {
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
 }

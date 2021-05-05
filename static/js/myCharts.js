@@ -96,16 +96,9 @@ function chart_half_doughnut(id, title, data, label_suffix, width, height) {
 }
 
 function chart_linechart(id, title, input, label_suffix, width = '', height = '') {
+    console.log('chart_linechart: ', input)
     var colors = get_color_sheme(input);
-    var datasets = [{
-        backgroundColor: colors,
-        borderColor: colors,
-        label: '',
-        data: [],
-        lineTension: 0,
-        borderWidth: 2,
-        fill: false
-    }]
+    var datasets = []
     var labels = []
 
     //in case of empty input
@@ -124,7 +117,8 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
             data: input[i].median,
             lineTension: 0,
             borderWidth: 2,
-            fill: false
+            fill: false,
+            yAxisID: 'y-axis-' + i
         })
     }
 
@@ -155,7 +149,7 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
                         return item[0].xLabel
                     },
                     label: function (item, data) {
-                        let symbol = data.datasets[0].label
+                        let symbol = data.datasets[item.datasetIndex].label
                         //let value = item.yLabel.toFixed(2)
                         let value = item.yLabel.toLocaleString('en-US', {
                             minimumFractionDigits: 2,
@@ -183,13 +177,13 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
                     }
                 }],
                 yAxes: [{
-                    beginAtZero: true,
                     display: true,
                     scaleLabel: {
                         display: false,
                         labelString: 'Value'
-                    }
-                }]
+                    },
+                    id: 'y-axis-0',
+                }],
             },
             myCustomOptions: {},
         }
@@ -492,5 +486,39 @@ function update_chart(chart, data, labels) { //ToDo
 
     chart.data.datasets[0].data = data;
     chart.data.labels = labels;
+    chart.update();
+}
+
+
+function add_dataset_to_chart(chart, data) {
+    console.log('add_dataset_to_chart: ', data)
+
+    let dsold_first_label = chart.data.labels[0]
+    let dsnew_first_label = data.labels[0]
+
+    let first_matching_position = chart.data.labels.findIndex(element => element === dsnew_first_label)
+
+    for (let i = 0; i < first_matching_position; i++) {
+        data.data.unshift(null)
+    }
+
+    console.log(dsold_first_label, dsnew_first_label)
+
+    chart.data.datasets[1] = {
+        backgroundColor: colors[2],
+        //borderColor: color[i],
+        borderColor: chartcolors.orange,
+        label: data.title,
+        data: data.data,
+        lineTension: 0,
+        borderWidth: 2,
+        fill: false,
+        yAxisID: 'y-axis-1'
+    }
+
+    chart.options.scales.yAxes[1] = {
+        id: 'y-axis-1',
+        display: false,
+    }
     chart.update();
 }

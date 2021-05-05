@@ -18,5 +18,4 @@ class Config(object):
         ' * [%(levelname)s][%(filename)s:%(lineno)d]: %(message)s'
     ))
 
-
     log_level = logging.DEBUG

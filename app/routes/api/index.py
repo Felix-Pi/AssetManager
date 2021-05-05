@@ -1,13 +1,10 @@
-import os
-import time
-from datetime import timedelta
-
 import pandas as pd
 
 from flask import jsonify, request
 
 from app import db, User, datetime
 from app.domain_logic.YahooHistoricalData import get_historical_data_for_portfolio
+from app.domain_logic.utils import get_csv_data
 from app.routes.api import *
 
 
@@ -31,30 +28,11 @@ def index_get_historical_data(id):
     interval = request.args.get('interval')
 
     domain = 'index'
-    file = 'data/csv/{}/{}_{}_{}_{}.csv'.format(domain, domain, id, period, interval)
 
-    if os.path.isfile(file):
-        stat = os.stat(file)
-        creation_time = datetime.fromtimestamp(stat.st_birthtime)
-
-        if '1d' == period or '2d' == period:
-            condition_time = datetime.now() - timedelta(hours=1)
-        else:
-            condition_time = datetime.now() - timedelta(days=1)
-
-        if creation_time > condition_time:
-            return pd.read_csv(file, index_col=0).to_json()
-        else:
-            get_historical_data_for_portfolio(id=id,
-                                              period=period,
-                                              interval=interval,
-                                              domain=domain)
+    file, creation_time, refresh = get_csv_data(domain, id, period, interval)
+    if file is not None:
+        if refresh is False:
             return pd.read_csv(file, index_col=0).to_json()
 
-    else:
-        data = get_historical_data_for_portfolio(id=id,
-                                                 period=period,
-                                                 interval=interval,
-                                                 domain=domain)
-
-        return jsonify(data)
+    get_historical_data_for_portfolio(id=id, period=period, interval=interval, domain=domain)
+    return pd.read_csv(file, index_col=0).to_json()

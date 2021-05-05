@@ -109,7 +109,6 @@ class User(UserMixin, db.Model):
 
         data = {}
         for transaction in transactions:
-            print(transaction.type)
             if transaction.type == 4:
                 timestamp = transaction.timestamp
                 # month = datetime.strptime(month, '%m.%y')
