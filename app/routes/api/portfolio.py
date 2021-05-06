@@ -36,8 +36,8 @@ def pf_get_historical_data(id):
         if refresh is False:
             return pd.read_csv(file, index_col=0).to_json()
 
-    get_historical_data_for_portfolio(id=id, period=period, interval=interval, domain=domain)
-    return pd.read_csv(file, index_col=0).to_json()
+    return get_historical_data_for_portfolio(id=id, period=period, interval=interval, domain=domain)
+    #return pd.read_csv(file, index_col=0).to_json()
 
 
 @bp.route('/portfolio/<int:id>/sector_distribution', methods=['GET'])

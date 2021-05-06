@@ -29,10 +29,35 @@ class Asset(db.Model):
 
     currency = db.Column(db.String(64))
 
+    def get_name(self):
+        def filter_asset_name(name):
+            blacklist = [',', 'Inc.', 'Inc', 'S.A.', 'SE', '& Co. KGaA', ' AG', 'N.V.', 'ltd.', 'Ltd.', 'ltd',
+                         'Limited', 'plc',
+                         'Corp.', 'Holdings', 'Holding', 'Corporation', 'Aktiengesellschaft', '.com', '.dl-0001',
+                         'UCITS', 'ETF', 'USD', '(Dist)', '(Acc)','Eur']
+
+            for substr in blacklist:
+                name = name.replace(substr.upper(), '')
+                name = name.replace(substr, '')
+
+            return name
+
+        name = self.long_name
+
+        if name is not None:
+            return filter_asset_name(name)
+
+        if name is None:
+            name = self.short_name
+            name = filter_asset_name(name)
+            name = ' '.join([word.capitalize() for word in name.lower().split(' ')])
+            return name
+
+        return self.symbol
 
     def to_dict(self):
         data = {
-            'name': self.name,
+            'name': self.get_name(),
             'symbol': self.symbol,
             'alternative_symbol': self.alternative_symbol,
 

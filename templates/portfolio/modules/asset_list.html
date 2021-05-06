@@ -13,19 +13,15 @@
             <tbody>
 
             {% for asset in assets %}
-                {% set name = asset.long_name %}
-                {% if name is none %}
-                    {% set name = asset.short_name %}
-                {% elif name is none %}
-                    {% set name = asset.symbol %}
-                {% endif %}
 
-                <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title="{{ name }}"
+
+                <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title=" {{ asset.name }}"
                     data-price="{{ asset.price }}">
                     <th scope="row">
                         <h5 class="ui sub header">
                             <a href="{{ url_for('asset.asset_index',portfolio_id=portfolio.id, symbol=asset.symbol) }}">
-                                {{ name }} </a>
+                                {{ asset.name }}
+                            </a>
                         </h5>
                         {% set quantity = asset.quantity %}
 

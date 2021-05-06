@@ -1,12 +1,54 @@
-<div class="card" id="asset_distribution">
-    <div class="card-header">
-        <div class="settings ui mini basic icon buttons">
-            <button class="ui button active change_chart_type"><i class="fas fa-chart-bar"></i></button>
-            <button class="ui button absolute"><i class="fas fa-euro-sign"></i></button>
-            <button class="ui button relative"><i class="fas fa-percent"></i></button>
+<div class="row row-cols-1 info_step ">
+    <div class="col-md-12 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Transaction costs</div>
+                    <div class="description">
+                      {{ user.calc_transaction_cost() }} %
+                    </div>
+                </div>
+                <div class="ordered_step_number">
+                   {{ user.calc_transaction_cost() }} €
+                </div>
+            </div>
         </div>
-        <span></span>
     </div>
 
-    <div class="card-body" style="padding-bottom: 0"></div>
+
+    <div class="col-md-12 mb-4">
+        <div class="card" id="asset_distribution">
+            <div class="card-header">
+                <div class="settings ui mini basic icon buttons">
+                    <button class="ui button active change_chart_type"><i class="fas fa-chart-bar"></i></button>
+                    <button class="ui button absolute"><i class="fas fa-euro-sign"></i></button>
+                    <button class="ui button relative"><i class="fas fa-percent"></i></button>
+                </div>
+                <span></span>
+            </div>
+
+            <div class="card-body" style="padding-bottom: 0"></div>
+        </div>
+    </div>
+
+
+    <div class="col-md-12 mb-4">
+        <div class="ui steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">Performance today</div>
+                    <div class="description">
+                        {% if user.calc_profit()['profit_today_relative'] >= 0 %}
+                            + {% endif %}{{ user.calc_profit()['profit_today_relative'] }} %
+                    </div>
+                </div>
+                <div class="ordered_step_number">
+                    {% if user.calc_profit()['profit_today_absolute'] >= 0 %} + {% endif %}
+                    {{ user.calc_profit()['profit_today_absolute'] }} €
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>

@@ -53,11 +53,11 @@ def assets():
 
 def transactions():
     transaction_types = [
-        Transaction_types(title='Bought'),
-        Transaction_types(title='Sold'),
-        Transaction_types(title='Monthly payment'),
-        Transaction_types(title='Money Transfer'),
-        Transaction_types(title='Dividend payment')
+        Transaction_types(title='Bought', suffix='Transactions', sort='4'),
+        Transaction_types(title='Sold', suffix='Transactions', sort='3'),
+        Transaction_types(title='Monthly payment', suffix='€', sort='5'),
+        Transaction_types(title='Money Transfer', suffix='€', sort='2'),
+        Transaction_types(title='Dividend payment', suffix='€', sort='1'),
     ]
     commit(transaction_types)
 
@@ -276,7 +276,9 @@ def transactions():
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=45, timestamp="30.11.20")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.12.20")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="04.01.21")
+    add_transaction(pf_id=4, symbol=None, transcation_type=4, quantity=1, price=100, timestamp="10.01.21", cost=2.66)
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.02.21")
+    add_transaction(pf_id=4, symbol=None, transcation_type=4, quantity=1, price=30, timestamp="03.02.21", cost=0.0)
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=85, timestamp="26.02.21")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.03.21")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=85, timestamp="06.04.21")

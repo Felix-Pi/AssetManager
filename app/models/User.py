@@ -6,7 +6,7 @@ from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app import login, db
+from app import login, db, app
 
 
 class User(UserMixin, db.Model):
@@ -102,31 +102,66 @@ class User(UserMixin, db.Model):
 
         return res
 
-    def get_monthly_transactions(self):
+    def get_monthly_transaction_data(self):
         transactions = self.get_all_transactions()
 
         transactions.sort(key=lambda t: t.timestamp)
 
         data = {}
+        meta = ['title', 'suffix', 'sort']
+
         for transaction in transactions:
-            if transaction.type == 4:
-                timestamp = transaction.timestamp
-                # month = datetime.strptime(month, '%m.%y')
-                month = timestamp.strftime('%b %Y')
-                value = transaction.price * transaction.quantity
+            timestamp = transaction.timestamp
+            month = timestamp.strftime('%b %Y')
+            title = transaction.type_str.title
+            suffix = transaction.type_str.suffix
+            sort = transaction.type_str.sort
+            type_str = title.replace(' ', '_').lower()
 
-                if month not in data:
-                    data[month] = {'total': value}
+            value = transaction.price * transaction.quantity
+
+            if type_str not in data:
+                data[type_str] = {'title': title, 'suffix': suffix, 'sort': sort}
+
+            if month not in data[type_str]:
+                data[type_str][month] = {'total': []}
+                data[type_str][month]['total'].append(value)
+            else:
+                data[type_str][month]['total'].append(value)
+
+            if transaction.type == 1 or transaction.type == 3:
+                type_str = 'bought_total'
+                if type_str not in data:
+                    data[type_str] = {'title': 'Bought (Total)', 'suffix': suffix, 'sort': 6}
+
+                if month not in data[type_str]:
+                    data[type_str][month] = {'total': []}
+                    data[type_str][month]['total'].append(value)
                 else:
-                    data[month]['total'] += value
+                    data[type_str][month]['total'].append(value)
 
+        for tr_type in data:
+            data_absolute = [{'total': sum(data[tr_type][key]['total']), 'cnt': len(data[tr_type][key]['total'])} for
+                             key in data[tr_type] if key not in meta]
 
-        data_absolute = [data[key]['total'] for key in data]
-        return {
-            'data_absolute': data_absolute,
-            'labels': list(data.keys()),
-            'average': round(sum(data_absolute) / len(data_absolute), 2)
-        }
+            sum_data_absolute = sum([key['total'] for key in data_absolute])
+            len_data_absolute = sum([key['cnt'] for key in data_absolute])
+
+            print(data[type_str].keys())
+            data[tr_type] = {
+                'title': data[tr_type]['title'],
+                'sort': data[tr_type]['sort'],
+                'suffix': data[tr_type]['suffix'],
+                'data_absolute': [key['total'] for key in data_absolute],
+                'labels': [key for key in data[tr_type] if key not in meta],
+                # 'average': round(sum_data_absolute / len_data_absolute, 2),
+                'average': round(sum_data_absolute / 12, 2),
+                'sum': round(sum_data_absolute, 2),
+                'actions': len_data_absolute,
+                'actions_month': round(len_data_absolute / 12, 2),
+            }
+
+        return {'keys': sorted(data, key=lambda x: data[x]['sort']), 'data': data}
 
     def get_asset_distribution(self):
         portfolios = self.portfolios.all()

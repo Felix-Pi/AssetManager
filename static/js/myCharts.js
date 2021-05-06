@@ -201,6 +201,7 @@ function bar_chart(id, title, input, label_suffix, width, height) {
             label: 'Stocks',
             data: input.data,
             backgroundColor: colors,
+            maxBarThickness: 60,
         }],
     };
     var config = {
@@ -437,6 +438,7 @@ function get_instance_from_id(id) {
 
 function insert_chart(id, title, config, label_suffix = '', width = 'auto', height = 300) {
     let header_elem = $(id + ' .card-header')
+    let footer_elem = $(id + ' .card-footer')
     let settings_change_chart_elem = $(id + ' .settings .change_chart_type')
 
     $(id).attr('label-suffix', label_suffix);
@@ -445,9 +447,9 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
     if (title.includes('~')) {
         let description = title.split('~')[1]
         title = title.split('~')[0]
-        header_elem.find('.description').html(description);
+        footer_elem.find('span').html(description);
     }
-    header_elem.find('span').text(title);
+    header_elem.find('span').html(title);
 
     if (settings_change_chart_elem.length > 0) {
         settings_change_chart_elem.attr('chart-type', config.type)
@@ -460,6 +462,7 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
     set_loader_inactive($(id + ' .card-body'))
     $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
 
+    console.log(id, $(id + ' .card-body'))
 
     config.options.myCustomOptions.width = width;
     config.options.myCustomOptions.height = height;

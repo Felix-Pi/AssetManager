@@ -184,16 +184,12 @@ function load_historical_data(id, symbol, elem, action = 'init', url = 'asset') 
 
 
             if (action === 'init') {
-                linechart = chart_linechart(id, 'Line chart', result, '€')
+                linechart = chart_linechart(id, 'Portfolio Performance', result, '€')
             }
             if (action === 'update') {
                 update_chart(linechart, result[0].median, result[0].labels)
             }
-            $(id + ' .card-header span').text(title + ': ' + price);
 
-            if (url === 'portfolio') {
-                $(id + ' .card-header span').text('Portfolio performance');
-            }
 
             set_loader_inactive(id + ' .card-body');
         }
@@ -217,6 +213,8 @@ $(document).ready(function () {
             $('.main_navigation_content .elem[data-attr=' + target + ']').removeClass('hidden');
         }
     });
+
+
 
     /**
      * accordeon logic

@@ -208,7 +208,7 @@ class Portfolio(db.Model):
             if type == 3 or type == 4 or type == 5:
                 cost = 0.0
 
-        if type == 4:  # money transfer
+        if type == 4:  # money transfer #todo needed?
             transaction = Transaction(portfolio_id=self.id, symbol=None, type=type, timestamp=timestamp, price=price,
                                       quantity=quantity, cost=cost)
         else:
@@ -273,11 +273,15 @@ class Transaction(db.Model):
 class Transaction_types(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64))
+    suffix = db.Column(db.String(64))
+    sort = db.Column(db.Integer)
 
     def to_dict(self, include_email=False):
         data = {
             'id': self.id,
             'title': self.title,
+            'suffix': self.suffix,
+            'sort': self.sort,
         }
         return data
 

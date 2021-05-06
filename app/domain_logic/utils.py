@@ -1,3 +1,4 @@
+import collections
 import os
 from datetime import datetime, timedelta
 
@@ -74,3 +75,16 @@ def get_csv_data(domain, id, period, interval):
 
     app.logger.info('Loading file: {} [NOT FOUND], refresh: {}'.format(file, refresh))
     return None, refresh, creation_time
+
+
+def filter_asset_name(name):
+    blacklist = [',', 'Inc.', 'Inc', 'S.A.', 'SE', '& Co. KGaA', ' AG', 'N.V.', 'ltd.', 'Ltd.', 'ltd',
+                 'Limited', 'plc',
+                 'Corp.', 'Holdings', 'Holding', 'Corporation', 'Aktiengesellschaft', '.com', '.dl-0001',
+                 'UCITS', 'ETF', 'USD', '(Dist)', '(Acc)', 'Eur']
+
+    for substr in blacklist:
+        name = name.replace(substr.upper(), '')
+        name = name.replace(substr, '')
+
+    return name

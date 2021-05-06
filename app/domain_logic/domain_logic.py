@@ -2,6 +2,8 @@ from app import db, Asset, Portfolio, User, app, Asset_types, datetime, json
 from app.domain_logic.YahooApi import YahooApi
 import yfinance as yf
 
+from app.domain_logic.utils import filter_asset_name
+
 
 def update_all_assets():
     assets = db.session.query(Asset).all()
@@ -12,6 +14,24 @@ def update_all_assets():
         update_asset(assets[i].symbol, debug=False)
 
     update_all_portfolio_positions()
+
+
+def set_asset_name(asset):
+    name = asset.long_name
+
+    if name is not None:
+        return filter_asset_name(name)
+
+    if name is None:
+        name = asset.short_name
+        name = filter_asset_name(name)
+        name = ' '.join([word.capitalize() for word in name.lower().split(' ')])
+        return name
+
+
+
+    return asset.symbol
+
 
 def update_asset(symbol, debug=True):
     if debug:
@@ -40,17 +60,11 @@ def update_asset(symbol, debug=True):
         if value in asset_data:
             setattr(asset, key, asset_data[value])
 
-    if asset.dividend is None:
-        asset.dividend = 0
-
-    if asset.sector is None:
-        asset.sector = 'other'
-
-    if asset.country is None:
-        asset.country = 'other'
-
-    if asset.industry is None:
-        asset.industry = 'other'
+    asset.dividend = asset.dividend if asset.dividend is not None else 0
+    asset.sector = asset.sector if asset.sector is not None else 'other'
+    asset.industry = asset.industry if asset.industry is not None else 'other'
+    asset.country = asset.country if asset.country is not None else 'other'
+    asset.name = set_asset_name(asset)
 
     db.session.commit()
 
@@ -87,7 +101,7 @@ def update_all_portfolio_positions():
         pf.update_portfolio_positions()
 
 
-def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity):
+def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity, cost=None):
     portfolio = get_portfolio(pf_id)
 
     if symbol is not None:  # for transcation_type = 4
@@ -101,7 +115,7 @@ def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity)
             add_symbol(symbol, asset_type.id)
 
     timestamp = datetime.strptime(timestamp, '%d.%m.%y')
-    portfolio.add_transaction(symbol, transcation_type, timestamp, price, quantity)
+    portfolio.add_transaction(symbol, transcation_type, timestamp, price, quantity, cost=cost)
 
 
 ### USER
