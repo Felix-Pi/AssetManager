@@ -1,7 +1,7 @@
 <div class="sidebar-sticky pt-3">
 
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="{{ url_for('index.index') }}">AssetManager
+        <a class="navbar-brand col-md-12 col-lg-2 mr-0 px-3" href="{{ url_for('index.index') }}">AssetManager
         </a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse"
                 data-target="#searchbar_wrapper" aria-controls="searchbar_wrapper" aria-expanded="false"
@@ -20,46 +20,31 @@
     <br>
     <ul class="nav flex-column">
         <li class="nav-item">
-            <a class="nav-link active" href="{{ url_for('index.index') }}">
+            <a class="nav-link {% if request.url_rule.endpoint == "index.index" %} active {% endif %}"
+               href="{{ url_for('index.index') }}">
                 <span data-feather="home"></span>
                 Home <span class="sr-only">(current)</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.url_rule.endpoint == "moneyManager.moneyManager" %} active {% endif %}"
+               href="{{ url_for('moneyManager.moneyManager') }}">
+                <span data-feather="home"></span>
+                Money Manager
+            </a>
+        </li>
     </ul>
+    <hr/>
 
+    <ul class="nav flex-column mb-2">
+        <a class="nav-link" id="update_data_full">
+            <!-- todo rederict to url-->
+            <span data-feather="file-text"></span>
+            Update data full
+        </a>
 
-    <div class="ui vertical menu">
-        <div class="item">
-            <div class="header">Products</div>
-            <div class="menu">
-                <a class="item">Enterprise</a>
-                <a class="item">Consumer</a>
-            </div>
-        </div>
-        <div class="item">
-            <div class="header">CMS Solutions</div>
-            <div class="menu">
-                <a class="item">Rails</a>
-                <a class="item">Python</a>
-                <a class="item">PHP</a>
-            </div>
-        </div>
-        <div class="item">
-            <div class="header">Hosting</div>
-            <div class="menu">
-                <a class="item">Shared</a>
-                <a class="item">Dedicated</a>
-            </div>
-        </div>
-        <div class="item">
-            <div class="header">Support</div>
-            <div class="menu">
-                <a class="item">E-mail Support</a>
-                <a class="item">FAQs</a>
-            </div>
-        </div>
-    </div>
-
+    </ul>
+    <hr/>
     <ul class="nav flex-column mb-2">
 
         <li class="nav-item">
@@ -88,11 +73,6 @@
             <a class="nav-link" href="#">
                 <span data-feather="file-text"></span>
                 Sentiment analysis
-            </a>
-            <a class="nav-link" id="update_data_full">
-                <!-- todo rederict to url-->
-                <span data-feather="file-text"></span>
-                Update data full
             </a>
 
         </li>

@@ -36,9 +36,17 @@ body {
     position: relative;
     top: 0;
     height: calc(100vh - 48px);
-    padding-top: .5rem;
+    padding-top: 0 !important;
     overflow-x: hidden;
     overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+.navbar-brand {
+    background: none !important;
+    box-shadow: none !important;
+}
+.bg-dark {
+    background-color: rgb(40, 43, 47);
 }
 
 @supports ((position: -webkit-sticky) or (position: sticky)) {
@@ -123,6 +131,6 @@ body {
     z-index: 100;
 }
 
-.main_navigation .dropdown.item:active{
+.main_navigation .dropdown.item:active {
     border-color: rgba(255, 255, 255, 0) !important;
 }
