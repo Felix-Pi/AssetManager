@@ -59,7 +59,7 @@ function setup() {
 
                 monthly_charts = {}
 
-                monthly_charts[chart_id] = bar_chart('#' + chart_id, data.title, data, '', 'auto', 150)
+                monthly_charts[chart_id] = bar_chart('#' + chart_id, data.title, data, '', 'auto', 122)
 
 
             }
@@ -77,15 +77,8 @@ function setup() {
 
     //MAIN_NAVIGATION
     $(document).on('click', '#monthly_transactions .settings .button', function () {
-
-
         let elem = $(this);
-
         let target = elem.attr('data-attr');
-
-        console.log(target)
-
-        console.log($('#' + target + ''))
 
         set_active('#monthly_transactions .settings', elem)
 
@@ -99,7 +92,6 @@ function setup() {
 
         $('#' + target + ' .tr_chart_container').removeClass('hidden');
 
-
         setTimeout(function () {
             chart.data.datasets[0].data = data
             chart.update()
@@ -107,7 +99,6 @@ function setup() {
 
 
     });
-
 
 }
 

@@ -1,8 +1,9 @@
 from flask import render_template
 from flask_breadcrumbs import register_breadcrumb
 from flask_login import login_required, current_user
+from sqlalchemy import desc
 
-from app import db, User, Portfolio, app
+from app import db, User, Portfolio, app, Transaction_types
 from app.routes.index import bp
 
 
@@ -17,6 +18,7 @@ def index():
     templateData = {
         'user': user,
         'portfolios': portfolios,
+        'transaction_types': db.session.query(Transaction_types).order_by(Transaction_types.sort).all(),
     }
 
     return render_template('index/index.html', **templateData, title=('Home'))

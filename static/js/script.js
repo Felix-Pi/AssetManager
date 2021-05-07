@@ -404,6 +404,35 @@ $(document).ready(function () {
 
         });
     });
+
+
+        $(document).on('click', '#transactions_list .settings .button', function () {
+        let id = '#transactions_list'
+        let elem = $(this);
+        let target = elem.attr('data-attr');
+
+        $(id + ' [data-attr="action"]').addClass('hidden');
+
+        $(id + ' [data-attr="symbol"]').removeClass('hidden');
+        $(id + ' [data-attr="price_quantity"]').removeClass('hidden');
+        $(id + ' [data-attr="timestamp"]').removeClass('hidden');
+
+
+        if (target === 'all') {
+            $(id + ' [data-attr="action"]').removeClass('hidden');
+        }
+
+        if (target === '4') { //money transfer
+            $(id + ' [data-attr="symbol"]').addClass('hidden');
+            $(id + ' [data-attr="price_quantity"]').addClass('hidden');
+        }
+
+
+        set_active('#transactions_list .settings', elem)
+
+        $('#transactions_list .toggle_wrapper').addClass('hidden');
+        $('#transactions_list .toggle_wrapper[data-attr=' + target + ']').removeClass('hidden');
+    });
 });
 
 

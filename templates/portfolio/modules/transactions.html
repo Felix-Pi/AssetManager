@@ -1,24 +1,52 @@
-<div class="card">
-    <div class="card-header">Transaction</div>
-    <div class="card-body oberflow-auto">
+<div class="card" id="transactions_list">
+    <div class="card-header">
+        <div class="settings ui mini basic icon buttons">
+            {% for transaction in transaction_types %}
+                <button class="ui button {% if loop.index == 1 %} active {% endif %}"
+                        data-attr="{{ transaction.id }}">{{ transaction.title }}</button>
+            {% endfor %}
+
+            <button class="ui button" data-attr="all">All</button>
+        </div>
+        <span>Transactions</span>
+    </div>
+    <div class="card-body fixed_scrollable_hight">
 
         <table class="table">
             <thead>
             <tr>
-                <th>Action</th>
-                <th>Symbol</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Timestamp</th>
+                <th data-attr="action" class="hidden">Action</th>
+                <th data-attr="symbol">Symbol</th>
+                <th data-attr="price_quantity">Amount x Price</th>
+                <th data-attr="value">Value</th>
+                <th data-attr="timestamp">Date</th>
             </tr>
             </thead>
-            <tbody>
+            {% for tt in transaction_types %}
+                <tbody class="toggle_wrapper {% if loop.index != 1 %} hidden {% endif %}" data-attr="{{ tt.id }}">
+
+                {% for transaction in transactions %}
+                    {% if transaction.type == tt.id %}
+                        <tr class="s">
+                            <td data-attr="action" class="hidden">{{ transaction.type_str.title }}</td>
+                            <td data-attr="symbol">{{ transaction.symbol }}</td>
+                            <td data-attr="price_quantity">{{ transaction.quantity }} x {{ transaction.price }}</td>
+                            <td data-attr="value">{{ (transaction.quantity *  transaction.price) | round(2)}} €</td>
+                            <td data-attr="timestamp">{{ transaction.timestamp.strftime('%d.%m.%Y') }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            {% endfor %}
+
+            <tbody class="toggle_wrapper hidden" data-attr="all">
+
             {% for transaction in transactions %}
-                <tr>
+                <tr class="s">
                     <th scope="row">{{ transaction.type_str.title }}</th>
                     <td>{{ transaction.symbol }}</td>
-                    <td>{{ transaction.price }}</td>
-                    <td>{{ transaction.quantity }}</td>
+                    <td>{{ transaction.quantity }} x {{ transaction.price }}</td>
+                    <td>{{ (transaction.quantity *  transaction.price) | round(2)}} €</td>
                     <td>{{ transaction.timestamp.strftime('%d.%m.%Y') }}</td>
                 </tr>
             {% endfor %}

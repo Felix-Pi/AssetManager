@@ -181,20 +181,21 @@ a, a:hover, a:active {
     border-radius: 0 !important;
 }
 
-#portfolio_stocks_card, .fixed_scrollable_hight {
-
+#portfolio_stocks_card{
     max-height: 414px !important;
-    overflow-y: hidden;
 }
 
-#newsfeed .card-body {
-    max-height: 340px !important;
-    overflow-y: hidden;
+.fixed_scrollable_hight {
+    min-height: 340px;
+    max-height: 340px;
+    overflow-y: auto !important;
 }
 
-
-#portfolio_stocks_card::-webkit-scrollbar {
+.fixed_scrollable_hight::-webkit-scrollbar {
     display: none;
+}
+#monthly_transactions .card-body {
+    max-height: 340px;
 }
 
 .portfolio_elem .ui.header, .asset_elem .ui.header {

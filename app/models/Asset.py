@@ -34,11 +34,13 @@ class Asset(db.Model):
             blacklist = [',', 'Inc.', 'Inc', 'S.A.', 'SE', '& Co. KGaA', ' AG', 'N.V.', 'ltd.', 'Ltd.', 'ltd',
                          'Limited', 'plc',
                          'Corp.', 'Holdings', 'Holding', 'Corporation', 'Aktiengesellschaft', '.com', '.dl-0001',
-                         'UCITS', 'ETF', 'USD', '(Dist)', '(Acc)','Eur']
+                         'UCITS', 'ETF', 'USD', '(Dist)', '(Acc)', 'Eur', 'iShares']
 
             for substr in blacklist:
                 name = name.replace(substr.upper(), '')
                 name = name.replace(substr, '')
+
+            name = name.replace('amp;', '')
 
             return name
 

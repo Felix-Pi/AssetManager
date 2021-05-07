@@ -1,8 +1,9 @@
 from flask import render_template, request, url_for
 from flask_breadcrumbs import register_breadcrumb
 from flask_login import login_required, current_user
+from sqlalchemy import desc
 
-from app import db, Portfolio, User
+from app import db, Portfolio, User, Transaction_types
 from app.domain_logic.utils import return_error
 from app.routes.portfolio import bp
 from app.routes.portfolio.forms import AddTransactionForm
@@ -23,10 +24,10 @@ def portfolio(portfolio_id):
     portfolio = db.session.query(Portfolio).filter_by(id=portfolio_id, user_id=USER_ID).first()
     user = db.session.query(User).filter_by(id=USER_ID).first()
 
-    add_transaction_form = AddTransactionForm()
-
     if portfolio is None:
         return return_error(500, 'Not allowed!')
+
+    add_transaction_form = AddTransactionForm()
 
     templateData = {
         'user': user,
@@ -35,6 +36,7 @@ def portfolio(portfolio_id):
         'symbols': [s['symbol'] for s in portfolio.positions],
         'symbol_list': ','.join([s['symbol'] for s in portfolio.positions]),
         'add_transaction_form': add_transaction_form,
+        'transaction_types': db.session.query(Transaction_types).order_by(Transaction_types.sort).all(),
     }
 
     print(templateData['symbols'])
