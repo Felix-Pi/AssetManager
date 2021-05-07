@@ -56,8 +56,7 @@ def asset_index(portfolio_id, symbol):
         'isin': ticker.isin,
     }
 
-    for k, v in templateData['recommendations'].items():
-        print(k, v)
+
 
 
 

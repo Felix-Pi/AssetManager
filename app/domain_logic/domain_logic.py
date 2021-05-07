@@ -1,8 +1,46 @@
+import pathlib
+
 from app import db, Asset, Portfolio, User, app, Asset_types, datetime, json
-from app.domain_logic.YahooApi import YahooApi
+from app.domain_logic.YahooApiOld import YahooApi
 import yfinance as yf
 
 from app.domain_logic.utils import filter_asset_name
+import subprocess
+
+
+def update_all_prices():
+    path = pathlib.Path(__file__).parent.absolute()
+    assets = db.session.query(Asset).all()
+
+    app.logger.info('Updating prices for all Symbols ({}) '.format(len(assets)))
+
+    symbols = ','.join([a.symbol for a in assets])
+
+    output = subprocess.check_output('python3 {}/YahooFinanceApi.py "{}"'.format(path, symbols), shell=True)
+
+    data = json.loads(output)
+
+    for asset in assets:
+        asset.price = data[asset.symbol]['price']
+        asset.price_open = data[asset.symbol]['price_open']
+
+    db.session.commit()
+    update_all_portfolio_positions()
+    app.logger.info('Completed updating prices')
+
+
+def update_price(asset, debug=True):
+    pass
+    # if debug:
+    #     app.logger.info('Updating Price for symbol \'{}\''.format(asset.symbol))
+    #
+    # api = YahooFinanceApi()
+    # res = api.get_price(asset.symbol)
+    #
+    # asset.price = res['price']
+    # asset.price_open = res['price_open']
+    #
+    # db.session.commit()
 
 
 def update_all_assets():
@@ -27,8 +65,6 @@ def set_asset_name(asset):
         name = filter_asset_name(name)
         name = ' '.join([word.capitalize() for word in name.lower().split(' ')])
         return name
-
-
 
     return asset.symbol
 

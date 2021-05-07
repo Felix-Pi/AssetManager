@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, SelectField
 from wtforms.fields.html5 import EmailField, IntegerField, DecimalField, DateField
 from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 
@@ -12,10 +12,13 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 #             except ValueError:
 #                 self.data = None
 #                 raise ValueError(self.gettext('Not a valid float value'))
+from app import db, Asset_types
 
 
 class AddTransactionForm(FlaskForm):
-    type = IntegerField('Type', validators=[DataRequired()])
+    type = SelectField('Type', validators=[DataRequired()], choices=[(a.id, a.type) for a in db.session.query(Asset_types).all()])
+
+
     symbol = StringField('Symbol', validators=[DataRequired()])
     price = DecimalField('Price', validators=[DataRequired()])
     quantity = DecimalField('Quantity', validators=[DataRequired()])

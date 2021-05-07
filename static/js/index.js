@@ -57,10 +57,14 @@ function setup() {
                     '</div>'
                 );
 
+                monthly_charts = {}
 
-                bar_chart('#' + chart_id, data.title, data, '', 'auto', 150)
+                monthly_charts[chart_id] = bar_chart('#' + chart_id, data.title, data, '', 'auto', 150)
+
+
             }
 
+            console.log(monthly_charts)
 
             $(id + ' .card-body.main .card-body').removeClass('card-body')
             $(id + ' .card-body.main .card-footer').removeClass('card-footer').addClass('footer')
@@ -87,6 +91,12 @@ function setup() {
         $('#' + target + ' .tr_chart_container').removeClass('hidden');
 
         $('#monthly_transactions .card-footer span').html($('#' + target + ' .footer').html())
+
+        console.log('#' + target + '_canvas')
+        let chart = get_instance_from_id('#' + target + '_canvas')
+
+        console.log('chart: ',chart)
+        chart.update();
     });
 
 

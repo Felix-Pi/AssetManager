@@ -230,13 +230,13 @@ $(document).ready(function () {
     /**
      * call update_data() to refresh data
      */
-    $(document).on('click', '#update_data_price', function (e, f) {
-        add_spinner('#update_data_price')
+    $(document).on('click', '#update_all_prices', function (e, f) {
+        add_spinner('#update_all_prices')
         $.ajax({
             method: "GET",
-            url: "/api/update_data_price",
+            url: "/api/update_all_prices",
             success: function (data) {
-                remove_spinner('#update_data_price')
+                remove_spinner('#update_all_prices')
             }
         });
     });

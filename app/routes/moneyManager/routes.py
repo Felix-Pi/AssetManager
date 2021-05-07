@@ -7,11 +7,10 @@ from app.routes.moneyManager import bp
 
 
 @bp.route('/')
-@register_breadcrumb(app, '.', 'MoneyManager')
+@register_breadcrumb(app, '.moneyManager', 'MoneyManager')
 @login_required
 def moneyManager():
     USER_ID = current_user.get_id()
-    portfolios = db.session.query(Portfolio).filter_by(user_id=USER_ID).all()
     user = db.session.query(User).filter_by(id=USER_ID).first()
 
     templateData = {

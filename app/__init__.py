@@ -17,6 +17,7 @@ Breadcrumbs(app)
 bootstrap = Bootstrap(app)
 login = LoginManager(app)
 
+
 from app.models.User import *
 from app.models.Portfolio import *
 from app.models.Asset import *
@@ -40,5 +41,6 @@ app.register_blueprint(moneyManager_bp, url_prefix='/moneyManager')
 from app import routes
 
 app.logger.setLevel(Config.log_level)
+
 # print(app.url_map)
 # app.logger.info('Routes: {}'.format(param))
