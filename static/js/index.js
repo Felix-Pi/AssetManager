@@ -77,6 +77,8 @@ function setup() {
 
     //MAIN_NAVIGATION
     $(document).on('click', '#monthly_transactions .settings .button', function () {
+
+
         let elem = $(this);
 
         let target = elem.attr('data-attr');
@@ -88,15 +90,22 @@ function setup() {
         set_active('#monthly_transactions .settings', elem)
 
         $('#monthly_transactions .tr_chart_container').addClass('hidden');
-        $('#' + target + ' .tr_chart_container').removeClass('hidden');
-
         $('#monthly_transactions .card-footer span').html($('#' + target + ' .footer').html())
 
-        console.log('#' + target + '_canvas')
-        let chart = get_instance_from_id('#' + target + '_canvas')
+        var chart = get_instance_from_id('#' + target + '_canvas')
+        let data = chart.data.datasets[0].data.slice()
+        chart.data.datasets[0].data = []
+        chart.update()
 
-        console.log('chart: ',chart)
-        chart.update();
+        $('#' + target + ' .tr_chart_container').removeClass('hidden');
+
+
+        setTimeout(function () {
+            chart.data.datasets[0].data = data
+            chart.update()
+        }, 30);
+
+
     });
 
 

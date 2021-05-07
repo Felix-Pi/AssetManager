@@ -5,7 +5,7 @@
                 <div class="content">
                     <div class="title">Transaction costs</div>
                     <div class="description">
-                      {{ user.calc_transaction_cost() }} %
+                      {{ (user.calc_transaction_cost() / user.calc_invested_money()) |round(2) }} %
                     </div>
                 </div>
                 <div class="ordered_step_number">

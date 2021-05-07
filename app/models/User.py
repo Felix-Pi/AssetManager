@@ -102,6 +102,16 @@ class User(UserMixin, db.Model):
 
         return res
 
+    def calc_invested_money(self):
+        portfolios = self.portfolios.all()
+
+        res = 0.0
+        for portfolio in portfolios:
+            for pos in portfolio.transactions.all():
+                res += pos.quantity * pos.price if pos.type == 4 else 0
+
+        return res
+
     def get_monthly_transaction_data(self):
         transactions = self.get_all_transactions()
 
