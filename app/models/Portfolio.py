@@ -45,7 +45,7 @@ class Portfolio(db.Model):
 
         return data
 
-    def calc_dividend(self):
+    def calc_expected_dividend(self):
         return round(sum(pos['dividend'] for pos in self.positions if 'dividend' in pos), 2)
 
     def calc_stock_distribution(self):
@@ -182,7 +182,7 @@ class Portfolio(db.Model):
 
             position.value = position.calc_value()
             position.profit = position.calc_profit()
-            position.dividend = position.calc_dividend()
+            position.dividend = position.calc_expected_dividend()
             position.portfolio_percentage = position.calc_portfolio_percentage()
             db.session.add(position)
         else:
@@ -190,7 +190,7 @@ class Portfolio(db.Model):
             position.buyin = data['buyin']
             position.value = position.calc_value()
             position.profit = position.calc_profit()
-            position.dividend = position.calc_dividend()
+            position.dividend = position.calc_expected_dividend()
             position.portfolio_percentage = position.calc_portfolio_percentage()
 
         db.session.commit()

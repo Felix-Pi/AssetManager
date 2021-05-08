@@ -80,7 +80,7 @@ class User(UserMixin, db.Model):
         return data
 
     def calc_expected_dividend(self):
-        return sum([pf.calc_dividend() for pf in self.portfolios.all()])
+        return sum([pf.calc_expected_dividend() for pf in self.portfolios.all()])
 
     def get_all_transactions(self, sort_by='timestamp', sort_reverse=True, calc_meta=False):
         def calc_meta(meta, tr):
@@ -270,8 +270,7 @@ class User(UserMixin, db.Model):
         networth = meta['invested_money'] + self.calc_profit()['total_absolute'] + meta['received_dividends'] - meta[
             'transaction_costs']
 
-        #dividends = self.calc_expected_dividend()
-        dividends = meta['received_dividends']
+        dividends = self.calc_expected_dividend()
         result = []
 
         print(networth)
