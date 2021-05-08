@@ -1,39 +1,43 @@
 <div class="row">
-        <!-- general info -->
+    <!-- general info -->
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-header">Price</div>
             <div class="card-body">
-                <table class="table">
-                    {% for info in financials['price'] %}
-                    <tr>
-                        <th scope="row">{{ info }}</th>
-                        <td>{{ financials['price'][info] }}</td>
-                    </tr>
-                    {% endfor %}
-                    {% for info in financials['price_more'] %}
-                    <tr>
-                        <th scope="row">{{ info }}</th>
-                        <td>{{ financials['price_more'][info] }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                {% for key, value in financials.items() %}
+                    <b>{{ key.strftime('%d.%m.%Y') }}</b>
+                    <table class="table">
+                        {% for k, v in value.items() %}
+                            {% if v != None %}
+                                <tr>
+                                    <th scope="row">{{ k }}</th>
+                                    <td>{{ v }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                {% endfor %}
             </div>
         </div>
     </div>
 
     <div class="col-md-3 mb-4">
         <div class="card">
-            <div class="card-header">Company Financials</div>
+            <div class="card-header">Quarterly Financials</div>
             <div class="card-body">
-                <table class="table">
-                    {% for info in financials['company_financials'] %}
-                    <tr>
-                        <th scope="row">{{ info }}</th>
-                        <td>{{ financials['company_financials'][info] }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                {% for key, value in quarterly_financials.items() %}
+                    <b>{{ key.strftime('%d.%m.%Y') }}</b>
+                    <table class="table">
+                        {% for k, v in value.items() %}
+                            {% if v != None %}
+                                <tr>
+                                    <th scope="row">{{ k }}</th>
+                                    <td>{{ v }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -43,10 +47,10 @@
             <div class="card-body">
                 <table class="table">
                     {% for info in financials['dividend'] %}
-                    <tr>
-                        <th scope="row">{{ info }}</th>
-                        <td>{{ financials['dividend'][info] }}</td>
-                    </tr>
+                        <tr>
+                            <th scope="row">{{ info }}</th>
+                            <td>{{ financials['dividend'][info] }}</td>
+                        </tr>
                     {% endfor %}
                 </table>
             </div>
@@ -58,16 +62,15 @@
             <div class="card-body">
                 <table class="table">
                     {% for info in financials['earnings'] %}
-                    <tr>
-                        <th scope="row">{{ info }}</th>
-                        <td>{{ financials['earnings'] }}</td>
-                    </tr>
+                        <tr>
+                            <th scope="row">{{ info }}</th>
+                            <td>{{ financials['earnings'] }}</td>
+                        </tr>
                     {% endfor %}
                 </table>
             </div>
         </div>
     </div>
-
 
 
 </div>

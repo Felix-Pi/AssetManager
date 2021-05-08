@@ -10,11 +10,13 @@
             <div class="card-header">Info</div>
             <div class="card-body">
                 <table class="table">
-                    {% for info in financials['price'] %}
-                    <tr>
-                        <th scope="row">{{ info }}</th>
-                        <td>{{ financials['price'][info] }}</td>
-                    </tr>
+                    {% for k, v in info.items() %}
+                        {% if v != None and k != 'longBusinessSummary' %}
+                            <tr>
+                                <th scope="row">{{ k }}</th>
+                                <td>{{ v }}</td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                 </table>
             </div>
@@ -50,7 +52,7 @@
                     <button class="ui button" data-id="max" data-days="1800" data-period="1mo">Max</button>
                 </div>
 
-                <span>{{ asset.title }}</span>
+                <span>{{ asset.name }}</span>
             </div>
             <div class="card-body">
                 <div class="ui active loader"></div>

@@ -5,6 +5,9 @@ from flask_login import login_required, current_user
 from app import db, Asset, Portfolio_positions, Portfolio, User
 from app.routes.asset import bp
 
+import yfinance as yf
+import requests_cache
+
 
 def view_user_dlc(*args, **kwargs):
     portfolio_id = request.view_args['portfolio_id']
@@ -24,86 +27,54 @@ def asset_index(portfolio_id, symbol):
     position = db.session.query(Portfolio_positions).filter(Portfolio_positions.symbol == symbol,
                                                             Portfolio_positions.portfolio == portfolio_id).first()
 
-    general_info = {
-        'title': asset.get_property('title'),
-        'symbol': asset.get_property('symbol'),
-        'Website': asset.get_property('website'),
-        'sector': asset.get_property('sector'),
-        'industry': asset.get_property('industry'),
-        'fullTimeEmployees': asset.get_property('fullTimeEmployees'),
-        'description': asset.get_property('longBusinessSummary'),
-    }
+    session = requests_cache.CachedSession('yfinance.cache')
 
-    financials = {
-        'price': {
-            'price': asset.get_property('price'),
-            'price open': asset.get_property('price_open'),
-            'volume': asset.get_property('regularMarketVolume'),
-            'day low': asset.get_property('regularMarketDayLow'),
-            'day hig': asset.get_property('regularMarketDayHigh'),
-            'averageVolume': asset.get_property('averageVolume'),
-            'bid': asset.get_property('bid'),
-            'ask': asset.get_property('ask'),
-        },
-        'price_more': {
-            'regularMarketPrice': asset.get_property('price'),
-            'regularMarketOpen': asset.get_property('price_open'),
-            'regularMarketVolume': asset.get_property('regularMarketVolume'),
-            'regularMarketDayLow': asset.get_property('regularMarketDayLow'),
-            'regularMarketDayHigh': asset.get_property('regularMarketDayHigh'),
-            'dayLow': asset.get_property('dayLow'),
-            'dayHigh': asset.get_property('dayHigh'),
-            'trailingPE': asset.get_property('trailingPE'),
-            'forwardPE': asset.get_property('forwardPE'),
-            'volume': asset.get_property('volume'),
-            'averageVolume': asset.get_property('averageVolume'),
-            'averageVolume10days': asset.get_property('averageVolume10days'),
-            'bid': asset.get_property('bid'),
-            'ask': asset.get_property('ask'),
-            'bidSize': asset.get_property('bidSize'),
-            'askSize': asset.get_property('askSize'),
-            'marketCap': asset.get_property('marketCap'),
-            'fiftyTwoWeekLow': asset.get_property('fiftyTwoWeekLow'),
-            'fiftyTwoWeekHigh': asset.get_property('fiftyTwoWeekHigh'),
-            'fiftyDayAverage': asset.get_property('fiftyDayAverage'),
-            'twoHundredDayAverage': asset.get_property('twoHundredDayAverage'),
-        },
-        'dividend': {
-            'dividend_rate': asset.get_property('dividend_rate'),
-            'dividendYield': asset.get_property('dividendYield'),
-            'exDividendDate': asset.get_property('exDividendDate'),
-            'trailingAnnualDividendRate': asset.get_property('trailingAnnualDividendRate'),
-            'trailingAnnualDividendYield': asset.get_property('trailingAnnualDividendYield'),
-        },
-        'company_financials': {
-            'totalCash': asset.get_property('totalCash'),
-            'totalCashPerShare': asset.get_property('totalCashPerShare'),
-            'totalDebt': asset.get_property('totalDebt'),
-            'totalRevenue': asset.get_property('totalRevenue'),
-            'debtToEquity': asset.get_property('debtToEquity'),
-            'revenuePerShare': asset.get_property('revenuePerShare'),
-            'freeCashflow': asset.get_property('freeCashflow'),
-            'operatingCashflow': asset.get_property('operatingCashflow'),
-            'earningsGrowth': asset.get_property('earningsGrowth'),
-            'revenueGrowth': asset.get_property('revenueGrowth'),
-        },
-        'earnings': asset.parse_earnings(),
-    }
+    ticker = yf.Ticker(asset.symbol, session=session)
 
-    events = {
-        'Dividend date': asset.get_property('dividend_date'),
-        'Ex dividend date': asset.get_property('ex_dividend_date'),
-    }
-
-    print(events)
     templateData = {
         'user': user,
         'asset': asset,
         'position': position,
-        'general_info': general_info,
-        'financials': financials,
-        'events': events,
-        'ownership': asset.parse_ownership(),
+        'info': ticker.info,
+
+        'dividends': ticker.dividends,
+        'splits': ticker.splits,
+        'financials': ticker.financials,
+
+        'quarterly_financials': ticker.quarterly_financials,
+        'major_holders': ticker.major_holders,
+        'institutional_holders': ticker.institutional_holders,
+        'balance_sheet': ticker.balance_sheet,
+        'quarterly_balance_sheet': ticker.quarterly_balance_sheet,
+        'cashflow': ticker.cashflow,
+        'quarterly_cashflow': ticker.quarterly_cashflow,
+        'earnings': ticker.earnings,
+        'quarterly_earnings': ticker.quarterly_earnings,
+        'sustainability': ticker.sustainability,
+        'recommendations': ticker.recommendations,
+        'calendar': ticker.calendar,
+        'isin': ticker.isin,
     }
+
+
+
+
+
+    # print('dividends: ', templateData['dividends'])
+    # print('splits: ', templateData['splits'])
+    # print('financials: ', templateData['financials'])
+    # print('quarterly_financials: ', templateData['quarterly_financials'])
+    # print('major_holders: ', templateData['major_holders'])
+    # print('institutional_holders: ', templateData['institutional_holders'])
+    # print('balance_sheet: ', templateData['balance_sheet'])
+    # print('quarterly_balance_sheet: ', templateData['quarterly_balance_sheet'])
+    # print('cashflow: ', templateData['cashflow'])
+    # print('quarterly_cashflow: ', templateData['quarterly_cashflow'])
+    # print('earnings: ', templateData['earnings'])
+    # print('quarterly_earnings: ', templateData['quarterly_earnings'])
+    # print('sustainability: ', templateData['sustainability'])
+    # print('recommendations: ', templateData['recommendations'])
+    # print('calendar: ', templateData['calendar'])
+    # print('isin: ', templateData['isin'])
 
     return render_template('assets/base.html', **templateData, title=('Home'))

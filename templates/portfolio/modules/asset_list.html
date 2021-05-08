@@ -1,5 +1,5 @@
 <div class="card mb-4">
-    <div id="portfolio_stocks_card" class="card-body overflow-auto" style="padding: 0;">
+    <div id="portfolio_stocks_card" class="card-body fixed_scrollable_hight" style="padding: 0;">
         <table id="portfolio_stocks" class="table">
             <thead class="thead-dark">
             <tr>
@@ -13,12 +13,15 @@
             <tbody>
 
             {% for asset in assets %}
-                <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title="{{ asset.title }}"
+
+
+                <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title=" {{ asset.name }}"
                     data-price="{{ asset.price }}">
                     <th scope="row">
                         <h5 class="ui sub header">
                             <a href="{{ url_for('asset.asset_index',portfolio_id=portfolio.id, symbol=asset.symbol) }}">
-                                {{ asset.title }} </a>
+                                {{ asset.name }}
+                            </a>
                         </h5>
                         {% set quantity = asset.quantity %}
 

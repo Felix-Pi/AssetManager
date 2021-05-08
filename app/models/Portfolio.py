@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from sqlalchemy import orm
+
 from app import db, app
 from app.models.Asset import *
 from app.models.Portfolio_position import Portfolio_positions
@@ -43,7 +45,7 @@ class Portfolio(db.Model):
 
         return data
 
-    def calc_dividend(self):
+    def calc_expected_dividend(self):
         return round(sum(pos['dividend'] for pos in self.positions if 'dividend' in pos), 2)
 
     def calc_stock_distribution(self):
@@ -95,14 +97,14 @@ class Portfolio(db.Model):
     def calc_country_distribution(self):
         data = {}
         for pos in self.positions:
-            country = pos['country']
+            industry = pos['country']
             value = pos['value']
 
-            if country not in data:
-                data[country] = {'total': value, 'relative': value / self.value * 100}
+            if industry not in data:
+                data[industry] = {'total': value, 'relative': value / self.value * 100}
             else:
-                data[country]['total'] += value
-                data[country]['relative'] = data[country]['total'] / self.value * 100
+                data[industry]['total'] += value
+                data[industry]['relative'] = data[industry]['total'] / self.value * 100
 
         data = dict(sorted(data.items(), key=lambda t: t[1]['total'], reverse=True))
 
@@ -180,7 +182,7 @@ class Portfolio(db.Model):
 
             position.value = position.calc_value()
             position.profit = position.calc_profit()
-            position.dividend = position.calc_dividend()
+            position.dividend = position.calc_expected_dividend()
             position.portfolio_percentage = position.calc_portfolio_percentage()
             db.session.add(position)
         else:
@@ -188,7 +190,7 @@ class Portfolio(db.Model):
             position.buyin = data['buyin']
             position.value = position.calc_value()
             position.profit = position.calc_profit()
-            position.dividend = position.calc_dividend()
+            position.dividend = position.calc_expected_dividend()
             position.portfolio_percentage = position.calc_portfolio_percentage()
 
         db.session.commit()
@@ -206,7 +208,7 @@ class Portfolio(db.Model):
             if type == 3 or type == 4 or type == 5:
                 cost = 0.0
 
-        if type == 4:  # money transfer
+        if type == 4:  # money transfer #todo needed?
             transaction = Transaction(portfolio_id=self.id, symbol=None, type=type, timestamp=timestamp, price=price,
                                       quantity=quantity, cost=cost)
         else:
@@ -271,11 +273,15 @@ class Transaction(db.Model):
 class Transaction_types(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64))
+    suffix = db.Column(db.String(64))
+    sort = db.Column(db.Integer)
 
     def to_dict(self, include_email=False):
         data = {
             'id': self.id,
             'title': self.title,
+            'suffix': self.suffix,
+            'sort': self.sort,
         }
         return data
 

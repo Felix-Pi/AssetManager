@@ -158,6 +158,7 @@ function load_content(id, endpoint, data) {
 function load_historical_data(id, symbol, elem, action = 'init', url = 'asset') {
     set_loader_active(id + ' .card-body');
 
+
     $.ajax({
         url: '/api/' + url + '/' + symbol + '/historical_data',
         data: {
@@ -167,9 +168,15 @@ function load_historical_data(id, symbol, elem, action = 'init', url = 'asset') 
         success: function (result) {
             result = JSON.parse(result)
 
+            console.log('load_historical_data: ', result)
             result.median = Object.values(result['Median'])
             result.labels = Object.values(result['timestamps'])
             result.colored = false;
+
+            result.title = symbol;
+            if (url === 'portfolio') {
+                result.title = 'Portfolio';
+            }
 
             result = [result];
 
@@ -177,16 +184,12 @@ function load_historical_data(id, symbol, elem, action = 'init', url = 'asset') 
 
 
             if (action === 'init') {
-                linechart = chart_linechart(id, 'Line chart', result, '€')
+                linechart = chart_linechart(id, 'Portfolio Performance', result, '€')
             }
             if (action === 'update') {
                 update_chart(linechart, result[0].median, result[0].labels)
             }
-            $(id + ' .card-header span').text(title + ': ' + price);
 
-            if (url === 'portfolio') {
-                $(id + ' .card-header span').text('Portfolio performance');
-            }
 
             set_loader_inactive(id + ' .card-body');
         }
@@ -211,6 +214,8 @@ $(document).ready(function () {
         }
     });
 
+
+
     /**
      * accordeon logic
      */
@@ -225,13 +230,13 @@ $(document).ready(function () {
     /**
      * call update_data() to refresh data
      */
-    $(document).on('click', '#update_data_price', function (e, f) {
-        add_spinner('#update_data_price')
+    $(document).on('click', '#update_all_prices', function (e, f) {
+        add_spinner('#update_all_prices')
         $.ajax({
             method: "GET",
-            url: "/api/update_data_price",
+            url: "/api/update_all_prices",
             success: function (data) {
-                remove_spinner('#update_data_price')
+                remove_spinner('#update_all_prices')
             }
         });
     });
@@ -398,6 +403,35 @@ $(document).ready(function () {
             $('#profit_label_title').text(profit_label_titles[counter])
 
         });
+    });
+
+
+        $(document).on('click', '#transactions_list .settings .button', function () {
+        let id = '#transactions_list'
+        let elem = $(this);
+        let target = elem.attr('data-attr');
+
+        $(id + ' [data-attr="action"]').addClass('hidden');
+
+        $(id + ' [data-attr="symbol"]').removeClass('hidden');
+        $(id + ' [data-attr="price_quantity"]').removeClass('hidden');
+        $(id + ' [data-attr="timestamp"]').removeClass('hidden');
+
+
+        if (target === 'all') {
+            $(id + ' [data-attr="action"]').removeClass('hidden');
+        }
+
+        if (target === '4') { //money transfer
+            $(id + ' [data-attr="symbol"]').addClass('hidden');
+            $(id + ' [data-attr="price_quantity"]').addClass('hidden');
+        }
+
+
+        set_active('#transactions_list .settings', elem)
+
+        $('#transactions_list .toggle_wrapper').addClass('hidden');
+        $('#transactions_list .toggle_wrapper[data-attr=' + target + ']').removeClass('hidden');
     });
 });
 

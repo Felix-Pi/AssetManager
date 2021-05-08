@@ -1,7 +1,6 @@
 import logging
 import os
 
-
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -18,5 +17,5 @@ class Config(object):
         ' * [%(levelname)s][%(filename)s:%(lineno)d]: %(message)s'
     ))
 
-
     log_level = logging.DEBUG
+

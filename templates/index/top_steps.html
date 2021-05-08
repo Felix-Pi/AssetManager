@@ -1,4 +1,4 @@
-<div class="row row-cols-1" id="top_steps">
+<div class="row row-cols-1 info_step">
 
     <div class="col-md-3 mb-4">
         <div class="ui steps">
@@ -6,8 +6,8 @@
                 <div class="content">
                     <div class="title">Performance today</div>
                     <div class="description">
-                        {% if user.calc_profit()['profit_today_relative'] >= 0 %} + {% endif %}{{
-                        user.calc_profit()['profit_today_relative'] }} %
+                        {% if user.calc_profit()['profit_today_relative'] >= 0 %}
+                            + {% endif %}{{ user.calc_profit()['profit_today_relative'] }} %
                     </div>
                 </div>
                 <div class="ordered_step_number">
@@ -23,13 +23,13 @@
                 <div class="content">
                     <div class="title"> overall return</div>
                     <div class="description">
-                        {% if user.calc_profit()['profit_total_relative'] >= 0 %} +{% endif %}{{
-                        user.calc_profit()['profit_total_relative'] }} %
+                        {% if user.calc_profit()['profit_total_relative'] >= 0 %}
+                            +{% endif %}{{ user.calc_profit()['profit_total_relative'] }} %
                     </div>
                 </div>
                 <div class="ordered_step_number">
-                    {% if user.calc_profit()['profit_total_absolute'] >= 0 %} +{% endif %}{{
-                    user.calc_profit()['profit_total_absolute'] }} €
+                    {% if user.calc_profit()['profit_total_absolute'] >= 0 %}
+                        +{% endif %}{{ user.calc_profit()['profit_total_absolute'] }} €
                 </div>
             </div>
         </div>

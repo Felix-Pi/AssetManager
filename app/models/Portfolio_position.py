@@ -17,7 +17,7 @@ class Portfolio_positions(db.Model):
     def init_on_load(self):
         self.value = self.calc_value()
         self.profit = self.calc_profit()
-        self.dividend = self.calc_dividend()
+        self.dividend = self.calc_expected_dividend()
         self.portfolio_percentage = self.calc_portfolio_percentage()
 
     def get_data(self):
@@ -67,9 +67,9 @@ class Portfolio_positions(db.Model):
             return 0
         return round(self.value / self.portfolio_elem.value, 2)
 
-    def calc_dividend(self):
+    def calc_expected_dividend(self):
         if self.symbol_elem.type == 1 or self.symbol_elem.type == 2:
-            dividend_rate = self.symbol_elem.dividend_rate
+            dividend_rate = self.symbol_elem.dividend
 
             if dividend_rate is None:
                 dividend_rate = 0
@@ -93,7 +93,7 @@ class Portfolio_positions(db.Model):
                     data[attr] = getattr(self, attr)
 
         if hasattr(self, 'symbol_elem'):
-            data['title'] = self.symbol_elem.title
+            data['name'] = self.symbol_elem.name
         return data
 
     def __repr__(self):

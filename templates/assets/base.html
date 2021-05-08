@@ -16,7 +16,6 @@
         {% include "assets/crypto/base.html" %}
     {% endif %}
 
-
 {%- endblock content %}
 
 {% block footer -%}
@@ -24,7 +23,7 @@
 
     <script>
         let symbol = '{{ asset.symbol }}';
-        let title = '{{ asset.title }}';
+        let title = '{{ asset.name }}';
         let price = '{{ asset.price }}';
     </script>
     <script src="{{ url_for('static', filename='js/assets/asset.js') }}"></script>

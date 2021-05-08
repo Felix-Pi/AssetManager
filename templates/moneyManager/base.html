@@ -1,0 +1,48 @@
+{% extends "base/base.html" -%}
+{% block content -%}
+    {% include "moneyManager/main_navigation.html" %}
+    <div id="stock_navigation" class="ui secondary pointing menu">
+        <a class="active item" data-attr="default">
+            Home
+        </a>
+
+
+        <div class="right menu">
+            <a class="ui item">
+
+            </a>
+        </div>
+    </div>
+
+    <div id="stock_navigation_content">
+        <div class="elem" data-attr="default">
+            {% include "moneyManager/default.html" %}
+        </div>
+        <div class="elem hidden" data-attr="info">
+            {#        {% include "assets/stock/info.html" %}#}
+        </div>
+        <div class="elem hidden" data-attr="calendar_events">
+            {#        {% include "assets/stock/calendar_events.html" %}#}
+        </div>
+        <div class="elem hidden" data-attr="financials">
+            {#        {% include "assets/stock/financials.html" %}#}
+        </div>
+        <div class="elem hidden" data-attr="dividends">
+            {#        {% include "assets/stock/dividends.html" %}#}
+        </div>
+        <div class="elem hidden" data-attr="ownership">
+            {#        {% include "assets/stock/ownership.html" %}#}
+        </div>
+    </div>
+
+
+{%- endblock content %}
+
+{% block footer -%}
+
+
+    <script>
+        {#let symbol = '{{ asset.symbol }}';#}
+    </script>
+    <script src="{{ url_for('static', filename='js/assets/moneyManager.js') }}"></script>
+{%- endblock footer %}

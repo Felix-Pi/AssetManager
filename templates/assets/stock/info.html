@@ -1,24 +1,26 @@
 <div class="row">
-        <!-- general info -->
-    <div class="col-md-3 mb-4">
+    <!-- general info -->
+    <div class="col-md-4 mb-4">
         <div class="card">
             <div class="card-header">General info</div>
             <div class="card-body">
                 <table class="table">
-                    {% for info in general_info if info != 'description' %}
-                    <tr>
-                        <th scope="row">{{ info }}</th>
-                        <td>{{ general_info[info] }}</td>
-                    </tr>
+                    {% for k, v in info.items() %}
+                        {% if v != None and k != 'longBusinessSummary' %}
+                            <tr>
+                                <th scope="row">{{ k }}</th>
+                                <td>{{ v }}</td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                 </table>
             </div>
         </div>
     </div>
-    <div class="col-md-9 mb-4">
+    <div class="col-md-8 mb-4">
         <div class="card">
             <div class="card-header">Description</div>
-            <div class="card-body"> {{ general_info['description'] }}</div>
+                        <div class="card-body"> {{ info['longBusinessSummary'] }}</div>
         </div>
     </div>
 </div>

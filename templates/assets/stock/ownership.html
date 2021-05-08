@@ -2,27 +2,25 @@
     <!-- general info -->
     <div class="col-md-6 mb-4">
         <div class="card">
-            <div class="card-header">Ownership</div>
+            <div class="card-header">major_holders</div>
             <div class="card-body">
+                <b>{{ key }}</b>
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Organization</th>
-                        <th>Percentage held</th>
-                        <th>Position</th>
-                        <th>InfoValue</th>
+                        <th></th>
+                        <th></th>
+
                     </tr>
                     </thead>
-                    <tbody>
-                    {% for info in ownership %}
-                        <tr>
-                            <td>{{ info['organization'] }}</td>
-                            <td>{{ info['pctHeld']['fmt'] }}</td>
-                            <td>{{ info['position']['fmt'] }}</td>
-                            <td>{{ info['value']['fmt'] }}</td>
-                        </tr>
+                    {% for i in major_holders %}
+                        {% for key, value in major_holders[i].items() %}
+                            <tr>
+                                <td>{{ key }}</td>
+                                <td>{{ value }}</td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
-                    </tbody>
                 </table>
             </div>
         </div>

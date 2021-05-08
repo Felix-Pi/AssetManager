@@ -1,7 +1,7 @@
 <div class="sidebar-sticky pt-3">
 
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="{{ url_for('index.index') }}">AssetManager
+        <a class="navbar-brand col-md-12 col-lg-2 mr-0 px-3" href="{{ url_for('index.index') }}">AssetManager
         </a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse"
                 data-target="#searchbar_wrapper" aria-controls="searchbar_wrapper" aria-expanded="false"
@@ -20,20 +20,38 @@
     <br>
     <ul class="nav flex-column">
         <li class="nav-item">
-            <a class="nav-link active" href="{{ url_for('index.index') }}">
+            <a class="nav-link {% if request.url_rule.endpoint == "index.index" %} active {% endif %}"
+               href="{{ url_for('index.index') }}">
                 <span data-feather="home"></span>
                 Home <span class="sr-only">(current)</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.url_rule.endpoint == "moneyManager.moneyManager" %} active {% endif %}"
+               href="{{ url_for('moneyManager.moneyManager') }}">
+                <span data-feather="home"></span>
+                Money Manager
+            </a>
+        </li>
     </ul>
+    <hr/>
 
-    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-        <span>Lore Ipsum</span>
-        <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
-            <span data-feather="plus-circle"></span>
-        </a>
-    </h6>
     <ul class="nav flex-column mb-2">
+        <a class="nav-link" id="update_all_prices">
+            <!-- todo rederict to url-->
+            <span data-feather="file-text"></span>
+            Update prices
+        </a>
+        <a class="nav-link" id="update_data_full">
+            <!-- todo rederict to url-->
+            <span data-feather="file-text"></span>
+            Update data full
+        </a>
+
+    </ul>
+    <hr/>
+    <ul class="nav flex-column mb-2">
+
         <li class="nav-item">
             <a class="nav-link" href="#">
                 <span data-feather="file-text"></span>
@@ -61,21 +79,7 @@
                 <span data-feather="file-text"></span>
                 Sentiment analysis
             </a>
-            <a class="nav-link" id="update_data_price">
-                <!-- todo rederict to url-->
-                <span data-feather="file-text"></span>
-                Update data price
-            </a>
-            <a class="nav-link" id="update_data_full">
-                <!-- todo rederict to url-->
-                <span data-feather="file-text"></span>
-                Update data full
-            </a>
-            <a class="nav-link" id="update_all_positions">
-                <!-- todo rederict to url-->
-                <span data-feather="file-text"></span>
-                Update all positions
-            </a>
+
         </li>
     </ul>
 </div>

@@ -15,6 +15,8 @@ def get_historical_data_(symbol):
     data = get_historical_data(symbol=symbol,
                                period=period,
                                interval=interval)
+
+
     return jsonify(data)
 
 

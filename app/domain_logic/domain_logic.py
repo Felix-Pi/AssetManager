@@ -1,154 +1,124 @@
-from app import db, Asset, Stock_data, Etf_data, Crypto_data, Portfolio, User, app, Currency_data, Asset_types, datetime
-from app.domain_logic.YahooApi import YahooApi
-from app.domain_logic.asset_templates import stock_api_template, etf_api_template, crypto_api_template, price_template, \
-    currency_template
+import pathlib
+
+from app import db, Asset, Portfolio, User, app, Asset_types, datetime, json
+from app.domain_logic.YahooApiOld import YahooApi
+import yfinance as yf
+
+from app.domain_logic.utils import filter_asset_name
+import subprocess
 
 
-### Asset Stuff
+def update_all_prices():
+    path = pathlib.Path(__file__).parent.absolute()
+    assets = db.session.query(Asset).all()
+
+    app.logger.info('Updating prices for all Symbols ({}) '.format(len(assets)))
+
+    symbols = ','.join([a.symbol for a in assets])
+
+    output = subprocess.check_output('python3 {}/YahooFinanceApi.py "{}"'.format(path, symbols), shell=True)
+
+    data = json.loads(output)
+
+    for asset in assets:
+        asset.price = data[asset.symbol]['price']
+        asset.price_open = data[asset.symbol]['price_open']
+
+    db.session.commit()
+    update_all_portfolio_positions()
+    app.logger.info('Completed updating prices')
 
 
-def update_all_assets_full():
-    for asset in db.session.query(Asset).all():
-        update_asset_full(asset)
+def update_price(asset, debug=True):
+    pass
+    # if debug:
+    #     app.logger.info('Updating Price for symbol \'{}\''.format(asset.symbol))
+    #
+    # api = YahooFinanceApi()
+    # res = api.get_price(asset.symbol)
+    #
+    # asset.price = res['price']
+    # asset.price_open = res['price_open']
+    #
+    # db.session.commit()
+
+
+def update_all_assets():
+    assets = db.session.query(Asset).all()
+    amount = len(assets)
+
+    for i in range(amount):
+        app.logger.info('[{}/{}] Updating symbol \'{}\''.format(i, amount, assets[i].symbol))
+        update_asset(assets[i].symbol, debug=False)
 
     update_all_portfolio_positions()
 
 
-def update_asset_full(asset):
-    if asset.type == 1:
-        template = stock_api_template
-    if asset.type == 2:
-        template = etf_api_template
-    if asset.type == 3:
-        template = crypto_api_template
-    if asset.type == 4:
-        template = currency_template
+def set_asset_name(asset):
+    name = asset.long_name
 
-    symbol = asset.symbol
+    if name is not None:
+        return filter_asset_name(name)
 
-    # use alternative symbol on update
-    # if asset.alternative_symbol is not None:
-    #     symbol=asset.alternative_symbol
+    if name is None:
+        name = asset.short_name
+        name = filter_asset_name(name)
+        name = ' '.join([word.capitalize() for word in name.lower().split(' ')])
+        return name
 
-    dataset = YahooApi().build_data(symbol, template)
-    if 'symbol' in dataset:
-        dataset.pop('symbol')
-    if 'modules' in dataset:
-        dataset.pop('modules')
-
-    update_asset_data(asset.symbol, dataset)
+    return asset.symbol
 
 
-def update_asset_data(symbol, dataset):
+def update_asset(symbol, debug=True):
+    if debug:
+        app.logger.info('Updating symbol \'{}\''.format(symbol))
+
+    ticker = yf.Ticker(symbol)
     asset = db.session.query(Asset).filter_by(symbol=symbol).first()
+    asset_data = ticker.info
 
-    asset.price = dataset['price']
-    asset.price_open = dataset['price_open']
-    db.session.commit()
+    type = db.session.query(Asset_types).filter_by(type=asset_data['quoteType']).first()
 
-    if asset.type == 1:
-        asset_data = db.session.query(Stock_data).filter_by(symbol=asset.symbol).first()
+    info = {
+        'short_name': 'shortName',
+        'long_name': 'longName',
+        'type': type.id,
+        'price_open': 'regularMarketOpen',
+        'price': 'regularMarketPrice',
+        'dividend': 'trailingAnnualDividendYield',
+        'sector': 'sector',
+        'industry': 'industry',
+        'country': 'country',
+        'currency': 'currency',
+    }
 
-        asset_data_is_none = asset_data is None
-        if asset_data_is_none:
-            asset_data = Stock_data(**dataset, symbol=symbol)
-    if asset.type == 2:
-        asset_data = db.session.query(Etf_data).filter_by(symbol=asset.symbol).first()
+    for key, value in info.items():
+        if value in asset_data:
+            setattr(asset, key, asset_data[value])
 
-        asset_data_is_none = asset_data is None
-        if asset_data_is_none:
-            asset_data = Etf_data(**dataset, symbol=symbol)
-    if asset.type == 3:
-        asset_data = db.session.query(Crypto_data).filter_by(symbol=asset.symbol).first()
-
-        asset_data_is_none = asset_data is None
-        if asset_data_is_none:
-            asset_data = Crypto_data(**dataset, symbol=symbol)
-    if asset.type == 4:
-        asset_data = db.session.query(Currency_data).filter_by(symbol=asset.symbol).first()
-
-        asset_data_is_none = asset_data is None
-        if asset_data_is_none:
-            asset_data = Currency_data(**dataset, symbol=symbol)
-
-    if asset_data_is_none:
-        db.session.add(asset_data)
-        db.session.commit()
-    else:
-        for key in dataset:
-            setattr(asset_data, key, dataset[key])
-
-    if asset.asset_data_id is None:
-        setattr(asset, 'asset_data_id', asset_data.id)
-        db.session.commit()
+    asset.dividend = asset.dividend if asset.dividend is not None else 0
+    asset.sector = asset.sector if asset.sector is not None else 'other'
+    asset.industry = asset.industry if asset.industry is not None else 'other'
+    asset.country = asset.country if asset.country is not None else 'other'
+    asset.name = set_asset_name(asset)
 
     db.session.commit()
 
     return asset
 
 
-def update_all_assets_price():
-    assets = db.session.query(Asset).all()
-    app.logger.info('Updating Price for all assets ({}) '.format(len(assets)))
-
-    for asset in assets:
-        template = price_template
-
-        if asset.type == 4:
-            template = currency_template
-
-        dataset = YahooApi().build_data(asset.symbol, template)
-        dataset.pop('modules')
-
-    update_all_portfolio_positions()
-
-
-def add_symbol(symbol, typee):
-    def search_alternative_symbol(symbol):
-        alt_exchanges = ['NQY', 'NMS', 'FRA']
-        api = YahooApi()
-        res, title = api.search_alternative_symbols(symbol)
-
-        if res is not None:
-            for alt_symbol in res:
-                if alt_symbol['symbol'] != symbol:
-                    return alt_symbol['symbol'], title
-
-        return None, title
-        # search for NASDAQ (NMS)
-        # alternative_symbol=None
-        # for alt_symbol in res:
-        #     print(symbol, alt_symbol['exchange'], alt_symbol['symbol'])
-        #     if alt_symbol['exchange'] in alt_exchanges:
-        #         alternative_symbol=alt_symbol['symbol']
-        #         # return alternative_symbol
-        #
-        # if alternative_symbol != symbol:
-        #     return alternative_symbol, title
-        #
-        # return None, title
-
+def add_symbol(symbol, type):
     fetch_existing = db.session.query(Asset).filter_by(symbol=symbol).first()
 
     if fetch_existing is not None:
         return fetch_existing
 
-    alternative_symbol, title = search_alternative_symbol(symbol)
-
-    if title is not None:
-        title = title.lower()
-        title = title.capitalize()
-
-    if title is None or len(title) < 1:
-        title = symbol
-
-    app.logger.info('Alternative symbol for {}: \'{}\'->\'{}\''.format(title, symbol, alternative_symbol))
-    asset = Asset(symbol=symbol, title=title, type=typee, alternative_symbol=alternative_symbol)
+    asset = Asset(symbol=symbol, type=type)
 
     db.session.add(asset)
     db.session.commit()
 
-    update_asset_full(asset)
+    update_asset(asset.symbol)
 
     return asset
 
@@ -167,7 +137,7 @@ def update_all_portfolio_positions():
         pf.update_portfolio_positions()
 
 
-def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity):
+def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity, cost=None):
     portfolio = get_portfolio(pf_id)
 
     if symbol is not None:  # for transcation_type = 4
@@ -181,16 +151,10 @@ def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity)
             add_symbol(symbol, asset_type.id)
 
     timestamp = datetime.strptime(timestamp, '%d.%m.%y')
-    portfolio.add_transaction(symbol, transcation_type, timestamp, price, quantity)
+    portfolio.add_transaction(symbol, transcation_type, timestamp, price, quantity, cost=cost)
 
 
 ### USER
 
 def get_user(id):
     return db.session.query(User).filter_by(id=id).first()
-
-# 1 - Buy
-# 2 - Sell
-# 3 - monthly
-# 4 - Money Transfer
-# 5 - Dividend
