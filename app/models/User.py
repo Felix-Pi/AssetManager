@@ -1,4 +1,4 @@
-from datetime import time, datetime
+from datetime import time, datetime, timedelta
 from hashlib import md5
 
 import jwt as jwt
@@ -63,59 +63,67 @@ class User(UserMixin, db.Model):
     def calc_profit(self):  # todo remove profit_
         networth = self.calc_networth()
 
-        profit_total_absolute = round(
+        total_absolute = round(
             sum([pf.calc_profit()['total_absolute'] for pf in self.portfolios.all()]), 2)
-        profit_today_absolute = round(
+        today_absolute = round(
             sum([pf.calc_profit()['today_absolute'] for pf in self.portfolios.all()]), 2)
 
-        profit_total_relative = profit_total_absolute / networth * 100
-        profit_today_relative = profit_today_absolute / networth * 100
+        total_relative = total_absolute / networth * 100
+        today_relative = today_absolute / networth * 100
 
         data = {
-            'profit_today_absolute': round(profit_today_absolute, 2),
-            'profit_today_relative': round(profit_today_relative, 2),
-            'profit_total_absolute': round(profit_total_absolute, 2),
-            'profit_total_relative': round(profit_total_relative, 2),
+            'today_absolute': round(today_absolute, 2),
+            'today_relative': round(today_relative, 2),
+            'total_absolute': round(total_absolute, 2),
+            'total_relative': round(total_relative, 2),
         }
         return data
 
-    def calc_dividend(self):
+    def calc_expected_dividend(self):
         return sum([pf.calc_dividend() for pf in self.portfolios.all()])
 
-    def get_all_transactions(self):
+    def get_all_transactions(self, sort_by='timestamp', sort_reverse=True, calc_meta=False):
+        def calc_meta(meta, tr):
+            meta['invested_money'] += tr.quantity * tr.price if tr.type == 4 else 0
+            meta['received_dividends'] += tr.quantity * tr.price if tr.type == 5 else 0
+            meta['transaction_costs'] += tr.cost
+
+            return meta
+
         transactions = []
+        meta = None
+
+        if calc_meta:
+            meta = {
+                'invested_money': 0.0,
+                'received_dividends': 0.0,
+                'transaction_costs': 0.0,
+            }
+
         for portfolio in self.portfolios.all():
             for transaction in portfolio.transactions.all():
                 transactions.append(transaction)
 
-        transactions.sort(key=lambda t: t.timestamp, reverse=True)
+                if calc_meta:
+                    meta = calc_meta(meta, transaction)
+
+        transactions.sort(key=lambda t: getattr(t, sort_by), reverse=sort_reverse)
+
+        if calc_meta:
+            return transactions, meta
 
         return transactions
 
     def calc_transaction_cost(self):
-        portfolios = self.portfolios.all()
-
-        res = 0.0
-        for portfolio in portfolios:
-            for pos in portfolio.transactions.all():
-                res += pos.cost
-
-        return res
+        return self.get_all_transactions(calc_meta=True)[1]['transaction_costs']
 
     def calc_invested_money(self):
-        portfolios = self.portfolios.all()
-
-        res = 0.0
-        for portfolio in portfolios:
-            for pos in portfolio.transactions.all():
-                res += pos.quantity * pos.price if pos.type == 4 else 0
-
-        return res
+        return self.get_all_transactions(calc_meta=True)[1]['invested_money']
 
     def get_monthly_transaction_data(self):
-        transactions = self.get_all_transactions()
+        transactions, meta = self.get_all_transactions(calc_meta=True)
 
-        transactions.sort(key=lambda t: t.timestamp)
+        transactions.sort(key=lambda t: t.timestamp)  # todo sort by parameter
 
         data = {}
         meta = ['title', 'suffix', 'sort']
@@ -193,6 +201,85 @@ class User(UserMixin, db.Model):
         return {'data_relative': [data[key]['relative'] for key in data],
                 'data_absolute': [data[key]['total'] for key in data],
                 'labels': list(data.keys())}
+
+    def calculate_milestones(self):
+        """
+        calculate a milestone:
+            - calc monthly average value
+            - calc steps
+        :return:
+        """
+
+        def calc_unit_per_day(starting_date, value):
+            days_since_first_transaction = (datetime.now() - starting_date).days
+
+            unit_per_day = value / days_since_first_transaction
+
+            return unit_per_day
+
+        def calc_steps(value):
+            val = int(value)
+            val_str = str(val)
+
+            zeros = 10 ** (len(val_str) - 1)
+            first_digit = int(val_str[0]) * zeros
+
+            _steps = [x * zeros for x in [1.0, 2.5, 3.5, 5.0, 7.5, 10]]
+
+            steps = []
+
+            for i, x in enumerate(_steps):
+                x = first_digit * (x / first_digit)
+                if x < val:
+                    _steps.append(_steps[i + 1] + _steps[-1])
+                    continue
+
+                steps.append(x)
+
+            return steps
+
+        def calc_expected_days_for_step(steps, value, profit_per_day):
+            milestones = {}
+            for step in steps:
+                missing_value = step - value
+                days = missing_value / profit_per_day
+                days = datetime.now() + timedelta(days=days)
+
+                milestones[step] = days.strftime('%d.%m.%Y')
+
+            return milestones
+
+        def _calculate_milestones(transactions, title, value, label_suffix='€'):
+            starting_data = transactions[0].timestamp
+
+            profit_per_day = calc_unit_per_day(starting_data, value)
+            print('profit_per_day: ', profit_per_day)
+            steps = calc_steps(value)
+            print('steps: ', steps)
+            milestone = calc_expected_days_for_step(steps, value, profit_per_day)
+
+            return {
+                'title': title,
+                'milestones': milestone,
+                'label_suffix': label_suffix,
+            }
+
+        transactions, meta = self.get_all_transactions(sort_reverse=False)
+        transactions = transactions[1:]
+
+        networth = meta['invested_money'] + self.calc_profit()['total_absolute'] + meta['received_dividends'] - meta[
+            'transaction_costs']
+
+        #dividends = self.calc_expected_dividend()
+        dividends = meta['received_dividends']
+        result = []
+
+        print(networth)
+
+
+        result.append(_calculate_milestones(transactions, 'Networth', networth))
+        result.append(_calculate_milestones(transactions, 'Dividends', dividends))
+        return result
 
 
 @login.user_loader
