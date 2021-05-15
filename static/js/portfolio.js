@@ -74,7 +74,7 @@ $(document).ready(function () {
             method: "GET",
             url: '/api/portfolio/' + portfolio_id + '/asset' + asset_id,
             success: function (data) {
-                console.log(data)
+                //console.log(data)
                 data = data[0]
 
                 let modal_id = '#edit_stock_modal'
@@ -98,7 +98,7 @@ $(document).ready(function () {
             url: "/api/portfolio/update_stock/",
             data: data,
             success: function (data) {
-                console.log('success: ', data)
+                //console.log('success: ', data)
                 $('#edit_stock_modal').modal('hide');
             }
         });
@@ -134,7 +134,7 @@ $(document).ready(function () {
         let elem = $('#add_stock_modal .dbcol[col=symbol]');
         let results = elem.parent().find('.results');
 
-        console.log('val: ', elem.val());
+        //console.log('val: ', elem.val());
         results.show()
         results.html('')
 
@@ -143,14 +143,14 @@ $(document).ready(function () {
             url: '/api/stock/yahoo_search_de/',
             data: {'input': elem.val()},
             success: function (data) {
-                console.log('data', data);
+                //console.log('data', data);
                 data = data['ResultSet']['Result'];
-                console.log(data);
+                //console.log(data);
                 results.html('');
 
                 for (let i = 0; i < data.length; i++) {
                     var item = data[i];
-                    console.log(item)
+                    //console.log(item)
                     html = '' +
                         '<a class="result" href="" data-symbol="' + item['symbol'] + '" data-title="' + item['name'] + '">' +
                         '   <div class="content">' +

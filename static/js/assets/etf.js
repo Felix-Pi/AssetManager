@@ -53,7 +53,7 @@ Line Chart
             },
             success: function (dataset) {
                 dataset = JSON.parse(dataset)
-                console.log(dataset)
+                //console.log(dataset)
                 update_chart(linechart, dataset[0].median, dataset[0].timestamps)
             }
         });

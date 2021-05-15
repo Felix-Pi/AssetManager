@@ -38,13 +38,13 @@
                 <div class="content">
                     <div class="title">Performance today</div>
                     <div class="description">
-                        {% if user.calc_profit()['profit_today_relative'] >= 0 %}
-                            + {% endif %}{{ user.calc_profit()['profit_today_relative'] }} %
+                        {% if user.calc_profit()['today_relative'] >= 0 %}
+                            + {% endif %}{{ user.calc_profit()['today_relative'] }} %
                     </div>
                 </div>
                 <div class="ordered_step_number">
-                    {% if user.calc_profit()['profit_today_absolute'] >= 0 %} + {% endif %}
-                    {{ user.calc_profit()['profit_today_absolute'] }} €
+                    {% if user.calc_profit()['today_absolute'] >= 0 %} + {% endif %}
+                    {{ user.calc_profit()['today_absolute'] }} €
                 </div>
             </div>
         </div>

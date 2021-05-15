@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, SelectField
 from wtforms.fields.html5 import EmailField, IntegerField, DecimalField, DateField
@@ -16,11 +18,13 @@ from app import db, Asset_types
 
 
 class AddTransactionForm(FlaskForm):
+    today = datetime.now() #.strftime('%d.%m.%Y')
     type = SelectField('Type', validators=[DataRequired()], choices=[(a.id, a.type) for a in db.session.query(Asset_types).all()])
 
 
     symbol = StringField('Symbol', validators=[DataRequired()])
     price = DecimalField('Price', validators=[DataRequired()])
     quantity = DecimalField('Quantity', validators=[DataRequired()])
-    date = DateField('Date', validators=[DataRequired()])
+    fee = DecimalField('Fee', validators=[DataRequired()])
+    date = DateField('Date', validators=[DataRequired()], default=today)
     submit = SubmitField('Add transaction')

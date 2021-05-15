@@ -1,5 +1,5 @@
 function setup_asset() {
-    console.log('LOADED: asset.js')
+    //console.log('LOADED: asset.js')
     load_newsfeed(symbol);
 }
 

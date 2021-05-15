@@ -1,4 +1,4 @@
-from app import db
+from app import db, app
 from app.models.Portfolio import *
 
 
@@ -32,35 +32,43 @@ class Portfolio_positions(db.Model):
         return res
 
     def calc_value(self):
-        if self.symbol_elem is None:
-            self.symbol_elem = db.session.query(Asset).filter(Asset.symbol == self.symbol).first()
-        return round(self.quantity * self.symbol_elem.price, 2)
+        try:
+            if self.symbol_elem is None:
+                self.symbol_elem = db.session.query(Asset).filter(Asset.symbol == self.symbol).first()
+
+            return round(self.quantity * self.symbol_elem.price, 2)
+        except Exception:
+            app.logger.error('calc_value: Error occured for symbol {}'.format(self.symbol))
+            return 0
 
     def calc_profit(self):
-        price_open = self.symbol_elem.price_open
-        value = self.value
-
+        data = {
+            'today_absolute': 0,
+            'today_relative': 0,
+            'total_absolute': 0,
+            'total_relative': 0,
+        }
         try:
+            price_open = self.symbol_elem.price_open
+            value = self.value
+
             total_absolute = value - (self.quantity * self.buyin)
 
             today_relative = total_absolute / value * 100
             today_absolute = value - (self.quantity * price_open)
             total_relative = today_absolute / self.value * 100
 
-            data = {
-                'today_absolute': round(today_absolute, 2),
-                'today_relative': round(today_relative, 2),
-                'total_absolute': round(total_absolute, 2),
-                'total_relative': round(total_relative, 2),
-            }
-            return data
+            data['today_absolute'] = round(today_absolute, 2)
+            data['today_relative'] = round(today_relative, 2)
+            data['total_absolute'] = round(total_absolute, 2)
+            data['total_relative'] = round(total_relative, 2)
+
         except ZeroDivisionError:
-            return {
-                'today_absolute': 0,
-                'today_relative': 0,
-                'total_absolute': 0,
-                'total_relative': 0,
-            }
+            app.logger.error('calc_profit: Error occured for symbol: ZeroDivisionError {}'.format(self.symbol))
+        except Exception:
+            app.logger.error('calc_profit: Error occured for symbol {}'.format(self.symbol))
+
+        return data
 
     def calc_portfolio_percentage(self):
         if self.portfolio_elem is None or self.portfolio_elem.value == 0:

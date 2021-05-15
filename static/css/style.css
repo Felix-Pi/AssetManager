@@ -241,3 +241,7 @@ a, a:hover, a:active {
     background: none !important;
     box-shadow: none !important;
 }
+
+.ui.placeholder.no_animation {
+    animation: none !important;
+}

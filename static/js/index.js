@@ -19,9 +19,6 @@ function setup() {
         url: "/api/index/" + user_id + "/monthly_transaction_data",
         success: function (result) {
             var id = '#monthly_transactions'
-
-
-            console.log(result)
             let keys = result.keys
 
             result = result.data
@@ -64,8 +61,6 @@ function setup() {
 
             }
 
-            console.log(monthly_charts)
-
             $(id + ' .card-body.main .card-body').removeClass('card-body')
             $(id + ' .card-body.main .card-footer').removeClass('card-footer').addClass('footer')
             $(id + ' .card-body.main .card-header').removeClass('card-header').addClass('header')
@@ -102,9 +97,76 @@ function setup() {
 
 }
 
+function load_milestones(id, title) {
+    $.ajax({
+        url: "/api/index/" + user_id + "/milestones",
+        success: function (result) {
+            console.log(result)
+
+            result = [result[0]]
+            for (let i = 0; i < result.length; i++) {
+                $(id + ' .card-body.main').append(
+                    '<div id="' + result[i]['title'] + '">' +
+                    '<div class="card-body tr_chart_container ' + (i === 0 ? 'active' : 'hidden') + '"></div>' +
+                    '<div class="card-header hidden"><span></span></div>' +
+                    '<div class="card-footer hidden"><span></span></div>' +
+                    '</div>'
+                );
+
+
+                dataset = {}
+
+                dataset.median = []
+
+                for (let j = 0; j < Object.keys(result[i]['milestones']).length; j++) {
+                    dataset.median.push(1)
+                }
+
+                dataset.labels = Object.values(result[i].milestones)
+                dataset.title = result[i]['title']
+                dataset.colored = false;
+
+                var chart = chart_linechart(id, title, [dataset], '€', 'auto', 150)
+
+                console.log(chart)
+
+                chart.data.datasets[i].backgroundColor = Object.values(chartcolors);
+                chart.data.datasets[i].borderColor = Object.values(chartcolors);
+                chart.data.datasets[i].lineWidth = 5;
+                chart.data.datasets[i].borderWidth = 1;
+                chart.data.datasets[i].label = result[i].title
+                chart.data.datasets[i].milestone_values = Object.keys(result[i]['milestones'])
+                chart.data.datasets[i].label_suffix = result[i].label_suffix
+                chart.options.scales.yAxes[i].display = false;
+                chart.options.scales.xAxes[i].display = false;
+                chart.options.elements.point.radius = 5;
+                chart.options.tooltips.callbacks = {
+                    title: function (item, data) {
+                        return item[0].xLabel
+                    },
+                    label: function (item, data) {
+                        let milestone_value = data.datasets[item.datasetIndex].milestone_values[item.index];
+                        let title = data.datasets[item.datasetIndex].label;
+                        let label_suffix = data.datasets[item.datasetIndex].label_suffix;
+
+                        return title + ': ' + milestone_value + ' ' + label_suffix;
+                    }
+                }
+
+
+                chart.update()
+            }
+
+
+        }
+    });
+}
+
+
 $(document).ready(function () {
     setup();
     load_historical_data('#linechart', user_id, $('#linechart .settings button.active'), action = 'init', 'index')
+    load_milestones('#milestones', 'Milestones')
 
 
     $('.toggleble_nav .item:first-child').addClass('active')

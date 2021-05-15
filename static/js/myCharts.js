@@ -96,7 +96,7 @@ function chart_half_doughnut(id, title, data, label_suffix, width, height) {
 }
 
 function chart_linechart(id, title, input, label_suffix, width = '', height = '') {
-    console.log('chart_linechart: ', input)
+    //console.log('chart_linechart: ', input)
     var colors = get_color_sheme(input);
     var datasets = []
     var labels = []
@@ -116,9 +116,9 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
             label: input[i].title,
             data: input[i].median,
             lineTension: 0,
-            borderWidth: 2,
+            borderWidth: 1.5,
             fill: false,
-            yAxisID: 'y-axis-' + i
+            yAxisID: 'y-axis-' + i,
         })
     }
 
@@ -460,15 +460,27 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
     }
 
     set_loader_inactive($(id + ' .card-body'))
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
 
-    console.log(id, $(id + ' .card-body'))
+    var canvas_id = id + '_canvas'
+    // console.log(canvas_id, $(canvas_id).length)
+    // while ($(canvas_id).length !== 0) {
+    //     canvas_id.concat('_')
+    //
+    //     console.log(canvas_id)
+    //     if (canvas_id.length > 50) {
+    //         break;
+    //     }
+    // }
+    canvas_id = canvas_id.replace('#', '')
+    console.log(canvas_id, $(canvas_id).length)
+    $(id + ' .card-body').prepend('<canvas id="' + canvas_id + '" width="' + width + '" height="' + height + '"></canvas>');
+
 
     config.options.myCustomOptions.width = width;
     config.options.myCustomOptions.height = height;
 
 
-    var ctx = document.getElementById(id + '_canvas').getContext('2d');
+    var ctx = document.getElementById(canvas_id).getContext('2d');
     return new Chart(ctx, config);
 }
 
@@ -480,7 +492,6 @@ function enable_xaxis_label(chart) {
 
 function update_chart(chart, data, labels) { //ToDo
 
-    console.log('data: ', data)
     if (chart.data.datasets.length === 0) {
         chart.data.datasets = [{data: []}];
     } else {
@@ -494,7 +505,6 @@ function update_chart(chart, data, labels) { //ToDo
 
 
 function add_dataset_to_chart(chart, data) {
-    console.log('add_dataset_to_chart: ', data)
 
     let dsold_first_label = chart.data.labels[0]
     let dsnew_first_label = data.labels[0]
@@ -505,7 +515,6 @@ function add_dataset_to_chart(chart, data) {
         data.data.unshift(null)
     }
 
-    console.log(dsold_first_label, dsnew_first_label)
 
     chart.data.datasets[1] = {
         backgroundColor: colors[2],

@@ -85,12 +85,14 @@ def update_asset(symbol, debug=True):
         'type': type.id,
         'price_open': 'regularMarketOpen',
         'price': 'regularMarketPrice',
-        'dividend': 'trailingAnnualDividendYield',
+        'dividend': 'trailingAnnualDividendRate',
         'sector': 'sector',
         'industry': 'industry',
         'country': 'country',
         'currency': 'currency',
     }
+
+    asset.dividend = None
 
     for key, value in info.items():
         if value in asset_data:
