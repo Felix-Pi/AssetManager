@@ -28,7 +28,7 @@ def get_historical_data_for_portfolio(id, period, interval, domain='portfolio'):
         transactions = pf.transactions.all()
         positions = pf.positions
 
-    symbols = [s['symbol'] for s in positions]
+    symbols = [s.symbol for s in positions]
 
     #ticker_list = [s.replace(".", "-") for s in symbols]
     ticker_list = ' '.join(symbols)

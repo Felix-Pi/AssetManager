@@ -17,6 +17,13 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     portfolios = db.relationship("Portfolio", backref='user', lazy='dynamic')
 
+    networth = db.Column(db.Float, default=0)
+    expected_dividend = db.Column(db.Float, default=0)
+    profit_today_rel = db.Column(db.Float, default=0)
+    profit_today_abs = db.Column(db.Float, default=0)
+    profit_total_rel = db.Column(db.Float, default=0)
+    profit_total_abs = db.Column(db.Float, default=0)
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
@@ -25,19 +32,6 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
-    def avatar(self, size):
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
-            digest, size)
-
-    def follow(self, user):
-        if not self.is_following(user):
-            self.followed.append(user)
-
-    def unfollow(self, user):
-        if self.is_following(user):
-            self.followed.remove(user)
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
@@ -57,30 +51,31 @@ class User(UserMixin, db.Model):
     def get_name(self):
         return self.prename + ' ' + self.surname
 
-    def calc_networth(self):
-        return round(sum([pf.calc_value() for pf in self.portfolios.all()]), 2)
+    def update_networth(self, commit=False):
+        self.networth = round(sum([pf.value for pf in self.portfolios.all()]), 2)
 
-    def calc_profit(self):  # todo remove profit_
-        networth = self.calc_networth()
+        if commit:
+            db.session.commit()
 
-        total_absolute = round(
-            sum([pf.calc_profit()['total_absolute'] for pf in self.portfolios.all()]), 2)
-        today_absolute = round(
-            sum([pf.calc_profit()['today_absolute'] for pf in self.portfolios.all()]), 2)
+    def update_profit(self, commit=False):
+        self.update_networth()
 
-        total_relative = total_absolute / networth * 100
-        today_relative = today_absolute / networth * 100
+        self.profit_total_abs = round(
+            sum([pf.profit_total_rel for pf in self.portfolios.all()]), 2)
+        self.profit_today_abs = round(
+            sum([pf.profit_today_abs for pf in self.portfolios.all()]), 2)
 
-        data = {
-            'today_absolute': round(today_absolute, 2),
-            'today_relative': round(today_relative, 2),
-            'total_absolute': round(total_absolute, 2),
-            'total_relative': round(total_relative, 2),
-        }
-        return data
+        self.profit_total_rel = round(self.profit_total_rel / self.networth * 100, 2)
+        self.profit_today_rel = round(self.profit_today_abs / self.networth * 100, 2)
 
-    def calc_expected_dividend(self):
-        return sum([pf.calc_expected_dividend() for pf in self.portfolios.all()])
+        if commit:
+            db.session.commit()
+
+    def update_expected_dividend(self, commit=False):
+        self.expected_dividend = sum([pf.expected_dividend for pf in self.portfolios.all()])
+
+        if commit:
+            db.session.commit()
 
     def get_all_transactions(self, sort_by='timestamp', sort_reverse=True, calc_meta=False):
         def calc_meta(meta, tr):
@@ -185,16 +180,15 @@ class User(UserMixin, db.Model):
         portfolios = self.portfolios.all()
         data = {}
         for portfolio in portfolios:
-            networth = self.calc_networth()
-            pf_value = portfolio.calc_value()
+            pf_value = portfolio.value
             pf_type = portfolio.type_str.type
 
             if pf_type not in data:
                 data[pf_type] = {'total': portfolio.value,
-                                 'relative': pf_value / networth * 100}
+                                 'relative': pf_value / self.networth * 100}
             else:
                 data[pf_type]['total'] += pf_value
-                data[pf_type]['relative'] = data[pf_type]['total'] / networth * 100
+                data[pf_type]['relative'] = data[pf_type]['total'] / self.networth * 100
 
         data = dict(sorted(data.items(), key=lambda t: t[1]['total'], reverse=True))
 
@@ -215,7 +209,7 @@ class User(UserMixin, db.Model):
 
             unit_per_day = value / days_since_first_transaction
 
-            return unit_per_day
+            return unit_per_day if unit_per_day != 0 else 0.1
 
         def calc_steps(value):
             val = int(value)
@@ -223,6 +217,7 @@ class User(UserMixin, db.Model):
 
             zeros = 10 ** (len(val_str) - 1)
             first_digit = int(val_str[0]) * zeros
+            first_digit = 1 if first_digit == 0 else first_digit  # if first digit is zero, make it 1
 
             _steps = [x * zeros for x in [1.5, 2.5, 3.5, 5.0, 7.5, 10, 15, 35, 70]]
 
@@ -230,7 +225,6 @@ class User(UserMixin, db.Model):
 
             for i, x in enumerate(_steps):
                 x = first_digit * (x / first_digit)
-
 
                 steps.append(first_digit + x)
 
@@ -266,13 +260,11 @@ class User(UserMixin, db.Model):
         transactions, meta = self.get_all_transactions(sort_reverse=False)
         transactions = transactions[1:]
 
-        networth = meta['invested_money'] + self.calc_profit()['total_absolute'] + meta['received_dividends'] - meta[
+        networth = meta['invested_money'] + self.profit_total_abs + meta['received_dividends'] - meta[
             'transaction_costs']
 
-        dividends = self.calc_expected_dividend()
+        dividends = self.expected_dividend
         result = []
-
-        print(networth)
 
         result.append(_calculate_milestones(transactions, 'Networth', networth))
         result.append(_calculate_milestones(transactions, 'Dividends', dividends))

@@ -6,13 +6,13 @@
                 <div class="content">
                     <div class="title">Performance today</div>
                     <div class="description">
-                        {% if user.calc_profit()['today_relative'] >= 0 %}
-                            + {% endif %}{{ user.calc_profit()['today_relative'] }} %
+                        {% if user.profit_today_rel >= 0 %}
+                            + {% endif %}{{ user.profit_today_rel }} %
                     </div>
                 </div>
                 <div class="ordered_step_number">
-                    {% if user.calc_profit()['today_absolute'] >= 0 %} + {% endif %}
-                    {{ user.calc_profit()['today_absolute'] }} €
+                    {% if user.profit_today_abs >= 0 %} + {% endif %}
+                    {{ user.profit_today_abs }} €
                 </div>
             </div>
         </div>
@@ -23,13 +23,13 @@
                 <div class="content">
                     <div class="title"> overall return</div>
                     <div class="description">
-                        {% if user.calc_profit()['total_relative'] >= 0 %}
-                            +{% endif %}{{ user.calc_profit()['total_relative'] }} %
+                        {% if user.profit_total_rel >= 0 %}
+                            +{% endif %}{{ user.profit_total_rel }} %
                     </div>
                 </div>
                 <div class="ordered_step_number">
-                    {% if user.calc_profit()['total_absolute'] >= 0 %}
-                        +{% endif %}{{ user.calc_profit()['total_absolute'] }} €
+                    {% if user.profit_total_abs >= 0 %}
+                        +{% endif %}{{ user.profit_total_abs }} €
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
                     <div class="title">Net worth</div>
                     <div class="description">&nbsp;</div>
                 </div>
-                <div class="ordered_step_number"> {{ user.calc_networth() }} €</div>
+                <div class="ordered_step_number"> {{ user.networth }} €</div>
             </div>
         </div>
     </div>
@@ -54,7 +54,7 @@
                     <div class="title">dividends</div>
                     <div class="description"> &nbsp;</div>
                 </div>
-                <div class="ordered_step_number"> {{ user.calc_expected_dividend() }} €</div>
+                <div class="ordered_step_number"> {{ user.expected_dividend }} €</div>
             </div>
         </div>
     </div>

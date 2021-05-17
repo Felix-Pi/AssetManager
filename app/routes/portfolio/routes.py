@@ -62,12 +62,14 @@ def portfolio(portfolio_id):
         app.logger.info("Successfully added to Portfolio '{}'".format(portfolio.title))
         return redirect(url_for('portfolio.portfolio', portfolio_id=portfolio_id))
 
+    symbols = [s.symbol for s in portfolio.positions]
+
     templateData = {
         'user': user,
         'portfolio': portfolio,
         'assets': portfolio.positions,
-        'symbols': [s['symbol'] for s in portfolio.positions],
-        'symbol_list': ','.join([s['symbol'] for s in portfolio.positions]),
+        'symbols': symbols,
+        'symbol_list': ','.join(symbols),
         'add_transaction_form': add_transaction_form,
         'transaction_types': db.session.query(Transaction_types).order_by(Transaction_types.sort).all(),
     }

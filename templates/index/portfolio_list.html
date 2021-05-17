@@ -24,14 +24,14 @@
                     <td>
 
                     <span class="profit_label"
-                          data-val="{{ portfolio.profit['total_absolute'] }}~{{ portfolio.profit['today_relative'] }}~{{ portfolio.profit['today_absolute'] }}~{{ portfolio.profit['total_relative'] }}">
-                            {% if portfolio.profit['total_absolute'] >= 0 %}
+                          data-val="{{ portfolio.profit_total_abs }}~{{ portfolio.profit_today_rel }}~{{ portfolio.profit_today_abs }}~{{ portfolio.profit_total_rel }}">
+                            {% if portfolio.profit_total_abs >= 0 %}
                                 <div class="ui label green">
-                                <i class="fas fa-caret-up"></i> <span>{{ portfolio.profit['total_absolute'] }}</span>
+                                <i class="fas fa-caret-up"></i> <span>{{ portfolio.profit_total_abs }}</span>
                             </div>
                             {% else %}
                                 <div class="ui label red">
-                                <i class="fas fa-caret-down"></i> <span>{{ portfolio.profit['total_absolute'] }}</span>
+                                <i class="fas fa-caret-down"></i> <span>{{ portfolio.profit_total_abs }}</span>
                             </div>
                             {% endif %}
                              </span>

@@ -62,7 +62,6 @@ class Asset(db.Model):
             'name': self.get_name(),
             'symbol': self.symbol,
             'alternative_symbol': self.alternative_symbol,
-
             'short_name': self.short_name,
             'long_name': self.long_name,
             'type': self.type,
