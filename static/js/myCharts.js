@@ -428,6 +428,7 @@ function change_chart_type(chart) {
 
 function get_instance_from_id(id) {
     Chart.helpers.each(Chart.instances, function (instance) {
+        console.log(instance)
         if (instance.canvas.id === id) {
             result = instance;
         }

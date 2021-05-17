@@ -43,6 +43,8 @@ function setup() {
 
                 var chart_id = (id + '_' + keys[i]).replace('#', '')
 
+
+                console.log(chart_id)
                 var btn_html = '<button class="ui button ' + (i === 0 ? 'active' : '') + '" data-attr="' + chart_id + '">' + tr_type.title + '</button>'
                 $(id + ' .card-header .settings').append(btn_html)
 
@@ -80,7 +82,8 @@ function setup() {
         $('#monthly_transactions .tr_chart_container').addClass('hidden');
         $('#monthly_transactions .card-footer span').html($('#' + target + ' .footer').html())
 
-        var chart = get_instance_from_id('#' + target + '_canvas')
+        console.log(target)
+        var chart = get_instance_from_id(target + '_canvas')
         let data = chart.data.datasets[0].data.slice()
         chart.data.datasets[0].data = []
         chart.update()
