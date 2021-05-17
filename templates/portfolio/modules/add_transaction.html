@@ -1,11 +1,20 @@
 {% import "bootstrap/wtf.html" as wtf %}
+<div class="card">
+    <div class="card-header">Add transaction</div>
+    <div class="card-body">
+        <form action="" method="post" class="add_transaction_form" role="form">
+{#            {{ add_transaction_form.csrf_token() }}#}
+{#            {{ wtf.form_field(add_transaction_form.portfolio, class='form-control') }}#}
+{#            {{ wtf.form_field(add_transaction_form.transaction_type, class='form-control') }}#}
+{#            {{ wtf.form_field(add_transaction_form.symbol, class='form-control') }}#}
+{#            {{ wtf.form_field(add_transaction_form.price, class='form-control') }}#}
+{#            {{ wtf.form_field(add_transaction_form.quantity, class='form-control') }}#}
+{#            {{ wtf.form_field(add_transaction_form.date, class='form-control') }}#}
+{#            {{ wtf.form_field(add_transaction_form.fee, class='form-control', value=1) }}#}
+{#            {{ wtf.form_field(add_transaction_form.submit, class='form-control btn-primary') }}#}
 
-<form>
-    {{ wtf.form_field(add_transaction_form.type, class='form-control') }}
-    {{ wtf.form_field(add_transaction_form.symbol, class='form-control') }}
-    {{ wtf.form_field(add_transaction_form.price, class='form-control') }}
-    {{ wtf.form_field(add_transaction_form.quantity, class='form-control') }}
-    {{ wtf.form_field(add_transaction_form.date, class='form-control') }}
-    {{ wtf.form_field(add_transaction_form.fee, class='form-control', placeholder=1) }}
-    {{ wtf.form_field(add_transaction_form.submit, class='form-control btn-primary') }}
-</form>
+            {{ wtf.quick_form(add_transaction_form, button_map={'submit':'primary'}) }}
+        </form>
+    </div>
+
+</div>
