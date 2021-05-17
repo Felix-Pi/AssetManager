@@ -428,7 +428,6 @@ function change_chart_type(chart) {
 
 function get_instance_from_id(id) {
     Chart.helpers.each(Chart.instances, function (instance) {
-        console.log(instance)
         if (instance.canvas.id === id) {
             result = instance;
         }
@@ -463,17 +462,8 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
     set_loader_inactive($(id + ' .card-body'))
 
     var canvas_id = id + '_canvas'
-    // console.log(canvas_id, $(canvas_id).length)
-    // while ($(canvas_id).length !== 0) {
-    //     canvas_id.concat('_')
-    //
-    //     console.log(canvas_id)
-    //     if (canvas_id.length > 50) {
-    //         break;
-    //     }
-    // }
+
     canvas_id = canvas_id.replace('#', '')
-    console.log(canvas_id, $(canvas_id).length)
     $(id + ' .card-body').prepend('<canvas id="' + canvas_id + '" width="' + width + '" height="' + height + '"></canvas>');
 
 
@@ -483,6 +473,55 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
 
     var ctx = document.getElementById(canvas_id).getContext('2d');
     return new Chart(ctx, config);
+}
+
+function get_n_chartcolors(n) {
+    var colors = Object.values(chartcolors)
+    var result = []
+    for (let i = 0; i < n; i++) {
+        var color = colors[i % colors.length]
+
+        console.log(i % colors.length, color)
+        result.push(color)
+    }
+
+    console.log(colors.length, n, result)
+    return result;
+}
+
+function set_milestone_settings(chart) {
+    for (let i = 0; i < chart.data.datasets.length; i++) {
+        console.log(chart)
+        chart.data.datasets[i].backgroundColor = get_n_chartcolors(chart.data.labels.length);
+        chart.data.datasets[i].borderColor = get_n_chartcolors(chart.data.labels.length);
+        chart.data.datasets[i].lineWidth = 5;
+        chart.data.datasets[i].borderWidth = 1;
+        chart.data.datasets[i].lineTension = 0.4;
+        chart.options.scales.yAxes[i].display = false;
+        chart.options.scales.xAxes[i].display = false;
+        chart.options.layout.padding = {
+            left: 25,
+            right: 25,
+            top: 10,
+            bottom: 10
+        };
+        chart.options.elements.point.radius = 5;
+        chart.options.tooltips.callbacks = {
+            title: function (item, data) {
+                return item[0].xLabel
+            },
+            label: function (item, data) {
+                let milestone_value = chart.options.myCustomOptions.datasets[item.datasetIndex].milestone_values[item.index];
+                let title = chart.options.myCustomOptions.datasets[item.datasetIndex].label;
+                let label_suffix = chart.options.myCustomOptions.datasets[item.datasetIndex].label_suffix;
+
+                return title + ': ' + milestone_value + ' ' + label_suffix;
+            }
+        }
+
+    }
+
+    return chart;
 }
 
 function enable_xaxis_label(chart) {

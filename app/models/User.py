@@ -224,17 +224,15 @@ class User(UserMixin, db.Model):
             zeros = 10 ** (len(val_str) - 1)
             first_digit = int(val_str[0]) * zeros
 
-            _steps = [x * zeros for x in [1.0, 2.5, 3.5, 5.0, 7.5, 10]]
+            _steps = [x * zeros for x in [1.5, 2.5, 3.5, 5.0, 7.5, 10, 15, 35, 70]]
 
             steps = []
 
             for i, x in enumerate(_steps):
                 x = first_digit * (x / first_digit)
-                if x < val:
-                    _steps.append(_steps[i + 1] + _steps[-1])
-                    continue
 
-                steps.append(x)
+
+                steps.append(first_digit + x)
 
             return steps
 
@@ -242,6 +240,7 @@ class User(UserMixin, db.Model):
             milestones = {}
             for step in steps:
                 missing_value = step - value
+
                 days = missing_value / profit_per_day
                 days = datetime.now() + timedelta(days=days)
 
@@ -274,7 +273,6 @@ class User(UserMixin, db.Model):
         result = []
 
         print(networth)
-
 
         result.append(_calculate_milestones(transactions, 'Networth', networth))
         result.append(_calculate_milestones(transactions, 'Dividends', dividends))

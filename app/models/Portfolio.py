@@ -171,6 +171,7 @@ class Portfolio(db.Model):
 
         return data
 
+
     def update_position(self, symbol):
         data = self.calc_position(symbol)
 
