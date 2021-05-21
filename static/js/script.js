@@ -83,7 +83,6 @@ function set_loader_inactive(id) {
 function add_spinner(id) {
     target = $(id);
 
-    console.log($(id + ' .spinner'))
     if ($(id + ' .spinner').length == 0) {
         target.append('<i class="fas spinner fa-spinner fa-spin"></i>')
     }
@@ -168,7 +167,6 @@ function load_historical_data(id, symbol, elem, action = 'init', url = 'asset') 
         success: function (result) {
             result = JSON.parse(result)
 
-            console.log('load_historical_data: ', result)
             result.median = Object.values(result['Median'])
             result.labels = Object.values(result['timestamps'])
             result.colored = false;
@@ -342,7 +340,6 @@ $(document).ready(function () {
     $('.profit_label').each(function () {
         elem = $(this)
 
-        console.log(elem)
         profit_val = parseFloat(elem.text())
 
         elem_text = elem.find('.label').find('span')

@@ -31,6 +31,13 @@ def api_get_monthly_transaction_page(user_id):
     return jsonify(user.get_monthly_dividends())
 
 
+@bp.route('/index/<int:user_id>/milestones', methods=['GET'])
+def api_calculate_milestones(user_id):
+    user = db.session.query(User).filter_by(id=user_id).first()
+
+    return jsonify(user.calculate_milestones())
+
+
 @bp.route('/index/<int:id>/historical_data', methods=['GET'])
 def api_index_get_historical_data(id):
     period = request.args.get('period')

@@ -46,6 +46,15 @@ def portfolios():
     commit(portfolios)
 
 
+def milestone_types():
+    milestone_types = [
+        Milestone_type(type='Networth'),
+        Milestone_type(type='Monthly Investement'),
+        Milestone_type(type='Monthly Dividend'),
+    ]
+    commit(milestone_types)
+
+
 def assets():
     # add_symbol('USDEUR=X', 4)
     pass
@@ -194,7 +203,7 @@ def transactions():
                     timestamp="15.02.21")  # BevCanna
     add_transaction(pf_id=2, symbol='GSG.F', transcation_type=1, quantity=250, price=0.013,
                     timestamp="17.02.21")  # ShengloOil
-    add_transaction(pf_id=2, symbol='42L.F', transcation_type=1, quantity=250, price=0.038,
+    add_transaction(pf_id=2, symbol='42L0.F', transcation_type=1, quantity=250, price=0.038,
                     timestamp="17.02.21")  # IntlCobaltCorp
     add_transaction(pf_id=2, symbol='SWQ.F', transcation_type=1, quantity=50, price=0.176,
                     timestamp="17.02.21")  # SilverMinesLTD
@@ -288,7 +297,8 @@ def transactions():
 
     add_transaction(pf_id=1, symbol='BAYN.DE', transcation_type=5, quantity=3, price=2.00, timestamp="29.04.21")
     add_transaction(pf_id=1, symbol='BAS.F', transcation_type=5, quantity=0.6843, price=3.30, timestamp="04.05.21")
-
+    add_transaction(pf_id=1, symbol='ALV.DE', transcation_type=5, quantity=0.1452, price=9.60, timestamp="08.05.21")
+    add_transaction(pf_id=1, symbol='APC.F', transcation_type=5, quantity=2, price=0.15, timestamp="14.05.21")
 
 def init_all():
     users()
@@ -297,9 +307,12 @@ def init_all():
     portfolio_types()
     portfolios()
     transactions()
+    milestone_types()
+
 
 
 if __name__ == '__main__':
     init_all()
+
 
     # transactions()

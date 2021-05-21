@@ -96,7 +96,7 @@ function chart_half_doughnut(id, title, data, label_suffix, width, height) {
 }
 
 function chart_linechart(id, title, input, label_suffix, width = '', height = '') {
-    console.log('chart_linechart: ', input)
+    //console.log('chart_linechart: ', input)
     var colors = get_color_sheme(input);
     var datasets = []
     var labels = []
@@ -116,9 +116,9 @@ function chart_linechart(id, title, input, label_suffix, width = '', height = ''
             label: input[i].title,
             data: input[i].median,
             lineTension: 0,
-            borderWidth: 2,
+            borderWidth: 1.5,
             fill: false,
-            yAxisID: 'y-axis-' + i
+            yAxisID: 'y-axis-' + i,
         })
     }
 
@@ -460,16 +460,68 @@ function insert_chart(id, title, config, label_suffix = '', width = 'auto', heig
     }
 
     set_loader_inactive($(id + ' .card-body'))
-    $(id + ' .card-body').prepend('<canvas id="' + id + '_canvas" width="' + width + '" height="' + height + '"></canvas>');
 
-    console.log(id, $(id + ' .card-body'))
+    var canvas_id = id + '_canvas'
+
+    canvas_id = canvas_id.replace('#', '')
+    $(id + ' .card-body').prepend('<canvas id="' + canvas_id + '" width="' + width + '" height="' + height + '"></canvas>');
+
 
     config.options.myCustomOptions.width = width;
     config.options.myCustomOptions.height = height;
 
 
-    var ctx = document.getElementById(id + '_canvas').getContext('2d');
+    var ctx = document.getElementById(canvas_id).getContext('2d');
     return new Chart(ctx, config);
+}
+
+function get_n_chartcolors(n) {
+    var colors = Object.values(chartcolors)
+    var result = []
+    for (let i = 0; i < n; i++) {
+        var color = colors[i % colors.length]
+
+        console.log(i % colors.length, color)
+        result.push(color)
+    }
+
+    console.log(colors.length, n, result)
+    return result;
+}
+
+function set_milestone_settings(chart) {
+    for (let i = 0; i < chart.data.datasets.length; i++) {
+        console.log(chart)
+        chart.data.datasets[i].backgroundColor = get_n_chartcolors(chart.data.labels.length);
+        chart.data.datasets[i].borderColor = get_n_chartcolors(chart.data.labels.length);
+        chart.data.datasets[i].lineWidth = 5;
+        chart.data.datasets[i].borderWidth = 1;
+        chart.data.datasets[i].lineTension = 0.4;
+        chart.options.scales.yAxes[i].display = false;
+        chart.options.scales.xAxes[i].display = false;
+        chart.options.layout.padding = {
+            left: 25,
+            right: 25,
+            top: 10,
+            bottom: 10
+        };
+        chart.options.elements.point.radius = 5;
+        chart.options.tooltips.callbacks = {
+            title: function (item, data) {
+                return item[0].xLabel
+            },
+            label: function (item, data) {
+                let milestone_value = chart.options.myCustomOptions.datasets[item.datasetIndex].milestone_values[item.index];
+                let title = chart.options.myCustomOptions.datasets[item.datasetIndex].label;
+                let label_suffix = chart.options.myCustomOptions.datasets[item.datasetIndex].label_suffix;
+
+                return title + ': ' + milestone_value + ' ' + label_suffix;
+            }
+        }
+
+    }
+
+    return chart;
 }
 
 function enable_xaxis_label(chart) {
@@ -480,7 +532,6 @@ function enable_xaxis_label(chart) {
 
 function update_chart(chart, data, labels) { //ToDo
 
-    console.log('data: ', data)
     if (chart.data.datasets.length === 0) {
         chart.data.datasets = [{data: []}];
     } else {
@@ -494,7 +545,6 @@ function update_chart(chart, data, labels) { //ToDo
 
 
 function add_dataset_to_chart(chart, data) {
-    console.log('add_dataset_to_chart: ', data)
 
     let dsold_first_label = chart.data.labels[0]
     let dsnew_first_label = data.labels[0]
@@ -505,7 +555,6 @@ function add_dataset_to_chart(chart, data) {
         data.data.unshift(null)
     }
 
-    console.log(dsold_first_label, dsnew_first_label)
 
     chart.data.datasets[1] = {
         backgroundColor: colors[2],

@@ -19,9 +19,6 @@ function setup() {
         url: "/api/index/" + user_id + "/monthly_transaction_data",
         success: function (result) {
             var id = '#monthly_transactions'
-
-
-            console.log(result)
             let keys = result.keys
 
             result = result.data
@@ -46,6 +43,7 @@ function setup() {
 
                 var chart_id = (id + '_' + keys[i]).replace('#', '')
 
+
                 var btn_html = '<button class="ui button ' + (i === 0 ? 'active' : '') + '" data-attr="' + chart_id + '">' + tr_type.title + '</button>'
                 $(id + ' .card-header .settings').append(btn_html)
 
@@ -63,8 +61,6 @@ function setup() {
 
 
             }
-
-            console.log(monthly_charts)
 
             $(id + ' .card-body.main .card-body').removeClass('card-body')
             $(id + ' .card-body.main .card-footer').removeClass('card-footer').addClass('footer')
@@ -85,10 +81,9 @@ function setup() {
         $('#monthly_transactions .tr_chart_container').addClass('hidden');
         $('#monthly_transactions .card-footer span').html($('#' + target + ' .footer').html())
 
-        var chart = get_instance_from_id('#' + target + '_canvas')
+        var chart = get_instance_from_id(target + '_canvas')
         let data = chart.data.datasets[0].data.slice()
         chart.data.datasets[0].data = []
-        chart.update()
 
         $('#' + target + ' .tr_chart_container').removeClass('hidden');
 
@@ -102,9 +97,58 @@ function setup() {
 
 }
 
+function load_milestones(id, title) {
+    $.ajax({
+        url: "/api/index/" + user_id + "/milestones",
+        success: function (result) {
+            for (let i = 0; i < result.length; i++) {
+                var milestone_title = result[i]['title']
+                var milestone_id = 'milestone_' + result[i]['title']
+
+                $(id + ' .card-body.main').append(
+                    '<div id="' + milestone_id + '" class="tr_chart_container ' + (i === 0 ? 'active' : 'hidden') + '">' +
+                    '<div class="card-body"></div></div>'
+                );
+
+
+                var dataset = {}
+
+                dataset.median =Object.keys(result[i]['milestones'])
+                console.log(result[i])
+                // for (let j = 0; j < Object.keys(result[i]['milestones']).length; j++) {
+                //     dataset.median.push(1)
+                // }
+
+                dataset.labels = Object.values(result[i].milestones)
+                dataset.title = result[i]['title']
+                dataset.colored = false;
+
+                var btn_html = '<button class="ui button ' + (i === 0 ? 'active' : '') + '" data-attr="' + milestone_id + '">' + milestone_title + '</button>'
+                $(id + ' .card-header .settings').append(btn_html)
+
+
+                var chart = chart_linechart('#' + milestone_id, title, [dataset], '€', 'auto', 135)
+
+                chart.options.myCustomOptions.datasets = []
+                chart.options.myCustomOptions.datasets[0] = {}
+                chart.options.myCustomOptions.datasets[0].milestone_values = Object.keys(result[i]['milestones'])
+                chart.options.myCustomOptions.datasets[0].label = result[i].title
+                chart.options.myCustomOptions.datasets[0].label_suffix = result[i].label_suffix
+
+                chart = set_milestone_settings(chart);
+                chart.update();
+            }
+
+
+        }
+    });
+}
+
+
 $(document).ready(function () {
     setup();
     load_historical_data('#linechart', user_id, $('#linechart .settings button.active'), action = 'init', 'index')
+    load_milestones('#milestones', 'Milestones')
 
 
     $('.toggleble_nav .item:first-child').addClass('active')
@@ -121,12 +165,38 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '#linechart .settings button', function () {
+        let elem = $(this);
 
         //set clicked btn active
         elem.parent().find('.active').removeClass('active');
         elem.addClass('active');
 
         load_historical_data('#linechart', user_id, $('#linechart .settings button.active'), action = 'update', 'index')
+    });
+
+
+    $(document).on('click', '#milestones .settings button', function () {
+        let elem = $(this);
+        let target = elem.attr('data-attr');
+
+        elem.parent().find('.active').removeClass('active');
+        elem.addClass('active');
+
+        $('#milestones .card-body.main .tr_chart_container').addClass('hidden')
+
+
+        var chart = get_instance_from_id(target + '_canvas')
+        //chart = set_milestone_settings(chart);
+
+        let data = chart.options.myCustomOptions.datasets[0].milestone_values.slice()
+        chart.options.myCustomOptions.datasets[0].milestone_values = []
+
+        $('#' + target).removeClass('hidden');
+        setTimeout(function () {
+            chart.options.myCustomOptions.datasets[0].milestone_values = data
+            chart.update()
+        }, 30);
+
     });
 
 });

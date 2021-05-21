@@ -5,13 +5,13 @@
                 <div class="content">
                     <div class="title">Performance today</div>
                     <div class="description">
-                        {% if portfolio.profit['today_relative'] >= 0 %}
-                            +{% endif %}{{ portfolio.profit['today_relative'] }} %
+                        {% if portfolio.profit_today_rel >= 0 %}
+                            +{% endif %}{{ portfolio.profit_today_rel }} %
                     </div>
                 </div>
                 <div class="ordered_step_number">
-                    {% if portfolio.profit['today_absolute'] >= 0 %} +{% endif %}
-                    {{ portfolio.profit['today_absolute'] }} €
+                    {% if portfolio.profit_today_abs >= 0 %} +{% endif %}
+                    {{ portfolio.profit_today_abs }} €
                 </div>
             </div>
         </div>
@@ -22,13 +22,13 @@
                 <div class="content">
                     <div class="title"> overall return</div>
                     <div class="description">
-                        {% if portfolio.profit['total_relative'] >= 0 %}
-                            +{% endif %}{{ portfolio.profit['total_relative'] }} %
+                        {% if portfolio.profit_total_rel >= 0 %}
+                            +{% endif %}{{ portfolio.profit_total_rel }} %
                     </div>
                 </div>
                 <div class="ordered_step_number">
-                    {% if portfolio.profit['total_absolute'] >= 0 %}
-                        +{% endif %}{{ portfolio.profit['total_absolute'] }} €
+                    {% if portfolio.profit_total_abs >= 0 %}
+                        +{% endif %}{{ portfolio.profit_total_abs }} €
                 </div>
             </div>
         </div>

@@ -15,12 +15,12 @@
             {% for asset in assets %}
 
 
-                <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title=" {{ asset.name }}"
+                <tr class="asset_elem" data-symbol="{{ asset.symbol }}" data-title=" {{ asset.symbol_elem.name }}"
                     data-price="{{ asset.price }}">
                     <th scope="row">
                         <h5 class="ui sub header">
                             <a href="{{ url_for('asset.asset_index',portfolio_id=portfolio.id, symbol=asset.symbol) }}">
-                                {{ asset.name }}
+                                {{ asset.symbol_elem.name }}
                             </a>
                         </h5>
                         {% set quantity = asset.quantity %}
@@ -29,31 +29,31 @@
                         {% if decimal_part == '0' %}
                             {% set quantity = int_part %}
                         {% endif %}
-                        <div class="ui mini label">
-                            x {{ quantity }}
-                        </div>
+
                         <span class="asset_elem_subheader_absolute hidden">
+                                <div class="ui mini label">x {{ quantity }}</div>
                                 <div class="ui mini label" style="background: none !important;">
                                      {{ asset.value }} €
                                 </div>
-                            </span>
+                        </span>
                         <span class="asset_elem_subheader_relative">
-                                <div class="ui mini label" style="background: none !important;">
-                                    {{ asset.price }} = 1
-                                </div>
-                            </span>
+                            <div class="ui mini label">x 1</div>
+                            <div class="ui mini label" style="background: none !important;">
+                                {{ asset.symbol_elem.price }}
+                            </div>
+                        </span>
 
                     </th>
                     <td>
                             <span class="profit_label" counter="0"
-                                  data-val="{{ asset.profit['total_absolute'] }}~{{ asset.profit['total_relative'] }}~{{ asset.profit['today_absolute'] }}~{{ asset.profit['today_relative'] }}">
-                                {% if asset.profit['total_absolute'] >= 0 %}
+                                  data-val="{{ asset.profit_total_abs }}~{{ asset.profit_total_rel }}~{{ asset.profit_today_abs }}~{{ asset.profit_today_rel }}">
+                                {% if asset.profit_total_abs >= 0 %}
                                     <div class="ui small label green">
-                                    <i class="fas fa-caret-up"></i> <span>{{ asset.profit['total_absolute'] }}</span>
+                                    <i class="fas fa-caret-up"></i> <span>{{ asset.profit_total_abs }}</span>
                                 </div>
                                 {% else %}
                                     <div class="ui small label red">
-                                    <i class="fas fa-caret-down"></i> <span>{{ asset.profit['total_absolute'] }}</span>
+                                    <i class="fas fa-caret-down"></i> <span>{{ asset.profit_total_abs }}</span>
 
                                 </div>
                                 {% endif %}

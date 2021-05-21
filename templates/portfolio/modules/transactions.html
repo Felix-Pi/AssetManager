@@ -12,7 +12,7 @@
     </div>
     <div class="card-body fixed_scrollable_hight">
 
-        <table class="table">
+        <table class="table table-striped table-hover">
             <thead>
             <tr>
                 <th data-attr="action" class="hidden">Action</th>
@@ -27,7 +27,7 @@
 
                 {% for transaction in transactions %}
                     {% if transaction.type == tt.id %}
-                        <tr class="s">
+                        <tr>
                             <td data-attr="action" class="hidden">{{ transaction.type_str.title }}</td>
                             <td data-attr="symbol">{{ transaction.symbol }}</td>
                             <td data-attr="price_quantity">{{ transaction.quantity }} x {{ transaction.price }}</td>
@@ -40,7 +40,6 @@
             {% endfor %}
 
             <tbody class="toggle_wrapper hidden" data-attr="all">
-
             {% for transaction in transactions %}
                 <tr class="s">
                     <th scope="row">{{ transaction.type_str.title }}</th>

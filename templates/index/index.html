@@ -23,13 +23,21 @@
         </div>
 
 
+        <div class="col-md-6 mb-4">
+            {% include "index/milestones.html" %}
+        </div>
+
 
         <div class="col-md-6 mb-4">
-             {% include "index/monthly/base.html" %}
+            {% include "index/monthly/base.html" %}
         </div>
 
         <div class="col-md-6 mb-4">
-            {% set transactions = user.get_all_transactions() %}
+            {% include "modules/placeholder.html" %}
+        </div>
+
+        <div class="col-md-6 mb-4">
+            {% set transactions = user.get_all_transactions()[0] %}
             {% include "portfolio/modules/transactions.html" %}
         </div>
     </div>

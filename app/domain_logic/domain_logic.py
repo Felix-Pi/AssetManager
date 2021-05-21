@@ -1,6 +1,6 @@
 import pathlib
 
-from app import db, Asset, Portfolio, User, app, Asset_types, datetime, json
+from app import db, Asset, Portfolio, User, app, Asset_types, datetime, json, Portfolio_positions
 from app.domain_logic.YahooApiOld import YahooApi
 import yfinance as yf
 
@@ -85,12 +85,14 @@ def update_asset(symbol, debug=True):
         'type': type.id,
         'price_open': 'regularMarketOpen',
         'price': 'regularMarketPrice',
-        'dividend': 'trailingAnnualDividendYield',
+        'dividend': 'trailingAnnualDividendRate',
         'sector': 'sector',
         'industry': 'industry',
         'country': 'country',
         'currency': 'currency',
     }
+
+    asset.dividend = None
 
     for key, value in info.items():
         if value in asset_data:
@@ -129,6 +131,10 @@ def get_portfolio(id):
     return db.session.query(Portfolio).filter_by(id=id).first()
 
 
+def get_user(id):
+    return db.session.query(User).filter_by(id=id).first()
+
+
 def update_all_portfolio_positions():
     portfolios = db.session.query(Portfolio).all()
 
@@ -136,9 +142,24 @@ def update_all_portfolio_positions():
     for pf in portfolios:
         pf.update_portfolio_positions()
 
+    update_user_data()
 
-def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity, cost=None):
+
+def update_user_data(log=False):
+    users = db.session.query(User).all()
+
+    if log:
+        app.logger.info('Updating User Data for all Users \'{}\': '.format(len(users)))
+
+    for user in users:
+        user.update_networth(commit=False)
+        user.update_profit(commit=False)
+        user.update_expected_dividend(commit=False)
+
+
+def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity, fee=None):
     portfolio = get_portfolio(pf_id)
+    user = get_user(portfolio.user_id)
 
     if symbol is not None:  # for transcation_type = 4
         fetch_existing = db.session.query(Asset).filter_by(symbol=symbol).first()
@@ -151,7 +172,19 @@ def add_transaction(pf_id, symbol, timestamp, transcation_type, price, quantity,
             add_symbol(symbol, asset_type.id)
 
     timestamp = datetime.strptime(timestamp, '%d.%m.%y')
-    portfolio.add_transaction(symbol, transcation_type, timestamp, price, quantity, cost=cost)
+    portfolio.add_transaction(symbol, transcation_type, timestamp, price, quantity, fee=fee)
+
+    user.update_networth()
+    user.update_profit()
+
+
+def add_position_update(pf_id, symbol, date, transaction_type, quantity, price, fee):
+    portfolio = get_portfolio(pf_id)
+
+    last_transaction = db.session.query(Portfolio_positions).filter_by(portfolio=pf_id, symbol=symbol).first()
+    print('lala: ', last_transaction)
+
+    pass
 
 
 ### USER
