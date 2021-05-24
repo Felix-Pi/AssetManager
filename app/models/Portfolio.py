@@ -123,7 +123,6 @@ class Portfolio(db.Model):
         data = self.positions_db.filter(Portfolio_positions.quantity > 0).order_by(
             Portfolio_positions.value.desc()).all()
 
-        print('portfolio-get_positions: ', data)
         return data
 
     def update_portfolio_positions(self, log=False):
@@ -131,7 +130,7 @@ class Portfolio(db.Model):
             app.logger.info('Updating Portfolio Positions for \'{}\': '.format(self.title))
 
         for pos in self.positions:
-            self.update_position(pos.symbol)
+            self.update_position(pos.symbol, log=True)
 
     def calc_position(self, symbol, transactions=None, until_data=None):
         self.calc_position_counter += 1
@@ -174,7 +173,9 @@ class Portfolio(db.Model):
 
         return data
 
-    def update_position(self, symbol):
+    def update_position(self, symbol, log=False):
+        if log:
+            app.logger.info('Updating Position for  \'{}\' in \'{}\': '.format(symbol, self.title))
         data = self.calc_position(symbol)
 
         position = db.session.query(Portfolio_positions).filter_by(portfolio=self.id, symbol=symbol).first()

@@ -46,15 +46,6 @@ def portfolios():
     commit(portfolios)
 
 
-def milestone_types():
-    milestone_types = [
-        Milestone_type(type='Networth'),
-        Milestone_type(type='Monthly Investement'),
-        Milestone_type(type='Monthly Dividend'),
-    ]
-    commit(milestone_types)
-
-
 def assets():
     # add_symbol('USDEUR=X', 4)
     pass
@@ -285,9 +276,9 @@ def transactions():
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=45, timestamp="30.11.20")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.12.20")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="04.01.21")
-    add_transaction(pf_id=4, symbol=None, transcation_type=4, quantity=1, price=100, timestamp="10.01.21", cost=2.66)
+    add_transaction(pf_id=4, symbol=None, transcation_type=4, quantity=1, price=100, timestamp="10.01.21", fee=2.66)
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.02.21")
-    add_transaction(pf_id=4, symbol=None, transcation_type=4, quantity=1, price=30, timestamp="03.02.21", cost=0.0)
+    add_transaction(pf_id=4, symbol=None, transcation_type=4, quantity=1, price=30, timestamp="03.02.21", fee=0.0)
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=85, timestamp="26.02.21")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=50, timestamp="03.03.21")
     add_transaction(pf_id=1, symbol=None, transcation_type=4, quantity=1, price=85, timestamp="06.04.21")
@@ -299,6 +290,30 @@ def transactions():
     add_transaction(pf_id=1, symbol='BAS.F', transcation_type=5, quantity=0.6843, price=3.30, timestamp="04.05.21")
     add_transaction(pf_id=1, symbol='ALV.DE', transcation_type=5, quantity=0.1452, price=9.60, timestamp="08.05.21")
     add_transaction(pf_id=1, symbol='APC.F', transcation_type=5, quantity=2, price=0.15, timestamp="14.05.21")
+    add_transaction(pf_id=4, symbol=None, transcation_type=4, quantity=1, price=50, fee=1.24, timestamp="14.05.21")
+    add_transaction(pf_id=4, symbol='ETH-EUR', transcation_type=1, quantity=0.0105, price=2872.00, timestamp="17.05.21",
+                    fee=0.03)
+    add_transaction(pf_id=4, symbol='XLM-EUR', transcation_type=1, quantity=18, price=0.558, timestamp='17.05.21',
+                    fee=0.01)
+    add_transaction(pf_id=1, symbol='FRE.DE', transcation_type=3, quantity=0.2603, price=38.415, timestamp='17.05.21',
+                    fee=0)
+    add_transaction(pf_id=1, symbol='BAS.F', transcation_type=3, quantity=0.1383, price=72.28, timestamp='17.05.21',
+                    fee=0.0)
+
+    add_transaction(pf_id=1, symbol='ALV.DE', transcation_type=3, quantity=0.0461, price=216.70, timestamp='17.05.21',
+                    fee=0)
+    add_transaction(pf_id=1, symbol='VNA.F', transcation_type=3, quantity=0.194, price=51.54, timestamp='17.05.21',
+                    fee=0)
+    add_transaction(pf_id=3, symbol='EUNL.DE', transcation_type=3, quantity=0.3019, price=66.234, timestamp='17.05.21',
+                    fee=0)
+    add_transaction(pf_id=1, symbol='None', transcation_type=4, quantity=1, price=50, timestamp='20.05.21', fee=0)
+    add_transaction(pf_id=4, symbol='None', transcation_type=4, quantity=1, price=50, timestamp='20.05.21', fee=1.25)
+
+    add_transaction(pf_id=4, symbol='XLM-EUR', transcation_type=1, quantity=19.4648350, price=0.00001, timestamp='20.05.21', fee=0)
+    add_transaction(pf_id=4, symbol='COMP-EUR', transcation_type=1, quantity=0.01612875, price=0.00001,
+                    timestamp='20.05.21', fee=0)
+
+
 
 def init_all():
     users()
@@ -307,12 +322,9 @@ def init_all():
     portfolio_types()
     portfolios()
     transactions()
-    milestone_types()
-
 
 
 if __name__ == '__main__':
     init_all()
-
 
     # transactions()

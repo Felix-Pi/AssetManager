@@ -50,7 +50,7 @@ def portfolio(portfolio_id):
         flash("Successfully added Transaction to Portfolio '{}'".format(portfolio.title))
 
         flash(
-            "add_transaction(pf_id={}, symbol='{}', transcation_type={}, quantity={}, price={}, timestamp='{}', cost={})".format(
+            "add_transaction(pf_id={}, symbol='{}', transcation_type={}, quantity={}, price={}, timestamp='{}', fee={})".format(
                 data['portfolio'],
                 data['symbol'],
                 data['transaction_type'],
@@ -71,6 +71,7 @@ def portfolio(portfolio_id):
         'symbols': symbols,
         'symbol_list': ','.join(symbols),
         'add_transaction_form': add_transaction_form,
+        'symbol_name_dict': {pos.symbol: pos.symbol_elem.name for pos in portfolio.positions},
         'transaction_types': db.session.query(Transaction_types).order_by(Transaction_types.sort).all(),
     }
 

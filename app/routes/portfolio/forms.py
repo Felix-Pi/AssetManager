@@ -14,8 +14,8 @@ class AddTransactionForm(FlaskForm):
     portfolio = SelectField('Portfolio', validators=[DataRequired()],
                             choices=[])
 
-    # transaction_type = SelectField('Transaction Type', validators=[DataRequired()],
-    #                                choices=[(a.id, a.title) for a in db.session.query(Transaction_types).all()])
+    transaction_type = SelectField('Transaction Type', validators=[DataRequired()],
+                                   choices=[(a.id, a.title) for a in db.session.query(Transaction_types).all()])
 
     symbol = StringField('Symbol', validators=[])
     price = DecimalField('Price', validators=[DataRequired()])

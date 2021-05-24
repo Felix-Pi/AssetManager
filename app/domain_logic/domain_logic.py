@@ -24,8 +24,9 @@ def update_all_prices():
         asset.price = data[asset.symbol]['price']
         asset.price_open = data[asset.symbol]['price_open']
 
-    db.session.commit()
     update_all_portfolio_positions()
+
+    db.session.commit()
     app.logger.info('Completed updating prices')
 
 
@@ -140,7 +141,7 @@ def update_all_portfolio_positions():
 
     app.logger.info('Updating positions for all Portfolios ({}) '.format(len(portfolios)))
     for pf in portfolios:
-        pf.update_portfolio_positions()
+        pf.update_portfolio_positions(log=True)
 
     update_user_data()
 

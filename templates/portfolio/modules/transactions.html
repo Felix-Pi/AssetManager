@@ -29,9 +29,11 @@
                     {% if transaction.type == tt.id %}
                         <tr>
                             <td data-attr="action" class="hidden">{{ transaction.type_str.title }}</td>
-                            <td data-attr="symbol">{{ transaction.symbol }}</td>
+                            <td data-attr="symbol">
+                                <b>{{ symbol_name_dict[transaction.symbol] }}</b>[{{ transaction.symbol }}]
+                            </td>
                             <td data-attr="price_quantity">{{ transaction.quantity }} x {{ transaction.price }}</td>
-                            <td data-attr="value">{{ (transaction.quantity *  transaction.price) | round(2)}} €</td>
+                            <td data-attr="value">{{ (transaction.quantity *  transaction.price) | round(2) }} €</td>
                             <td data-attr="timestamp">{{ transaction.timestamp.strftime('%d.%m.%Y') }}</td>
                         </tr>
                     {% endif %}
@@ -45,7 +47,7 @@
                     <th scope="row">{{ transaction.type_str.title }}</th>
                     <td>{{ transaction.symbol }}</td>
                     <td>{{ transaction.quantity }} x {{ transaction.price }}</td>
-                    <td>{{ (transaction.quantity *  transaction.price) | round(2)}} €</td>
+                    <td>{{ (transaction.quantity *  transaction.price) | round(2) }} €</td>
                     <td>{{ transaction.timestamp.strftime('%d.%m.%Y') }}</td>
                 </tr>
             {% endfor %}

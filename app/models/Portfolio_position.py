@@ -50,6 +50,10 @@ class Portfolio_positions(db.Model):
 
     def update_profit(self, commit=False):
         self.update_value(commit=False)
+
+        if self.quantity == 0:
+            return
+
         try:
             self.price_open = self.symbol_elem.price_open
 
@@ -59,10 +63,9 @@ class Portfolio_positions(db.Model):
             self.profit_today_rel = round(self.profit_today_abs / self.value * 100, 2)
 
         except ZeroDivisionError:
-            app.logger.error('calc_profit: Error occured for symbol \'{}\': ZeroDivisionError'.format(self.symbol))
+            app.logger.error('update_profit: Error occured for symbol \'{}\': ZeroDivisionError'.format(self.symbol))
         except Exception as err:
-            app.logger.error('calc_profit: Error occured for symbol \'{}\''.format(self.symbol))
-            app.logger.error('calc_profit: Error occured for symbol \'{}\': {}'.format(self.symbol, err))
+            app.logger.error('update_profit: Error occured for symbol \'{}\': {}'.format(self.symbol, err))
 
         if commit:
             db.session.commit()

@@ -6,7 +6,7 @@ from app.routes.api import bp
 @bp.route('/update_all_prices', methods=['GET'])
 def api_update_prices():
     result = update_all_prices()
-    #
+
 
     return jsonify(True)
 
