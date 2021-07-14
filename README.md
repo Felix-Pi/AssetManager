@@ -1,5 +1,5 @@
 # AssetManager 
-> AssetManager is a tool I created to visualize my tradable assets like stocks, etf's and cryptocurrencies in one application. \
+> AssetManager is a tool I created to visualize my tradable assets like stocks, etf's and cryptocurrencies in one single application. \
 I just love charts and stats and after getting more and more into finance stuff I found no tool out there beeing able to display everything I wanted in one place. So i created this prototype.
 
 
